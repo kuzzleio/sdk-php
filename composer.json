@@ -1,0 +1,25 @@
+{
+  "name": "kuzzle-sdk",
+  "version": "1.0.0-RC3",
+  "description": "Official PHP SDK for Kuzzle",
+  "homepage": "kuzzle.io",
+  "license": "Apache-2.0",
+  "authors":{
+    "name": "The Kuzzle Team",
+    "email": "support@kuzzle.io",
+    "homepage": "kuzzle.io"
+  },
+  "support": {
+    "issues": "support@example.org"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kuzzle\\": "src/"
+    }
+  },
+  "require" : {
+  },
+  "require-dev" : {
+    "phpunit/phpunit": "4.8.*"
+  }
+}
