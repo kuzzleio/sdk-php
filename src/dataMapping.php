@@ -58,10 +58,12 @@ class DataMapping
      *
      * @param string $field Name of the field from which the mapping is to be added or updated
      * @param array $mapping Mapping for this field, following the Elasticsearch Mapping format
+     * @return DataMapping
      */
     function set($field, array $mapping)
     {
 
+        return $this;
     }
 
     /**
@@ -69,9 +71,11 @@ class DataMapping
      *
      * @param array $content New content
      * @param bool $replace true: replace the current content with the provided data, false: merge it
+     * @return DataMapping
      */
     function setHeaders(array $content, $replace = false)
     {
 
+        return $this;
     }
 }
