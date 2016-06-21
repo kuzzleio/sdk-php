@@ -45,4 +45,63 @@ class Document
 
     }
 
+    /**
+     * Deletes this document in Kuzzle
+     *
+     * @param array $options Optional parameters
+     */
+    function delete(array $options = [])
+    {
+
+    }
+
+    /**
+     * Creates a new KuzzleDocument object with the last version of this document stored in Kuzzle.
+     *
+     * @param array $options Optional parameters
+     * @return Document
+     */
+    function refresh(array $options = [])
+    {
+
+    }
+
+    /**
+     * Saves this document into Kuzzle.
+     *
+     * If this is a new document, this function will create it in Kuzzle and the id property will be made available.
+     * Otherwise, this method will replace the latest version of this document in Kuzzle by the current content of this object.
+     *
+     * @param array $options Optional parameters
+     * @return Document
+     */
+    function save(array $options = [])
+    {
+
+    }
+
+    /**
+     * Replaces the current content with new data.
+     * This is a helper function returning itself, allowing to easily chain calls.
+     *
+     * @param array $data
+     * @param array $options
+     * @return Document
+     */
+    function setContent(array $data, array $options = [])
+    {
+
+        return $this;
+    }
+
+    /**
+     * This is a helper function returning itself, allowing to easily chain calls.
+     *
+     * @param array $content New content
+     * @param bool $replace true: replace the current content with the provided data, false: merge it
+     */
+    function setHeaders(array $content, $replace = false)
+    {
+
+    }
 }
