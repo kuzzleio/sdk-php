@@ -1,16 +1,16 @@
 {
-  "name": "kuzzle-sdk",
+  "name": "kuzzleio/kuzzle-sdk",
   "version": "1.0.0-RC3",
   "description": "Official PHP SDK for Kuzzle",
-  "homepage": "kuzzle.io",
+  "homepage": "http://kuzzle.io",
   "license": "Apache-2.0",
-  "authors":{
+  "authors": [{
     "name": "The Kuzzle Team",
     "email": "support@kuzzle.io",
-    "homepage": "kuzzle.io"
-  },
+    "homepage": "http://kuzzle.io"
+  }],
   "support": {
-    "issues": "support@example.org"
+    "issues": "https://github.com/kuzzleio/sdk-php/issues"
   },
   "autoload": {
     "psr-4": {
@@ -18,6 +18,8 @@
     }
   },
   "require" : {
+    "php": ">=5.4",
+    "ramsey/uuid": "^3.4"
   },
   "require-dev" : {
     "phpunit/phpunit": "4.8.*"

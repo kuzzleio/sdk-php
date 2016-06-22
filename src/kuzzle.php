@@ -2,15 +2,25 @@
 
 namespace Kuzzle;
 
+use ErrorException;
+use Exception;
+use HttpException;
+use InvalidArgumentException;
 use Kuzzle\DataCollection;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class Kuzzle
  * @package kuzzle-sdk
  */
 class Kuzzle {
+
+    /**
+     * @var string url of kuzzle http server
+     */
+    protected $url;
 
     /**
      * @var string Kuzzle’s default index to use
@@ -37,6 +47,11 @@ class Kuzzle {
      */
     protected $collections = [];
 
+    /**
+     * @var array
+     */
+    private $routesDescription = [];
+
 
     /**
      * Kuzzle constructor.
@@ -45,8 +60,11 @@ class Kuzzle {
      * @param array $options Optional Kuzzle connection configuration
      * @return Kuzzle
      */
-    function __construct($url, array $options = array())
+    public function __construct($url, array $options = array())
     {
+        $this->url = $url;
+
+        $this->getRouteDescription();
 
         return $this;
     }
@@ -59,7 +77,7 @@ class Kuzzle {
      * @param callable $listener The function to call each time one of the registered event is fired
      * @return string containing an unique listener ID.
      */
-    function addListener($event, $listener)
+    public function addListener($event, $listener)
     {
 
     }
@@ -72,7 +90,7 @@ class Kuzzle {
      *         If the token is valid, a expiresAt property is set with the expiration timestamp.
      *         If not, a state property is set explaining why the token is invalid.
      */
-    function checkToken($token)
+    public function checkToken($token)
     {
 
     }
@@ -84,15 +102,15 @@ class Kuzzle {
      * @param string $index The name of the index containing the data collection
      * @return DataCollection
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    function dataCollectionFactory($collection, $index = "")
+    public function dataCollectionFactory($collection, $index = "")
     {
         if (empty($index))
         {
             if (empty($this->defaultIndex))
             {
-                throw new \InvalidArgumentException('Unable to create a new data collection object: no index specified');
+                throw new InvalidArgumentException('Unable to create a new data collection object: no index specified');
             }
 
             $index = $this->defaultIndex;
@@ -118,7 +136,7 @@ class Kuzzle {
      * @param array $options Optional parameters
      * @return array[] each one of them being a statistic frame
      */
-    function getAllStatistics(array $options = [])
+    public function getAllStatistics(array $options = [])
     {
 
     }
@@ -128,7 +146,7 @@ class Kuzzle {
      *
      * @return string
      */
-    function getJwtToken()
+    public function getJwtToken()
     {
         return $this->jwtToken;
     }
@@ -139,7 +157,7 @@ class Kuzzle {
      * @param array $options Optional parameters
      * @return array[]
      */
-    function getMyRights(array $options = [])
+    public function getMyRights(array $options = [])
     {
 
     }
@@ -150,7 +168,7 @@ class Kuzzle {
      * @param array $options Optional parameters
      * @return array containing server information
      */
-    function getServerInfo(array $options = [])
+    public function getServerInfo(array $options = [])
     {
 
     }
@@ -164,7 +182,7 @@ class Kuzzle {
      * @param array $options Optional parameters
      * @return array[] containing one or more statistics frame(s)
      */
-    function getStatistics($timestamp = '', array $options = [])
+    public function getStatistics($timestamp = '', array $options = [])
     {
 
     }
@@ -176,7 +194,7 @@ class Kuzzle {
      * @param array $options Optional parameters
      * @return array containing the list of stored and/or realtime collections on the provided index
      */
-    function listCollections($index = '', array $options = [])
+    public function listCollections($index = '', array $options = [])
     {
 
     }
@@ -187,7 +205,7 @@ class Kuzzle {
      * @param array $options Optional parameters
      * @return array of index names
      */
-    function listIndexes(array $options = [])
+    public function listIndexes(array $options = [])
     {
 
     }
@@ -199,7 +217,7 @@ class Kuzzle {
      * @param array $credentials Optional login credentials, depending on the strategy
      * @param string $expiresIn Login expiration time
      */
-    function login($strategy, array $credentials = [], $expiresIn = '')
+    public function login($strategy, array $credentials = [], $expiresIn = '')
     {
 
     }
@@ -207,9 +225,26 @@ class Kuzzle {
     /**
      * Logs the user out.
      */
-    function logout()
+    public function logout()
     {
 
+    }
+
+    /**
+     * A static Kuzzle\MemoryStorage instance
+     * 
+     * @return MemoryStorage
+     */
+    public function memoryStorage()
+    {
+        static $memoryStorage;
+
+        if (is_null($memoryStorage))
+        {
+            $memoryStorage = new MemoryStorage($this);
+        }
+
+        return $memoryStorage;
     }
 
     /**
@@ -217,7 +252,7 @@ class Kuzzle {
      *
      * @param array $options Optional parameters
      */
-    function now(array $options = [])
+    public function now(array $options = [])
     {
 
     }
@@ -228,10 +263,83 @@ class Kuzzle {
      * @param array $queryArgs Query base arguments
      * @param array $query Query to execute
      * @param array $options Optional parameters
+     * @return array
+     *
+     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException
      */
-    function query(array $queryArgs, array $query, array $options = [])
+    public function query(array $queryArgs, array $query = [], array $options = [])
     {
+        $request = [
+            'action' => $queryArgs['action'],
+            'controller' => $queryArgs['controller'],
+            'metadata' => $this->metadata
+        ];
 
+        if (!empty($options))
+        {
+            if (array_key_exists('metadata', $options))
+            {
+                foreach ($options['metadata'] as $meta)
+                {
+                    $request['metadata'][$meta] = $options['metadata'][$meta];
+                }
+            }
+        }
+
+        if (array_key_exists('metadata', $query))
+        {
+            foreach ($query['metadata'] as $meta)
+            {
+                $request['metadata'][$meta] = $options['metadata'][$meta];
+            }
+        }
+
+        foreach ($query as $attr => $value)
+        {
+            if ($attr !== 'metadata')
+            {
+                $request[$attr] = $value;
+            }
+        }
+
+        foreach ($this->headers as $header)
+        {
+            if (!array_key_exists($header, $request['headers']))
+            {
+                $request['headers'][$header] = $this->headers[$header];
+            }
+        }
+
+        /*
+        * Do not add the token for the checkToken route, to avoid getting a token error when
+        * a developer simply wish to verify his token
+        */
+        if ($this->jwtToken && !($request['controller'] === 'auth' && $request['action'] === 'checkToken'))
+        {
+            if (!is_array($request['headers']))
+            {
+                $request['headers'] = [];
+            }
+
+            $request['headers']['authorization'] = 'Bearer ' . $this->jwtToken;
+        }
+
+        if (array_key_exists('collection', $queryArgs))
+        {
+            $request['collection'] = $queryArgs['collection'];
+        }
+
+        if (array_key_exists('index', $queryArgs))
+        {
+            $request['index'] = $queryArgs['index'];
+        }
+
+        if (!array_key_exists('requestId', $request))
+        {
+            $request['requestId'] = Uuid::uuid4()->toString();
+        }
+
+        return $this->emitRestRequest($this->convertRestRequest($request));
     }
 
     /**
@@ -242,7 +350,7 @@ class Kuzzle {
      * @param array $options Optional parameters
      * @return array structure matching the response from Elasticsearch
      */
-    function refreshIndex($index = '', array $options = [])
+    public function refreshIndex($index = '', array $options = [])
     {
 
     }
@@ -250,7 +358,7 @@ class Kuzzle {
     /**
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      */
-    function removeAllListeners($event = '')
+    public function removeAllListeners($event = '')
     {
 
     }
@@ -259,17 +367,17 @@ class Kuzzle {
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      * @param string $listenerID The ID returned by Kuzzle->addListener()
      */
-    function removeListener($event, $listenerID)
+    public function removeListener($event, $listenerID)
     {
 
     }
 
     /**
-     * A static KuzzleSecurity instance
+     * A static Kuzzle\Security instance
      *
      * @return Security
      */
-    function security()
+    public function security()
     {
         static $security;
 
@@ -290,7 +398,7 @@ class Kuzzle {
      * @param bool $autoRefresh The value to set for the autoRefresh setting.
      * @param array $options Optional parameters
      */
-    function setAutoRefresh($index = '', $autoRefresh = false, $options = [])
+    public function setAutoRefresh($index = '', $autoRefresh = false, $options = [])
     {
 
     }
@@ -300,7 +408,7 @@ class Kuzzle {
      *
      * @param $index
      */
-    function setDefaultIndex($index)
+    public function setDefaultIndex($index)
     {
 
     }
@@ -311,7 +419,7 @@ class Kuzzle {
      * @param array $content
      * @param array $options
      */
-    function updateSelf(array $content, $options = [])
+    public function updateSelf(array $content, $options = [])
     {
 
     }
@@ -323,7 +431,7 @@ class Kuzzle {
      * @param bool $replace
      * @return Kuzzle
      */
-    function setHeaders(array $headers, $replace = false)
+    public function setHeaders(array $headers, $replace = false)
     {
 
         return $this;
@@ -335,7 +443,7 @@ class Kuzzle {
      * @param string $jwtToken Previously generated JSON Web Token
      * @return Kuzzle
      */
-    function setJwtToken($jwtToken)
+    public function setJwtToken($jwtToken)
     {
 
         return $this;
@@ -346,8 +454,124 @@ class Kuzzle {
      *
      * @return User
      */
-    function whoAmI()
+    public function whoAmI()
     {
 
+    }
+
+    /**
+     * @param array $httpRequest
+     * @return array
+     *
+     * @throws HttpException
+     * @throws ErrorException
+     */
+    private function emitRestRequest(array $httpRequest)
+    {
+        $curlResource = curl_init();
+        curl_setopt($curlResource, CURLOPT_URL, $this->url . $httpRequest['route']);
+        curl_setopt($curlResource, CURLOPT_HTTPHEADER, ['Content-type: application/json']);
+        curl_setopt($curlResource, CURLOPT_CUSTOMREQUEST, $httpRequest['method']);
+        curl_setopt($curlResource, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curlResource, CURLOPT_ENCODING, '');
+        curl_setopt($curlResource, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curlResource, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curlResource, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+
+        if (array_key_exists('body', $httpRequest['request']))
+        {
+            curl_setopt($curlResource, CURLOPT_POSTFIELDS, json_encode($httpRequest['request']['body']));
+        }
+
+        $response = curl_exec($curlResource);
+        $error = curl_error($curlResource);
+
+        curl_close($curlResource);
+
+        if (!empty($error))
+        {
+            throw new HttpException($error);
+        }
+
+        $response = json_decode($response, true);
+
+        if (!empty($response['error']))
+        {
+            throw new ErrorException($response['error']['message']);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getRouteDescription()
+    {
+        $routeConfigFile = realpath(__DIR__ . '/./config/routes.json');
+
+        if (!file_exists($routeConfigFile))
+        {
+            throw new \Exception('Unable to find http routes configuration file (' . __DIR__ . '/./config/routes.json)');
+        }
+
+        $this->routesDescription = json_decode(file_get_contents($routeConfigFile), true);
+    }
+
+    /**
+     * @param array $request
+     * @return array
+     *
+     * @throws InvalidArgumentException
+     */
+    private function convertRestRequest(array $request)
+    {
+        $httpRequest = [
+            'request' => $request
+        ];
+
+        if (!array_key_exists('route', $request))
+        {
+            if (!array_key_exists($request['controller'], $this->routesDescription))
+            {
+                throw new InvalidArgumentException('Unable to retrieve http route: controller "' . $request['controller'] . '" information not found');
+            }
+
+            if (!array_key_exists($request['action'], $this->routesDescription[$request['controller']]))
+            {
+                throw new InvalidArgumentException('Unable to retrieve http route: action "' . $request['controller'] . ':' . $request['action'] . '" information not found');
+            }
+
+            $httpRequest['route'] = $this->routesDescription[$request['controller']][$request['action']]['route'];
+        }
+        else
+        {
+            $httpRequest['route'] = $request['route'];
+        }
+
+        // replace http route parameters
+        $httpRequest['route'] = str_replace(':collection', $request['collection'], $httpRequest['route']);
+        $httpRequest['route'] = str_replace(':index', $request['index'], $httpRequest['route']);
+
+        if (!array_key_exists('method', $httpRequest))
+        {
+            if (!array_key_exists($request['controller'], $this->routesDescription))
+            {
+                throw new InvalidArgumentException('Unable to retrieve http method: controller "' . $request['controller'] . '" information not found');
+            }
+
+            if (!array_key_exists($request['action'], $this->routesDescription[$request['controller']]))
+            {
+                throw new InvalidArgumentException('Unable to retrieve http method: action "' . $request['controller'] . ':' . $request['action'] . '" information not found');
+            }
+
+            $httpRequest['method'] = mb_strtoupper($this->routesDescription[$request['controller']][$request['action']]['method']);
+        }
+        else
+        {
+            $httpRequest['method'] = mb_strtoupper($request['method']);
+        }
+
+        return $httpRequest;
     }
 }

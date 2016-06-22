@@ -24,7 +24,7 @@ class DataMapping
      * @param DataCollection $kuzzleDataCollection An instantiated Kuzzle\DataCollection object
      * @param array $mapping Optional mapping
      */
-    function __construct(DataCollection $kuzzleDataCollection, array $mapping = [])
+    public function __construct(DataCollection $kuzzleDataCollection, array $mapping = [])
     {
 
     }
@@ -35,7 +35,7 @@ class DataMapping
      * @param array $options Optional parameters
      * @return DataMapping
      */
-    function apply(array $options = [])
+    public function apply(array $options = [])
     {
 
         return $this;
@@ -47,7 +47,7 @@ class DataMapping
      * @param array $options Optional parameters
      * @return DataMapping
      */
-    function refresh(array $options = [])
+    public function refresh(array $options = [])
     {
 
         return $this;
@@ -60,7 +60,7 @@ class DataMapping
      * @param array $mapping Mapping for this field, following the Elasticsearch Mapping format
      * @return DataMapping
      */
-    function set($field, array $mapping)
+    public function set($field, array $mapping)
     {
 
         return $this;
@@ -73,7 +73,7 @@ class DataMapping
      * @param bool $replace true: replace the current content with the provided data, false: merge it
      * @return DataMapping
      */
-    function setHeaders(array $content, $replace = false)
+    public function setHeaders(array $content, $replace = false)
     {
 
         return $this;

@@ -40,7 +40,7 @@ class Document
      * @param string $documentId ID of an existing document.
      * @param array $content Initializes this document with the provided content
      */
-    function __construct(DataCollection $kuzzleDataCollection, $documentId = '', array $content = [])
+    public function __construct(DataCollection $kuzzleDataCollection, $documentId = '', array $content = [])
     {
 
     }
@@ -50,7 +50,7 @@ class Document
      *
      * @param array $options Optional parameters
      */
-    function delete(array $options = [])
+    public function delete(array $options = [])
     {
 
     }
@@ -61,7 +61,7 @@ class Document
      * @param array $options Optional parameters
      * @return Document
      */
-    function refresh(array $options = [])
+    public function refresh(array $options = [])
     {
 
     }
@@ -75,7 +75,7 @@ class Document
      * @param array $options Optional parameters
      * @return Document
      */
-    function save(array $options = [])
+    public function save(array $options = [])
     {
 
     }
@@ -88,7 +88,7 @@ class Document
      * @param array $options
      * @return Document
      */
-    function setContent(array $data, array $options = [])
+    public function setContent(array $data, array $options = [])
     {
 
         return $this;
@@ -100,7 +100,7 @@ class Document
      * @param array $content New content
      * @param bool $replace true: replace the current content with the provided data, false: merge it
      */
-    function setHeaders(array $content, $replace = false)
+    public function setHeaders(array $content, $replace = false)
     {
 
     }

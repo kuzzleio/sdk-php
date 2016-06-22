@@ -35,7 +35,7 @@ class DataCollection
      * @param string $index Name of the index containing the data collection
      * @param string $collection The name of the data collection you want to manipulate
      */
-    function __construct(Kuzzle $kuzzle, $index, $collection)
+    public function __construct(Kuzzle $kuzzle, $index, $collection)
     {
 
     }
@@ -46,7 +46,7 @@ class DataCollection
      * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
      */
-    function advancedSearch(array $filters, array $options = [])
+    public function advancedSearch(array $filters, array $options = [])
     {
 
     }
@@ -59,7 +59,7 @@ class DataCollection
      *
      * @return integer the matched documents count
      */
-    function count(array $filters, array $options = [])
+    public function count(array $filters, array $options = [])
     {
 
     }
@@ -70,7 +70,7 @@ class DataCollection
      *
      * @param array $options Optional parameters
      */
-    function create(array $options = [])
+    public function create(array $options = [])
     {
 
     }
@@ -83,7 +83,7 @@ class DataCollection
      *
      * @return Document
      */
-    function createDocument(Document $kuzzleDocument, array $options = [])
+    public function createDocument(Document $kuzzleDocument, array $options = [])
     {
 
     }
@@ -93,7 +93,7 @@ class DataCollection
      *
      * @param array $mapping Optional mapping
      */
-    function dataMappingFactory(array $mapping = [])
+    public function dataMappingFactory(array $mapping = [])
     {
 
     }
@@ -104,7 +104,7 @@ class DataCollection
      * @param array|string $filters Unique document identifier OR Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
      */
-    function deleteDocument($filters, array $options = [])
+    public function deleteDocument($filters, array $options = [])
     {
 
     }
@@ -116,7 +116,7 @@ class DataCollection
      * @param array $content Optional document content
      * @return Document the newly created Kuzzle\Document object
      */
-    function documentFactory($id = '', array $content = [])
+    public function documentFactory($id = '', array $content = [])
     {
 
     }
@@ -128,7 +128,7 @@ class DataCollection
      * @param array $options Optional parameters
      * @return Document
      */
-    function fetchDocument($documentId, array $options = [])
+    public function fetchDocument($documentId, array $options = [])
     {
 
     }
@@ -139,7 +139,7 @@ class DataCollection
      * @param array $options Optional parameters
      * @return array containing the total number of retrieved documents and an array of Kuzzle/Document objects
      */
-    function fetchAllDocuments(array $options = [])
+    public function fetchAllDocuments(array $options = [])
     {
 
     }
@@ -150,7 +150,7 @@ class DataCollection
      * @param array $options Optional parameters
      * @return DataMapping
      */
-    function getMapping(array $options = [])
+    public function getMapping(array $options = [])
     {
 
     }
@@ -163,7 +163,7 @@ class DataCollection
      * @param array $options Optional parameters
      * @return Document
      */
-    function replaceDocument($documentId, array $content, array $options = [])
+    public function replaceDocument($documentId, array $content, array $options = [])
     {
 
     }
@@ -175,7 +175,7 @@ class DataCollection
      * @param bool $replace true: replace the current content with the provided data, false: merge it
      * @return DataCollection
      */
-    function setHeaders(array $content, $replace = false)
+    public function setHeaders(array $content, $replace = false)
     {
 
         return $this;
@@ -187,7 +187,7 @@ class DataCollection
      *
      * @param array $options Optional parameters
      */
-    function truncate(array $options = [])
+    public function truncate(array $options = [])
     {
 
     }
@@ -201,7 +201,7 @@ class DataCollection
      * @param array $options Optional parameters
      * @return Document
      */
-    function updateDocument($documentId, array $content, array $options = [])
+    public function updateDocument($documentId, array $content, array $options = [])
     {
 
     }

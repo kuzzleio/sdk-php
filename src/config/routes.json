@@ -1,0 +1,1666 @@
+{
+  "admin": {
+    "createIndex": {
+      "method": "put",
+      "name": "createIndex",
+      "route": "/api/1.0/:index"
+    },
+    "deleteIndex": {
+      "method": "delete",
+      "name": "deleteIndex",
+      "route": "/api/1.0/:index"
+    },
+    "deleteIndexes": {
+      "method": "delete",
+      "name": "deleteIndexes",
+      "route": "/api/1.0/_deleteIndexes"
+    },
+    "getAllStats": {
+      "method": "get",
+      "name": "getAllStats",
+      "route": "/api/1.0/_getAllStats"
+    },
+    "getAutoRefresh": {
+      "method": "get",
+      "name": "getAutoRefresh",
+      "route": "/api/1.0/:index/_autoRefresh"
+    },
+    "getLastStats": {
+      "method": "get",
+      "name": "getLastStats",
+      "route": "/api/1.0/_getLastStats"
+    },
+    "getMapping": {
+      "method": "get",
+      "name": "getMapping",
+      "route": "/api/1.0/:index/:collection/_mapping"
+    },
+    "getStats": {
+      "method": "post",
+      "name": "getStats",
+      "route": "/api/1.0/_getStats"
+    },
+    "refreshIndex": {
+      "method": "post",
+      "name": "refreshIndex",
+      "route": "/api/1.0/:index/_refresh"
+    },
+    "removeRooms": {
+      "name": "removeRooms"
+    },
+    "setAutoRefresh": {
+      "method": "post",
+      "name": "setAutoRefresh",
+      "route": "/api/1.0/:index/_autoRefresh"
+    },
+    "truncateCollection": {
+      "method": "delete",
+      "name": "truncateCollection",
+      "route": "/api/1.0/:index/:collection/_truncate"
+    },
+    "updateMapping": {
+      "method": "put",
+      "name": "updateMapping",
+      "route": "/api/1.0/:index/:collection/_mapping"
+    }
+  },
+  "auth": {
+    "checkToken": {
+      "method": "post",
+      "name": "checkToken",
+      "route": "/api/1.0/_checkToken"
+    },
+    "getCurrentUser": {
+      "method": "get",
+      "name": "getCurrentUser",
+      "route": "/api/1.0/users/_me"
+    },
+    "getMyRights": {
+      "method": "get",
+      "name": "getMyRights",
+      "route": "/api/1.0/users/_me/_rights"
+    },
+    "login": {
+      "method": "post",
+      "name": "login",
+      "route": "/api/1.0/_login/:strategy"
+    },
+    "logout": {
+      "method": "get",
+      "name": "logout",
+      "route": "/api/1.0/_logout"
+    },
+    "updateSelf": {
+      "method": "put",
+      "name": "updateSelf",
+      "route": "/api/1.0/_updateSelf"
+    }
+  },
+  "bulk": {
+    "import": {
+      "method": "post",
+      "name": "import",
+      "route": "/api/1.0/:index/:collection/_bulk"
+    }
+  },
+  "memoryStorage": {
+    "append": {
+      "method": "post",
+      "name": "append",
+      "route": "/api/1.0/ms/_append/:id"
+    },
+    "asking": {
+      "name": "asking"
+    },
+    "auth": {
+      "name": "auth"
+    },
+    "bgrewriteaof": {
+      "method": "post",
+      "name": "bgrewriteaof",
+      "route": "/api/1.0/ms/_bgrewriteaof"
+    },
+    "bgsave": {
+      "method": "post",
+      "name": "bgsave",
+      "route": "/api/1.0/ms/_bgsave"
+    },
+    "bitcount": {
+      "name": "bitcount"
+    },
+    "bitop": {
+      "method": "post",
+      "name": "bitop",
+      "route": "/api/1.0/ms/_bitop/:operation/:destkey"
+    },
+    "bitpos": {
+      "method": "get",
+      "name": "bitpos",
+      "route": "/api/1.0/ms/_bitpos/:id/:bit"
+    },
+    "blpop": {
+      "method": "post",
+      "name": "blpop",
+      "route": "/api/1.0/ms/_blpop/:id"
+    },
+    "brpop": {
+      "method": "post",
+      "name": "brpop",
+      "route": "/api/1.0/ms/_brpop/:id"
+    },
+    "brpoplpush": {
+      "method": "post",
+      "name": "brpoplpush",
+      "route": "/api/1.0/ms/_brpoplpush"
+    },
+    "command": {
+      "name": "command"
+    },
+    "dbsize": {
+      "method": "get",
+      "name": "dbsize",
+      "route": "/api/1.0/ms/_dbsize"
+    },
+    "decr": {
+      "method": "post",
+      "name": "decr",
+      "route": "/api/1.0/ms/_decr/:id"
+    },
+    "decrby": {
+      "method": "post",
+      "name": "decrby",
+      "route": "/api/1.0/ms/_decrby/:id"
+    },
+    "del": {
+      "method": "delete",
+      "name": "del",
+      "route": "/api/1.0/ms"
+    },
+    "discard": {
+      "method": "post",
+      "name": "discard",
+      "route": "/api/1.0/ms/_discard"
+    },
+    "dump": {
+      "method": "get",
+      "name": "dump",
+      "route": "/api/1.0/ms/_dump/:id"
+    },
+    "exec": {
+      "method": "post",
+      "name": "exec",
+      "route": "/api/1.0/ms/_exec"
+    },
+    "exists": {
+      "method": "get",
+      "name": "exists",
+      "route": "/api/1.0/ms/_exists/:id"
+    },
+    "expire": {
+      "method": "post",
+      "name": "expire",
+      "route": "/api/1.0/ms/_expire/:id"
+    },
+    "expireat": {
+      "method": "post",
+      "name": "expireat",
+      "route": "/api/1.0/ms/_expireat/:id"
+    },
+    "flushdb": {
+      "method": "post",
+      "name": "flushdb",
+      "route": "/api/1.0/ms/_flushdb"
+    },
+    "geoadd": {
+      "method": "post",
+      "name": "geoadd",
+      "route": "/api/1.0/ms/_geoadd/:id"
+    },
+    "geodist": {
+      "method": "get",
+      "name": "geodist",
+      "route": "/api/1.0/ms/_goedist/:id/:member1/:member2"
+    },
+    "geohash": {
+      "method": "get",
+      "name": "geohash",
+      "route": "/api/1.0/ms/_geohash/:id/:member"
+    },
+    "geopos": {
+      "method": "get",
+      "name": "geopos",
+      "route": "/api/1.0/ms/_geopos/:id/:member"
+    },
+    "georadius": {
+      "method": "get",
+      "name": "georadius",
+      "route": "/api/1.0/ms/_georadius/:id"
+    },
+    "georadiusbymember": {
+      "method": "get",
+      "name": "georadiusbymember",
+      "route": "/api/1.0/ms/_georadiusbymember/:id"
+    },
+    "get": {
+      "method": "get",
+      "name": "get",
+      "route": "/api/1.0/ms/:id"
+    },
+    "getbit": {
+      "method": "get",
+      "name": "getbit",
+      "route": "/api/1.0/ms/_getbit/:id/:offset"
+    },
+    "getrange": {
+      "method": "get",
+      "name": "getrange",
+      "route": "/api/1.0/ms/_getrange/:id/:start/:end"
+    },
+    "getset": {
+      "method": "post",
+      "name": "getset",
+      "route": "/api/1.0/ms/_getset/:id"
+    },
+    "hdel": {
+      "method": "delete",
+      "name": "hdel",
+      "route": "/api/1.0/ms/_hdel/:id"
+    },
+    "hexists": {
+      "name": "hexists"
+    },
+    "hget": {
+      "method": "get",
+      "name": "hget",
+      "route": "/api/1.0/ms/_hget/:id/:field"
+    },
+    "hgetall": {
+      "method": "get",
+      "name": "hgetall",
+      "route": "/api/1.0/ms/_hgetall/:id"
+    },
+    "hincrby": {
+      "method": "post",
+      "name": "hincrby",
+      "route": "/api/1.0/ms/_hincrby/:id"
+    },
+    "hincrbyfloat": {
+      "method": "post",
+      "name": "hincrbyfloat",
+      "route": "/api/1.0/ms/_hincrbyfloat/:id"
+    },
+    "hkeys": {
+      "method": "get",
+      "name": "hkeys",
+      "route": "/api/1.0/ms/_hkeys/:id"
+    },
+    "hlen": {
+      "method": "get",
+      "name": "hlen",
+      "route": "/api/1.0/ms/_hlen/:id"
+    },
+    "hmget": {
+      "method": "get",
+      "name": "hmget",
+      "route": "/api/1.0/ms/_hmget/:id/:field"
+    },
+    "hmset": {
+      "method": "post",
+      "name": "hmset",
+      "route": "/api/1.0/ms/_hmset/:id"
+    },
+    "hset": {
+      "method": "post",
+      "name": "hset",
+      "route": "/api/1.0/ms/_hset/:id"
+    },
+    "hsetnx": {
+      "method": "post",
+      "name": "hsetnx",
+      "route": "/api/1.0/ms/_hsetnx/:id"
+    },
+    "hstrlen": {
+      "method": "get",
+      "name": "hstrlen",
+      "route": "/api/1.0/ms/_hstrlen/:id/:field"
+    },
+    "hvals": {
+      "method": "get",
+      "name": "hvals",
+      "route": "/api/1.0/ms/_hvals/:id"
+    },
+    "incr": {
+      "method": "post",
+      "name": "incr",
+      "route": "/api/1.0/ms/_incr/:id"
+    },
+    "incrby": {
+      "method": "post",
+      "name": "incrby",
+      "route": "/api/1.0/ms/_incrby/:id"
+    },
+    "incrbyfloat": {
+      "method": "post",
+      "name": "incrbyfloat",
+      "route": "/api/1.0/ms/_incrbyfloat/:id"
+    },
+    "info": {
+      "method": "get",
+      "name": "info",
+      "route": "/api/1.0/ms/_info"
+    },
+    "keys": {
+      "method": "get",
+      "name": "keys",
+      "route": "/api/1.0/ms/_keys/:pattern"
+    },
+    "lastsave": {
+      "method": "get",
+      "name": "lastsave",
+      "route": "/api/1.0/ms/_lastsave"
+    },
+    "latency": {
+      "name": "latency"
+    },
+    "lindex": {
+      "method": "get",
+      "name": "lindex",
+      "route": "/api/1.0/ms/_lindex/:id/:idx"
+    },
+    "linsert": {
+      "method": "post",
+      "name": "linsert",
+      "route": "/api/1.0/ms/_linsert/:id"
+    },
+    "llen": {
+      "method": "get",
+      "name": "llen",
+      "route": "/api/1.0/ms/_llen/:id"
+    },
+    "lpop": {
+      "method": "post",
+      "name": "lpop",
+      "route": "/api/1.0/ms/_lpop/:id"
+    },
+    "lpush": {
+      "method": "post",
+      "name": "lpush",
+      "route": "/api/1.0/ms/_lpush/:id"
+    },
+    "lpushx": {
+      "method": "post",
+      "name": "lpushx",
+      "route": "/api/1.0/ms/_lpushx/:id"
+    },
+    "lrange": {
+      "method": "get",
+      "name": "lrange",
+      "route": "/api/1.0/ms/_lrange/:id/:start/:stop"
+    },
+    "lrem": {
+      "method": "delete",
+      "name": "lrem",
+      "route": "/api/1.0/ms/_lrem/:id"
+    },
+    "lset": {
+      "method": "post",
+      "name": "lset",
+      "route": "/api/1.0/ms/_lset/:id"
+    },
+    "ltrim": {
+      "method": "post",
+      "name": "ltrim",
+      "route": "/api/1.0/ms/_ltrim/:id"
+    },
+    "mget": {
+      "method": "get",
+      "name": "mget",
+      "route": "/api/1.0/ms/_mget"
+    },
+    "mset": {
+      "method": "post",
+      "name": "mset",
+      "route": "/api/1.0/ms/_mset"
+    },
+    "msetnx": {
+      "method": "post",
+      "name": "msetnx",
+      "route": "/api/1.0/ms/_msetnx"
+    },
+    "multi": {
+      "method": "post",
+      "name": "multi",
+      "route": "/api/1.0/ms/_multi"
+    },
+    "object": {
+      "method": "get",
+      "name": "object",
+      "route": "/api/1.0/ms/_object"
+    },
+    "persist": {
+      "method": "post",
+      "name": "persist",
+      "route": "/api/1.0/ms/_persist/:id"
+    },
+    "pexpire": {
+      "method": "post",
+      "name": "pexpire",
+      "route": "/api/1.0/ms/_pexpire/:id"
+    },
+    "pexpireat": {
+      "method": "post",
+      "name": "pexpireat",
+      "route": "/api/1.0/ms/_pexpireat/:id"
+    },
+    "pfadd": {
+      "method": "post",
+      "name": "pfadd",
+      "route": "/api/1.0/ms/_pfadd/:id"
+    },
+    "pfcount": {
+      "method": "get",
+      "name": "pfcount",
+      "route": "/api/1.0/ms/_pfcount"
+    },
+    "pfdebug": {
+      "name": "pfdebug"
+    },
+    "pfmerge": {
+      "method": "post",
+      "name": "pfmerge",
+      "route": "/api/1.0/ms/_pfmerge"
+    },
+    "pfselftest": {
+      "name": "pfselftest"
+    },
+    "ping": {
+      "method": "get",
+      "name": "ping",
+      "route": "/api/1.0/ms/_ping"
+    },
+    "psetex": {
+      "method": "post",
+      "name": "psetex",
+      "route": "/api/1.0/ms/_psetex"
+    },
+    "psync": {
+      "name": "psync"
+    },
+    "pttl": {
+      "method": "get",
+      "name": "pttl",
+      "route": "/api/1.0/ms/_pttl/:id"
+    },
+    "publish": {
+      "method": "post",
+      "name": "publish",
+      "route": "/api/1.0/ms/_publish/:channel"
+    },
+    "randomkey": {
+      "method": "get",
+      "name": "randomkey",
+      "route": "/api/1.0/ms/_randomkey"
+    },
+    "rename": {
+      "method": "post",
+      "name": "rename",
+      "route": "/api/1.0/ms/_rename/:id"
+    },
+    "renamenx": {
+      "method": "post",
+      "name": "renamenx",
+      "route": "/api/1.0/ms/_renamenx/:id"
+    },
+    "replconf": {
+      "name": "replconf"
+    },
+    "restore": {
+      "method": "post",
+      "name": "restore",
+      "route": "/api/1.0/ms/_restore/:id"
+    },
+    "restore-asking": {
+      "name": "restore-asking"
+    },
+    "rpop": {
+      "method": "post",
+      "name": "rpop",
+      "route": "/api/1.0/ms/_rpop/:id"
+    },
+    "rpoplpush": {
+      "method": "post",
+      "name": "rpoplpush",
+      "route": "/api/1.0/ms/_rpoplpush"
+    },
+    "rpush": {
+      "method": "post",
+      "name": "rpush",
+      "route": "/api/1.0/ms/_rpush/:id"
+    },
+    "rpushx": {
+      "method": "post",
+      "name": "rpushx",
+      "route": "/api/1.0/ms/_rpushx/:id"
+    },
+    "sadd": {
+      "method": "post",
+      "name": "sadd",
+      "route": "/api/1.0/ms/_sadd/:id"
+    },
+    "save": {
+      "method": "post",
+      "name": "save",
+      "route": "/api/1.0/ms/_save"
+    },
+    "scard": {
+      "method": "get",
+      "name": "scard",
+      "route": "/api/1.0/ms/_scard/:id"
+    },
+    "sdiff": {
+      "method": "get",
+      "name": "sdiff",
+      "route": "/api/1.0/ms/_sdiff/:id"
+    },
+    "sdiffstore": {
+      "method": "post",
+      "name": "sdiffstore",
+      "route": "/api/1.0/ms/_sdiffstore"
+    },
+    "sentinel": {
+      "name": "sentinel"
+    },
+    "set": {
+      "method": "post",
+      "name": "set",
+      "route": "/api/1.0/ms/:id"
+    },
+    "setbit": {
+      "method": "post",
+      "name": "setbit",
+      "route": "/api/1.0/ms/_setbit/:id"
+    },
+    "setex": {
+      "method": "post",
+      "name": "setex",
+      "route": "/api/1.0/ms/_setex/:id"
+    },
+    "setnx": {
+      "method": "post",
+      "name": "setnx",
+      "route": "/api/1.0/ms/_setnx/:id"
+    },
+    "setrange": {
+      "method": "post",
+      "name": "setrange",
+      "route": "/api/1.0/ms/_setrange/:id"
+    },
+    "sinter": {
+      "method": "get",
+      "name": "sinter",
+      "route": "/api/1.0/ms/_sinter/:id"
+    },
+    "sinterstore": {
+      "method": "post",
+      "name": "sinterstore",
+      "route": "/api/1.0/ms/_sinterstore/:id"
+    },
+    "sismember": {
+      "method": "get",
+      "name": "sismember",
+      "route": "/api/1.0/ms/_sismember/:id/:member"
+    },
+    "smembers": {
+      "method": "get",
+      "name": "smembers",
+      "route": "/api/1.0/ms/_smembers/:id"
+    },
+    "smove": {
+      "method": "post",
+      "name": "smove",
+      "route": "/api/1.0/ms/_smove"
+    },
+    "sort": {
+      "method": "post",
+      "name": "sort",
+      "route": "/api/1.0/ms/_sort/:id"
+    },
+    "spop": {
+      "method": "post",
+      "name": "spop",
+      "route": "/api/1.0/ms/_spop/:id"
+    },
+    "srandmember": {
+      "method": "get",
+      "name": "srandmember",
+      "route": "/api/1.0/ms/_srandmember/:id"
+    },
+    "srem": {
+      "method": "delete",
+      "name": "srem",
+      "route": "/api/1.0/ms/_srem/:id"
+    },
+    "strlen": {
+      "method": "get",
+      "name": "strlen",
+      "route": "/api/1.0/ms/_strlen/:id"
+    },
+    "substr": {
+      "name": "substr"
+    },
+    "sunion": {
+      "method": "post",
+      "name": "sunion",
+      "route": "/api/1.0/ms/_sunion/:id"
+    },
+    "sunionstore": {
+      "method": "post",
+      "name": "sunionstore",
+      "route": "/api/1.0/ms/_sunionstore/:id"
+    },
+    "time": {
+      "method": "get",
+      "name": "time",
+      "route": "/api/1.0/ms/_time"
+    },
+    "ttl": {
+      "method": "get",
+      "name": "ttl",
+      "route": "/api/1.0/ms/_ttl/:id"
+    },
+    "type": {
+      "method": "get",
+      "name": "type",
+      "route": "/api/1.0/ms/_type/:id"
+    },
+    "unwatch": {
+      "name": "unwatch"
+    },
+    "wait": {
+      "name": "wait"
+    },
+    "watch": {
+      "name": "watch"
+    },
+    "zadd": {
+      "method": "post",
+      "name": "zadd",
+      "route": "/api/1.0/ms/_zadd/:id"
+    },
+    "zcard": {
+      "method": "get",
+      "name": "zcard",
+      "route": "/api/1.0/ms/_zcard/:id"
+    },
+    "zcount": {
+      "method": "get",
+      "name": "zcount",
+      "route": "/api/1.0/ms/_zcount/:id/:min/:max"
+    },
+    "zincrby": {
+      "method": "post",
+      "name": "zincrby",
+      "route": "/api/1.0/ms/_zincrby/:id"
+    },
+    "zinterstore": {
+      "method": "post",
+      "name": "zinterstore",
+      "route": "/api/1.0/ms/_zinterstore"
+    },
+    "zlexcount": {
+      "method": "get",
+      "name": "zlexcount",
+      "route": "/api/1.0/ms/_zlexcount/:id/:min/:max"
+    },
+    "zrange": {
+      "method": "get",
+      "name": "zrange",
+      "route": "/api/1.0/ms/_zrange/:id/:start/:stop"
+    },
+    "zrangebylex": {
+      "method": "get",
+      "name": "zrangebylex",
+      "route": "/api/1.0/ms/_zrangebylex/:id/:min/:max"
+    },
+    "zrangebyscore": {
+      "method": "get",
+      "name": "zrangebyscore",
+      "route": "/api/1.0/ms/_zrangebyscore/:id/:min/:max"
+    },
+    "zrank": {
+      "method": "get",
+      "name": "zrank",
+      "route": "/api/1.0/ms/_zrank/:id/:member"
+    },
+    "zrem": {
+      "method": "delete",
+      "name": "zrem",
+      "route": "/api/1.0/ms/_zrem/:id"
+    },
+    "zremrangebylex": {
+      "method": "delete",
+      "name": "zremrangebylex",
+      "route": "/api/1.0/ms/_zremrangebylex/:id"
+    },
+    "zremrangebyrank": {
+      "name": "zremrangebyrank"
+    },
+    "zremrangebyscore": {
+      "method": "delete",
+      "name": "zremrangebyscore",
+      "route": "/api/1.0/ms/_zremrangebyscore/:id"
+    },
+    "zrevrange": {
+      "method": "get",
+      "name": "zrevrange",
+      "route": "/api/1.0/ms/_zrevrange/:id/:start/:stop"
+    },
+    "zrevrangebylex": {
+      "method": "get",
+      "name": "zrevrangebylex",
+      "route": "/api/1.0/ms/_zrevrangebylex/:id/:min/:max"
+    },
+    "zrevrangebyscore": {
+      "method": "get",
+      "name": "zrevrangebyscore",
+      "route": "/api/1.0/ms/_zrevrangebyscore/:id/:max/:min"
+    },
+    "zrevrank": {
+      "method": "get",
+      "name": "zrevrank",
+      "route": "/api/1.0/ms/_zrevrank/:id/:member"
+    },
+    "zscore": {
+      "method": "get",
+      "name": "zscore",
+      "route": "/api/1.0/ms/_zscore/:id/:member"
+    },
+    "zunionstore": {
+      "method": "post",
+      "name": "zunionstore",
+      "route": "/api/1.0/ms/_zunionstore"
+    }
+  },
+  "ms": {
+    "append": {
+      "method": "post",
+      "name": "append",
+      "route": "/api/1.0/ms/_append/:id"
+    },
+    "asking": {
+      "name": "asking"
+    },
+    "auth": {
+      "name": "auth"
+    },
+    "bgrewriteaof": {
+      "method": "post",
+      "name": "bgrewriteaof",
+      "route": "/api/1.0/ms/_bgrewriteaof"
+    },
+    "bgsave": {
+      "method": "post",
+      "name": "bgsave",
+      "route": "/api/1.0/ms/_bgsave"
+    },
+    "bitcount": {
+      "name": "bitcount"
+    },
+    "bitop": {
+      "method": "post",
+      "name": "bitop",
+      "route": "/api/1.0/ms/_bitop/:operation/:destkey"
+    },
+    "bitpos": {
+      "method": "get",
+      "name": "bitpos",
+      "route": "/api/1.0/ms/_bitpos/:id/:bit"
+    },
+    "blpop": {
+      "method": "post",
+      "name": "blpop",
+      "route": "/api/1.0/ms/_blpop/:id"
+    },
+    "brpop": {
+      "method": "post",
+      "name": "brpop",
+      "route": "/api/1.0/ms/_brpop/:id"
+    },
+    "brpoplpush": {
+      "method": "post",
+      "name": "brpoplpush",
+      "route": "/api/1.0/ms/_brpoplpush"
+    },
+    "command": {
+      "name": "command"
+    },
+    "dbsize": {
+      "method": "get",
+      "name": "dbsize",
+      "route": "/api/1.0/ms/_dbsize"
+    },
+    "decr": {
+      "method": "post",
+      "name": "decr",
+      "route": "/api/1.0/ms/_decr/:id"
+    },
+    "decrby": {
+      "method": "post",
+      "name": "decrby",
+      "route": "/api/1.0/ms/_decrby/:id"
+    },
+    "del": {
+      "method": "delete",
+      "name": "del",
+      "route": "/api/1.0/ms"
+    },
+    "discard": {
+      "method": "post",
+      "name": "discard",
+      "route": "/api/1.0/ms/_discard"
+    },
+    "dump": {
+      "method": "get",
+      "name": "dump",
+      "route": "/api/1.0/ms/_dump/:id"
+    },
+    "exec": {
+      "method": "post",
+      "name": "exec",
+      "route": "/api/1.0/ms/_exec"
+    },
+    "exists": {
+      "method": "get",
+      "name": "exists",
+      "route": "/api/1.0/ms/_exists/:id"
+    },
+    "expire": {
+      "method": "post",
+      "name": "expire",
+      "route": "/api/1.0/ms/_expire/:id"
+    },
+    "expireat": {
+      "method": "post",
+      "name": "expireat",
+      "route": "/api/1.0/ms/_expireat/:id"
+    },
+    "flushdb": {
+      "method": "post",
+      "name": "flushdb",
+      "route": "/api/1.0/ms/_flushdb"
+    },
+    "geoadd": {
+      "method": "post",
+      "name": "geoadd",
+      "route": "/api/1.0/ms/_geoadd/:id"
+    },
+    "geodist": {
+      "method": "get",
+      "name": "geodist",
+      "route": "/api/1.0/ms/_goedist/:id/:member1/:member2"
+    },
+    "geohash": {
+      "method": "get",
+      "name": "geohash",
+      "route": "/api/1.0/ms/_geohash/:id/:member"
+    },
+    "geopos": {
+      "method": "get",
+      "name": "geopos",
+      "route": "/api/1.0/ms/_geopos/:id/:member"
+    },
+    "georadius": {
+      "method": "get",
+      "name": "georadius",
+      "route": "/api/1.0/ms/_georadius/:id"
+    },
+    "georadiusbymember": {
+      "method": "get",
+      "name": "georadiusbymember",
+      "route": "/api/1.0/ms/_georadiusbymember/:id"
+    },
+    "get": {
+      "method": "get",
+      "name": "get",
+      "route": "/api/1.0/ms/:id"
+    },
+    "getbit": {
+      "method": "get",
+      "name": "getbit",
+      "route": "/api/1.0/ms/_getbit/:id/:offset"
+    },
+    "getrange": {
+      "method": "get",
+      "name": "getrange",
+      "route": "/api/1.0/ms/_getrange/:id/:start/:end"
+    },
+    "getset": {
+      "method": "post",
+      "name": "getset",
+      "route": "/api/1.0/ms/_getset/:id"
+    },
+    "hdel": {
+      "method": "delete",
+      "name": "hdel",
+      "route": "/api/1.0/ms/_hdel/:id"
+    },
+    "hexists": {
+      "name": "hexists"
+    },
+    "hget": {
+      "method": "get",
+      "name": "hget",
+      "route": "/api/1.0/ms/_hget/:id/:field"
+    },
+    "hgetall": {
+      "method": "get",
+      "name": "hgetall",
+      "route": "/api/1.0/ms/_hgetall/:id"
+    },
+    "hincrby": {
+      "method": "post",
+      "name": "hincrby",
+      "route": "/api/1.0/ms/_hincrby/:id"
+    },
+    "hincrbyfloat": {
+      "method": "post",
+      "name": "hincrbyfloat",
+      "route": "/api/1.0/ms/_hincrbyfloat/:id"
+    },
+    "hkeys": {
+      "method": "get",
+      "name": "hkeys",
+      "route": "/api/1.0/ms/_hkeys/:id"
+    },
+    "hlen": {
+      "method": "get",
+      "name": "hlen",
+      "route": "/api/1.0/ms/_hlen/:id"
+    },
+    "hmget": {
+      "method": "get",
+      "name": "hmget",
+      "route": "/api/1.0/ms/_hmget/:id/:field"
+    },
+    "hmset": {
+      "method": "post",
+      "name": "hmset",
+      "route": "/api/1.0/ms/_hmset/:id"
+    },
+    "hset": {
+      "method": "post",
+      "name": "hset",
+      "route": "/api/1.0/ms/_hset/:id"
+    },
+    "hsetnx": {
+      "method": "post",
+      "name": "hsetnx",
+      "route": "/api/1.0/ms/_hsetnx/:id"
+    },
+    "hstrlen": {
+      "method": "get",
+      "name": "hstrlen",
+      "route": "/api/1.0/ms/_hstrlen/:id/:field"
+    },
+    "hvals": {
+      "method": "get",
+      "name": "hvals",
+      "route": "/api/1.0/ms/_hvals/:id"
+    },
+    "incr": {
+      "method": "post",
+      "name": "incr",
+      "route": "/api/1.0/ms/_incr/:id"
+    },
+    "incrby": {
+      "method": "post",
+      "name": "incrby",
+      "route": "/api/1.0/ms/_incrby/:id"
+    },
+    "incrbyfloat": {
+      "method": "post",
+      "name": "incrbyfloat",
+      "route": "/api/1.0/ms/_incrbyfloat/:id"
+    },
+    "info": {
+      "method": "get",
+      "name": "info",
+      "route": "/api/1.0/ms/_info"
+    },
+    "keys": {
+      "method": "get",
+      "name": "keys",
+      "route": "/api/1.0/ms/_keys/:pattern"
+    },
+    "lastsave": {
+      "method": "get",
+      "name": "lastsave",
+      "route": "/api/1.0/ms/_lastsave"
+    },
+    "latency": {
+      "name": "latency"
+    },
+    "lindex": {
+      "method": "get",
+      "name": "lindex",
+      "route": "/api/1.0/ms/_lindex/:id/:idx"
+    },
+    "linsert": {
+      "method": "post",
+      "name": "linsert",
+      "route": "/api/1.0/ms/_linsert/:id"
+    },
+    "llen": {
+      "method": "get",
+      "name": "llen",
+      "route": "/api/1.0/ms/_llen/:id"
+    },
+    "lpop": {
+      "method": "post",
+      "name": "lpop",
+      "route": "/api/1.0/ms/_lpop/:id"
+    },
+    "lpush": {
+      "method": "post",
+      "name": "lpush",
+      "route": "/api/1.0/ms/_lpush/:id"
+    },
+    "lpushx": {
+      "method": "post",
+      "name": "lpushx",
+      "route": "/api/1.0/ms/_lpushx/:id"
+    },
+    "lrange": {
+      "method": "get",
+      "name": "lrange",
+      "route": "/api/1.0/ms/_lrange/:id/:start/:stop"
+    },
+    "lrem": {
+      "method": "delete",
+      "name": "lrem",
+      "route": "/api/1.0/ms/_lrem/:id"
+    },
+    "lset": {
+      "method": "post",
+      "name": "lset",
+      "route": "/api/1.0/ms/_lset/:id"
+    },
+    "ltrim": {
+      "method": "post",
+      "name": "ltrim",
+      "route": "/api/1.0/ms/_ltrim/:id"
+    },
+    "mget": {
+      "method": "get",
+      "name": "mget",
+      "route": "/api/1.0/ms/_mget"
+    },
+    "mset": {
+      "method": "post",
+      "name": "mset",
+      "route": "/api/1.0/ms/_mset"
+    },
+    "msetnx": {
+      "method": "post",
+      "name": "msetnx",
+      "route": "/api/1.0/ms/_msetnx"
+    },
+    "multi": {
+      "method": "post",
+      "name": "multi",
+      "route": "/api/1.0/ms/_multi"
+    },
+    "object": {
+      "method": "get",
+      "name": "object",
+      "route": "/api/1.0/ms/_object"
+    },
+    "persist": {
+      "method": "post",
+      "name": "persist",
+      "route": "/api/1.0/ms/_persist/:id"
+    },
+    "pexpire": {
+      "method": "post",
+      "name": "pexpire",
+      "route": "/api/1.0/ms/_pexpire/:id"
+    },
+    "pexpireat": {
+      "method": "post",
+      "name": "pexpireat",
+      "route": "/api/1.0/ms/_pexpireat/:id"
+    },
+    "pfadd": {
+      "method": "post",
+      "name": "pfadd",
+      "route": "/api/1.0/ms/_pfadd/:id"
+    },
+    "pfcount": {
+      "method": "get",
+      "name": "pfcount",
+      "route": "/api/1.0/ms/_pfcount"
+    },
+    "pfdebug": {
+      "name": "pfdebug"
+    },
+    "pfmerge": {
+      "method": "post",
+      "name": "pfmerge",
+      "route": "/api/1.0/ms/_pfmerge"
+    },
+    "pfselftest": {
+      "name": "pfselftest"
+    },
+    "ping": {
+      "method": "get",
+      "name": "ping",
+      "route": "/api/1.0/ms/_ping"
+    },
+    "psetex": {
+      "method": "post",
+      "name": "psetex",
+      "route": "/api/1.0/ms/_psetex"
+    },
+    "psync": {
+      "name": "psync"
+    },
+    "pttl": {
+      "method": "get",
+      "name": "pttl",
+      "route": "/api/1.0/ms/_pttl/:id"
+    },
+    "publish": {
+      "method": "post",
+      "name": "publish",
+      "route": "/api/1.0/ms/_publish/:channel"
+    },
+    "randomkey": {
+      "method": "get",
+      "name": "randomkey",
+      "route": "/api/1.0/ms/_randomkey"
+    },
+    "rename": {
+      "method": "post",
+      "name": "rename",
+      "route": "/api/1.0/ms/_rename/:id"
+    },
+    "renamenx": {
+      "method": "post",
+      "name": "renamenx",
+      "route": "/api/1.0/ms/_renamenx/:id"
+    },
+    "replconf": {
+      "name": "replconf"
+    },
+    "restore": {
+      "method": "post",
+      "name": "restore",
+      "route": "/api/1.0/ms/_restore/:id"
+    },
+    "restore-asking": {
+      "name": "restore-asking"
+    },
+    "rpop": {
+      "method": "post",
+      "name": "rpop",
+      "route": "/api/1.0/ms/_rpop/:id"
+    },
+    "rpoplpush": {
+      "method": "post",
+      "name": "rpoplpush",
+      "route": "/api/1.0/ms/_rpoplpush"
+    },
+    "rpush": {
+      "method": "post",
+      "name": "rpush",
+      "route": "/api/1.0/ms/_rpush/:id"
+    },
+    "rpushx": {
+      "method": "post",
+      "name": "rpushx",
+      "route": "/api/1.0/ms/_rpushx/:id"
+    },
+    "sadd": {
+      "method": "post",
+      "name": "sadd",
+      "route": "/api/1.0/ms/_sadd/:id"
+    },
+    "save": {
+      "method": "post",
+      "name": "save",
+      "route": "/api/1.0/ms/_save"
+    },
+    "scard": {
+      "method": "get",
+      "name": "scard",
+      "route": "/api/1.0/ms/_scard/:id"
+    },
+    "sdiff": {
+      "method": "get",
+      "name": "sdiff",
+      "route": "/api/1.0/ms/_sdiff/:id"
+    },
+    "sdiffstore": {
+      "method": "post",
+      "name": "sdiffstore",
+      "route": "/api/1.0/ms/_sdiffstore"
+    },
+    "sentinel": {
+      "name": "sentinel"
+    },
+    "set": {
+      "method": "post",
+      "name": "set",
+      "route": "/api/1.0/ms/:id"
+    },
+    "setbit": {
+      "method": "post",
+      "name": "setbit",
+      "route": "/api/1.0/ms/_setbit/:id"
+    },
+    "setex": {
+      "method": "post",
+      "name": "setex",
+      "route": "/api/1.0/ms/_setex/:id"
+    },
+    "setnx": {
+      "method": "post",
+      "name": "setnx",
+      "route": "/api/1.0/ms/_setnx/:id"
+    },
+    "setrange": {
+      "method": "post",
+      "name": "setrange",
+      "route": "/api/1.0/ms/_setrange/:id"
+    },
+    "sinter": {
+      "method": "get",
+      "name": "sinter",
+      "route": "/api/1.0/ms/_sinter/:id"
+    },
+    "sinterstore": {
+      "method": "post",
+      "name": "sinterstore",
+      "route": "/api/1.0/ms/_sinterstore/:id"
+    },
+    "sismember": {
+      "method": "get",
+      "name": "sismember",
+      "route": "/api/1.0/ms/_sismember/:id/:member"
+    },
+    "smembers": {
+      "method": "get",
+      "name": "smembers",
+      "route": "/api/1.0/ms/_smembers/:id"
+    },
+    "smove": {
+      "method": "post",
+      "name": "smove",
+      "route": "/api/1.0/ms/_smove"
+    },
+    "sort": {
+      "method": "post",
+      "name": "sort",
+      "route": "/api/1.0/ms/_sort/:id"
+    },
+    "spop": {
+      "method": "post",
+      "name": "spop",
+      "route": "/api/1.0/ms/_spop/:id"
+    },
+    "srandmember": {
+      "method": "get",
+      "name": "srandmember",
+      "route": "/api/1.0/ms/_srandmember/:id"
+    },
+    "srem": {
+      "method": "delete",
+      "name": "srem",
+      "route": "/api/1.0/ms/_srem/:id"
+    },
+    "strlen": {
+      "method": "get",
+      "name": "strlen",
+      "route": "/api/1.0/ms/_strlen/:id"
+    },
+    "substr": {
+      "name": "substr"
+    },
+    "sunion": {
+      "method": "post",
+      "name": "sunion",
+      "route": "/api/1.0/ms/_sunion/:id"
+    },
+    "sunionstore": {
+      "method": "post",
+      "name": "sunionstore",
+      "route": "/api/1.0/ms/_sunionstore/:id"
+    },
+    "time": {
+      "method": "get",
+      "name": "time",
+      "route": "/api/1.0/ms/_time"
+    },
+    "ttl": {
+      "method": "get",
+      "name": "ttl",
+      "route": "/api/1.0/ms/_ttl/:id"
+    },
+    "type": {
+      "method": "get",
+      "name": "type",
+      "route": "/api/1.0/ms/_type/:id"
+    },
+    "unwatch": {
+      "name": "unwatch"
+    },
+    "wait": {
+      "name": "wait"
+    },
+    "watch": {
+      "name": "watch"
+    },
+    "zadd": {
+      "method": "post",
+      "name": "zadd",
+      "route": "/api/1.0/ms/_zadd/:id"
+    },
+    "zcard": {
+      "method": "get",
+      "name": "zcard",
+      "route": "/api/1.0/ms/_zcard/:id"
+    },
+    "zcount": {
+      "method": "get",
+      "name": "zcount",
+      "route": "/api/1.0/ms/_zcount/:id/:min/:max"
+    },
+    "zincrby": {
+      "method": "post",
+      "name": "zincrby",
+      "route": "/api/1.0/ms/_zincrby/:id"
+    },
+    "zinterstore": {
+      "method": "post",
+      "name": "zinterstore",
+      "route": "/api/1.0/ms/_zinterstore"
+    },
+    "zlexcount": {
+      "method": "get",
+      "name": "zlexcount",
+      "route": "/api/1.0/ms/_zlexcount/:id/:min/:max"
+    },
+    "zrange": {
+      "method": "get",
+      "name": "zrange",
+      "route": "/api/1.0/ms/_zrange/:id/:start/:stop"
+    },
+    "zrangebylex": {
+      "method": "get",
+      "name": "zrangebylex",
+      "route": "/api/1.0/ms/_zrangebylex/:id/:min/:max"
+    },
+    "zrangebyscore": {
+      "method": "get",
+      "name": "zrangebyscore",
+      "route": "/api/1.0/ms/_zrangebyscore/:id/:min/:max"
+    },
+    "zrank": {
+      "method": "get",
+      "name": "zrank",
+      "route": "/api/1.0/ms/_zrank/:id/:member"
+    },
+    "zrem": {
+      "method": "delete",
+      "name": "zrem",
+      "route": "/api/1.0/ms/_zrem/:id"
+    },
+    "zremrangebylex": {
+      "method": "delete",
+      "name": "zremrangebylex",
+      "route": "/api/1.0/ms/_zremrangebylex/:id"
+    },
+    "zremrangebyrank": {
+      "name": "zremrangebyrank"
+    },
+    "zremrangebyscore": {
+      "method": "delete",
+      "name": "zremrangebyscore",
+      "route": "/api/1.0/ms/_zremrangebyscore/:id"
+    },
+    "zrevrange": {
+      "method": "get",
+      "name": "zrevrange",
+      "route": "/api/1.0/ms/_zrevrange/:id/:start/:stop"
+    },
+    "zrevrangebylex": {
+      "method": "get",
+      "name": "zrevrangebylex",
+      "route": "/api/1.0/ms/_zrevrangebylex/:id/:min/:max"
+    },
+    "zrevrangebyscore": {
+      "method": "get",
+      "name": "zrevrangebyscore",
+      "route": "/api/1.0/ms/_zrevrangebyscore/:id/:max/:min"
+    },
+    "zrevrank": {
+      "method": "get",
+      "name": "zrevrank",
+      "route": "/api/1.0/ms/_zrevrank/:id/:member"
+    },
+    "zscore": {
+      "method": "get",
+      "name": "zscore",
+      "route": "/api/1.0/ms/_zscore/:id/:member"
+    },
+    "zunionstore": {
+      "method": "post",
+      "name": "zunionstore",
+      "route": "/api/1.0/ms/_zunionstore"
+    }
+  },
+  "read": {
+    "count": {
+      "method": "post",
+      "name": "count",
+      "route": "/api/1.0/:index/:collection/_count"
+    },
+    "get": {
+      "method": "get",
+      "name": "get",
+      "route": "/api/1.0/:index/:collection/:id"
+    },
+    "listCollections": {
+      "method": "get",
+      "name": "listCollections",
+      "route": "/api/1.0/:index/_listCollections/:type"
+    },
+    "listIndexes": {
+      "method": "get",
+      "name": "listIndexes",
+      "route": "/api/1.0/_listIndexes"
+    },
+    "now": {
+      "method": "get",
+      "name": "now",
+      "route": "/api/1.0/_now"
+    },
+    "search": {
+      "method": "post",
+      "name": "search",
+      "route": "/api/1.0/:index/:collection/_search"
+    },
+    "serverInfo": {
+      "name": "serverInfo"
+    }
+  },
+  "security": {
+    "createOrReplaceProfile": {
+      "method": "put",
+      "name": "createOrReplaceProfile",
+      "route": "/api/1.0/profiles/:id/_createOrReplace"
+    },
+    "createOrReplaceRole": {
+      "method": "put",
+      "name": "createOrReplaceRole",
+      "route": "/api/1.0/roles/:id/_createOrReplace"
+    },
+    "createOrReplaceUser": {
+      "method": "put",
+      "name": "createOrReplaceUser",
+      "route": "/api/1.0/users/:id"
+    },
+    "createProfile": {
+      "method": "post",
+      "name": "createProfile",
+      "route": "/api/1.0/profiles/_create"
+    },
+    "createRole": {
+      "method": "post",
+      "name": "createRole",
+      "route": "/api/1.0/roles/_create"
+    },
+    "createUser": {
+      "method": "post",
+      "name": "createUser",
+      "route": "/api/1.0/users/_create"
+    },
+    "deleteProfile": {
+      "method": "delete",
+      "name": "deleteProfile",
+      "route": "/api/1.0/profiles/:id"
+    },
+    "deleteRole": {
+      "method": "delete",
+      "name": "deleteRole",
+      "route": "/api/1.0/roles/:id"
+    },
+    "deleteUser": {
+      "method": "delete",
+      "name": "deleteUser",
+      "route": "/api/1.0/users/:id"
+    },
+    "getProfile": {
+      "method": "get",
+      "name": "getProfile",
+      "route": "/api/1.0/profiles/:id"
+    },
+    "getProfileRights": {
+      "method": "get",
+      "name": "getProfileRights",
+      "route": "/api/1.0/profiles/:id/_rights"
+    },
+    "getRole": {
+      "method": "get",
+      "name": "getRole",
+      "route": "/api/1.0/roles/:id"
+    },
+    "getUser": {
+      "method": "get",
+      "name": "getUser",
+      "route": "/api/1.0/users/:id"
+    },
+    "getUserRights": {
+      "method": "get",
+      "name": "getUserRights",
+      "route": "/api/1.0/users/:id/_rights"
+    },
+    "mGetProfiles": {
+      "method": "post",
+      "name": "mGetProfiles",
+      "route": "/api/1.0/profiles/_mget"
+    },
+    "mGetRoles": {
+      "method": "post",
+      "name": "mGetRoles",
+      "route": "/api/1.0/roles/_mget"
+    },
+    "searchProfiles": {
+      "method": "post",
+      "name": "searchProfiles",
+      "route": "/api/1.0/profiles/_search"
+    },
+    "searchRoles": {
+      "method": "post",
+      "name": "searchRoles",
+      "route": "/api/1.0/roles/_search"
+    },
+    "searchUsers": {
+      "method": "post",
+      "name": "searchUsers",
+      "route": "/api/1.0/users/_search"
+    },
+    "updateProfile": {
+      "method": "post",
+      "name": "updateProfile",
+      "route": "/api/1.0/profiles/:id"
+    },
+    "updateRole": {
+      "method": "post",
+      "name": "updateRole",
+      "route": "/api/1.0/roles/:id"
+    },
+    "updateUser": {
+      "method": "post",
+      "name": "updateUser",
+      "route": "/api/1.0/users/:id"
+    }
+  },
+  "subscribe": {
+    "count": {
+      "name": "count"
+    },
+    "join": {
+      "name": "join"
+    },
+    "list": {
+      "method": "get",
+      "name": "list",
+      "route": "/api/1.0/_listSubscriptions"
+    },
+    "off": {
+      "name": "off"
+    },
+    "on": {
+      "name": "on"
+    }
+  },
+  "write": {
+    "create": {
+      "method": "post",
+      "name": "create",
+      "route": "/api/1.0/:index/:collection/_create"
+    },
+    "createCollection": {
+      "method": "put",
+      "name": "createCollection",
+      "route": "/api/1.0/:index/:collection"
+    },
+    "createOrReplace": {
+      "method": "put",
+      "name": "createOrReplace",
+      "route": "/api/1.0/:index/:collection/:id"
+    },
+    "delete": {
+      "method": "delete",
+      "name": "delete",
+      "route": "/api/1.0/:index/:collection/:id"
+    },
+    "deleteByQuery": {
+      "method": "delete",
+      "name": "deleteByQuery",
+      "route": "/api/1.0/:index/:collection/_query"
+    },
+    "publish": {
+      "method": "post",
+      "name": "publish",
+      "route": "/api/1.0/:index/:collection"
+    },
+    "replace": {
+      "name": "replace"
+    },
+    "update": {
+      "name": "update"
+    }
+  }
+}
