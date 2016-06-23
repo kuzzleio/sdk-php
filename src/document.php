@@ -42,7 +42,25 @@ class Document
      */
     public function __construct(DataCollection $kuzzleDataCollection, $documentId = '', array $content = [])
     {
+        $this->collection = $kuzzleDataCollection;
 
+        if (!empty($documentId))
+        {
+            $this->id = $documentId;
+        }
+
+        if (!empty($content))
+        {
+            if (array_key_exists('_version', $content))
+            {
+                $this->version = $content['_version'];
+                unset($content['_version']);
+            }
+
+            $this->setContent($content, true);
+        }
+
+        return $this;
     }
 
     /**
@@ -64,6 +82,7 @@ class Document
     public function refresh(array $options = [])
     {
 
+        return $this;
     }
 
     /**
@@ -78,18 +97,30 @@ class Document
     public function save(array $options = [])
     {
 
+        return $this;
     }
 
     /**
      * Replaces the current content with new data.
      * This is a helper function returning itself, allowing to easily chain calls.
      *
-     * @param array $data
-     * @param array $options
+     * @param array $content
+     * @param bool $replace true: replace the current content with the provided data, false: merge it
      * @return Document
      */
-    public function setContent(array $data, array $options = [])
+    public function setContent(array $content, $replace = false)
     {
+        if ($replace)
+        {
+            $this->content = $content;
+        }
+        else
+        {
+            foreach ($content as $key => $value)
+            {
+                $this->content[$key] = $value;
+            }
+        }
 
         return $this;
     }
@@ -103,5 +134,26 @@ class Document
     public function setHeaders(array $content, $replace = false)
     {
 
+    }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        $data = [];
+
+        if (!empty($this->id)) {
+            $data['_id'] = $this->id;
+        }
+
+        if (!empty($this->version)) {
+            $data['_version'] = $this->version;
+        }
+
+        $data['body'] = $this->content;
+
+
+        return $data;
     }
 }

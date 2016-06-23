@@ -2,6 +2,7 @@
 
 namespace Kuzzle;
 
+use DateTime;
 use ErrorException;
 use Exception;
 use HttpException;
@@ -43,7 +44,7 @@ class Kuzzle {
     protected $jwtToken;
 
     /**
-     * @var DataCollection[]
+     * @var DataCollection[][]
      */
     protected $collections = [];
 
@@ -116,12 +117,12 @@ class Kuzzle {
             $index = $this->defaultIndex;
         }
 
-        if (!$this->collections[$index])
+        if (!array_key_exists($index, $this->collections))
         {
             $this->collections[$index] = [];
         }
 
-        if (!$this->collections[$index][$collection])
+        if (!array_key_exists($collection, $this->collections[$index]))
         {
             $this->collections[$index][$collection] = new DataCollection($this, $index, $collection);
         }
@@ -216,10 +217,37 @@ class Kuzzle {
      * @param string $strategy Authentication strategy (local, facebook, github, …)
      * @param array $credentials Optional login credentials, depending on the strategy
      * @param string $expiresIn Login expiration time
+     * @return array
      */
     public function login($strategy, array $credentials = [], $expiresIn = '')
     {
+        $body = $credentials;
 
+        if (!empty($expiresIn))
+        {
+            $body['expiresIn'] = $expiresIn;
+        }
+
+        $response = $this->query(
+            [
+                'controller' => 'auth',
+                'action' => 'login'
+            ],
+            [
+                'body' => $body
+            ],
+            [
+                'httpParams' => [
+                    ':strategy' => $strategy
+                ]
+            ]
+        );
+        
+        if ($response['result']['jwt']) {
+            $this->jwtToken = $response['result']['jwt'];
+        }
+
+        return $response;
     }
 
     /**
@@ -227,7 +255,16 @@ class Kuzzle {
      */
     public function logout()
     {
+        $response = $this->query(
+            [
+                'controller' => 'auth',
+                'action' => 'logout'
+            ]
+        );
 
+        $this->jwtToken = null;
+
+        return $response;
     }
 
     /**
@@ -251,10 +288,20 @@ class Kuzzle {
      * Retrieves the current Kuzzle time.
      *
      * @param array $options Optional parameters
+     * @return DateTime
      */
     public function now(array $options = [])
     {
+        $response = $this->query(
+            [
+                'controller' => 'read',
+                'action' => 'now'
+            ],
+            [],
+            $options
+        );
 
+        return new DateTime('@' . round($response['result']['now'] / 1000));
     }
 
     /**
@@ -269,6 +316,7 @@ class Kuzzle {
      */
     public function query(array $queryArgs, array $query = [], array $options = [])
     {
+        $httpParams = [];
         $request = [
             'action' => $queryArgs['action'],
             'controller' => $queryArgs['controller'],
@@ -279,18 +327,25 @@ class Kuzzle {
         {
             if (array_key_exists('metadata', $options))
             {
-                foreach ($options['metadata'] as $meta)
+                foreach ($options['metadata'] as $meta => $value)
                 {
-                    $request['metadata'][$meta] = $options['metadata'][$meta];
+                    $request['metadata'][$meta] = $value;
+                }
+            }
+            if (array_key_exists('httpParams', $options))
+            {
+                foreach ($options['httpParams'] as $param => $value)
+                {
+                    $httpParams[$param] = $value;
                 }
             }
         }
 
         if (array_key_exists('metadata', $query))
         {
-            foreach ($query['metadata'] as $meta)
+            foreach ($query['metadata'] as $meta => $value)
             {
-                $request['metadata'][$meta] = $options['metadata'][$meta];
+                $request['metadata'][$meta] = $value;
             }
         }
 
@@ -316,7 +371,7 @@ class Kuzzle {
         */
         if ($this->jwtToken && !($request['controller'] === 'auth' && $request['action'] === 'checkToken'))
         {
-            if (!is_array($request['headers']))
+            if (array_key_exists('headers', $request) && !is_array($request['headers']))
             {
                 $request['headers'] = [];
             }
@@ -339,7 +394,7 @@ class Kuzzle {
             $request['requestId'] = Uuid::uuid4()->toString();
         }
 
-        return $this->emitRestRequest($this->convertRestRequest($request));
+        return $this->emitRestRequest($this->convertRestRequest($request, $httpParams));
     }
 
     /**
@@ -456,7 +511,14 @@ class Kuzzle {
      */
     public function whoAmI()
     {
+        $response = $this->query(
+            [
+                'controller' => 'auth',
+                'action' => 'getCurrentUser'
+            ]
+        );
 
+        return $response;
     }
 
     /**
@@ -468,9 +530,20 @@ class Kuzzle {
      */
     private function emitRestRequest(array $httpRequest)
     {
+        $headers = [
+            'Content-type: application/json'
+        ];
+
+        if (array_key_exists('headers', $httpRequest['request']))
+        {
+            foreach ($httpRequest['request']['headers'] as $header => $value) {
+                $headers[] = ucfirst($header) . ': ' . $value;
+            }
+        }
+
         $curlResource = curl_init();
         curl_setopt($curlResource, CURLOPT_URL, $this->url . $httpRequest['route']);
-        curl_setopt($curlResource, CURLOPT_HTTPHEADER, ['Content-type: application/json']);
+        curl_setopt($curlResource, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curlResource, CURLOPT_CUSTOMREQUEST, $httpRequest['method']);
         curl_setopt($curlResource, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curlResource, CURLOPT_ENCODING, '');
@@ -480,7 +553,7 @@ class Kuzzle {
 
         if (array_key_exists('body', $httpRequest['request']))
         {
-            curl_setopt($curlResource, CURLOPT_POSTFIELDS, json_encode($httpRequest['request']['body']));
+            curl_setopt($curlResource, CURLOPT_POSTFIELDS, json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT));
         }
 
         $response = curl_exec($curlResource);
@@ -520,11 +593,12 @@ class Kuzzle {
 
     /**
      * @param array $request
+     * @param array $httpParams
      * @return array
      *
      * @throws InvalidArgumentException
      */
-    private function convertRestRequest(array $request)
+    private function convertRestRequest(array $request, array $httpParams = [])
     {
         $httpRequest = [
             'request' => $request
@@ -550,8 +624,20 @@ class Kuzzle {
         }
 
         // replace http route parameters
-        $httpRequest['route'] = str_replace(':collection', $request['collection'], $httpRequest['route']);
-        $httpRequest['route'] = str_replace(':index', $request['index'], $httpRequest['route']);
+        if (array_key_exists('collection', $request))
+        {
+            $httpParams[':collection'] = $request['collection'];
+        }
+
+        if (array_key_exists('index', $request))
+        {
+            $httpParams[':index'] = $request['index'];
+        }
+
+        foreach ($httpParams as $pattern => $value)
+        {
+            $httpRequest['route'] = str_replace($pattern, $value, $httpRequest['route']);
+        }
 
         if (!array_key_exists('method', $httpRequest))
         {

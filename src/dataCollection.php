@@ -37,7 +37,11 @@ class DataCollection
      */
     public function __construct(Kuzzle $kuzzle, $index, $collection)
     {
+        $this->kuzzle = $kuzzle;
+        $this->index = $index;
+        $this->collection = $collection;
 
+        return $this;
     }
 
     /**
@@ -45,10 +49,39 @@ class DataCollection
      *
      * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
+     * @return array
      */
     public function advancedSearch(array $filters, array $options = [])
     {
+        $response = $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'read',
+                'action' => 'search'
+            ],
+            [
+                'body' => $filters
+            ],
+            $options
+        );
 
+        $documents = [];
+
+        foreach($response['result']['hits'] as $documentInfo)
+        {
+            $content = $documentInfo['_source'];
+            $content['_version'] = $documentInfo['_version'];
+
+            $document = new Document($this, $documentInfo['_id'], $content);
+
+            $documents[] = $document;
+        }
+
+        return [
+            'total' => $response['result']['total'],
+            'documents' => $documents
+        ];
     }
 
     /**
@@ -61,7 +94,20 @@ class DataCollection
      */
     public function count(array $filters, array $options = [])
     {
+        $response = $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'read',
+                'action' => 'count'
+            ],
+            [
+                'body' => $filters
+            ],
+            $options
+        );
 
+        return $response['result']['count'];
     }
 
 
@@ -69,33 +115,79 @@ class DataCollection
      * Create a new empty data collection, with no associated mapping.
      *
      * @param array $options Optional parameters
+     * @return DataCollection
      */
     public function create(array $options = [])
     {
+        $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'write',
+                'action' => 'createCollection'
+            ],
+            [],
+            $options
+        );
 
+        return $this;
     }
 
     /**
      * Create a new document in Kuzzle.
      *
-     * @param Document $kuzzleDocument KuzzleDocument object
+     * @param array|Document $document either an instance of a KuzzleDocument object, or a document
+     * @param string $id document identifier
      * @param array $options Optional parameters
      *
      * @return Document
      */
-    public function createDocument(Document $kuzzleDocument, array $options = [])
+    public function createDocument($document, $id = '', array $options = [])
     {
+        $action = 'create';
+        $data = [];
+        
+        if (array_key_exists('updateIfExist', $options)) {
+            $action = $options['updateIfExist'] ? 'createOrUpdate' : 'create';
+        }
 
+        if ($document instanceof Document)
+        {
+            $data = $document->serialize();
+        }
+        else
+        {
+            $data['body'] = $document;
+        }
+
+        if (!empty($id))
+        {
+            $data['_id'] = $id;
+        }
+        
+        $response = $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'write',
+                'action' => $action
+            ],
+            $data,
+            $options
+        );
+
+        return new Document($this, $response['result']['_id'], $response['result']['_source']);
     }
 
     /**
      * Creates a new KuzzleDataMapping object, using its constructor.
      *
      * @param array $mapping Optional mapping
+     * @return DataMapping
      */
     public function dataMappingFactory(array $mapping = [])
     {
-
+        return new DataMapping($this, $mapping);
     }
 
     /**
@@ -103,10 +195,35 @@ class DataCollection
      *
      * @param array|string $filters Unique document identifier OR Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
+     * @return integer|integer[]
      */
     public function deleteDocument($filters, array $options = [])
     {
+        $data = [];
 
+        if (is_string($filters))
+        {
+            $data['_id'] = $filters;
+            $action = 'delete';
+        }
+        else
+        {
+            $data['body'] = $filters;
+            $action = 'deleteByQuery';
+        }
+
+        $response = $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'write',
+                'action' => $action
+            ],
+            $data,
+            $options
+        );
+
+        return $action === 'delete' ? $response['result']['_id'] : $response['result']['ids'];
     }
 
     /**
@@ -118,7 +235,7 @@ class DataCollection
      */
     public function documentFactory($id = '', array $content = [])
     {
-
+        return new Document($this, $id, $content);
     }
 
     /**
@@ -130,7 +247,23 @@ class DataCollection
      */
     public function fetchDocument($documentId, array $options = [])
     {
+        $response = $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'read',
+                'action' => 'get'
+            ],
+            [
+                '_id' => $documentId
+            ],
+            $options
+        );
 
+        $content = $response['result']['_source'];
+        $content['_version'] = $response['result']['_version'];
+
+        return new Document($this, $response['result']['_id'], $content);
     }
 
     /**
@@ -141,7 +274,19 @@ class DataCollection
      */
     public function fetchAllDocuments(array $options = [])
     {
+        $filters = [];
+        
+        if (array_key_exists('from', $options))
+        {
+            $filters['from'] = $options['from'];
+        }
 
+        if (array_key_exists('size', $options))
+        {
+            $filters['size'] = $options['size'];
+        }
+
+        return $this->advancedSearch($filters, $options);
     }
 
     /**
@@ -152,7 +297,7 @@ class DataCollection
      */
     public function getMapping(array $options = [])
     {
-
+        return $this->dataMappingFactory()->refresh($options);
     }
 
     /**
@@ -165,7 +310,26 @@ class DataCollection
      */
     public function replaceDocument($documentId, array $content, array $options = [])
     {
+        $data = [
+            '_id' => $documentId,
+            'body' => $content
+        ];
 
+        $response = $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'write',
+                'action' => 'createOrReplace'
+            ],
+            $data,
+            $options
+        );
+
+        $content = $response['result']['_source'];
+        $content['_version'] = $response['result']['_version'];
+
+        return new Document($this, $response['result']['_id'], $content);
     }
 
     /**
@@ -177,7 +341,8 @@ class DataCollection
      */
     public function setHeaders(array $content, $replace = false)
     {
-
+        $this->kuzzle->setHeaders($content, $replace);
+        
         return $this;
     }
 
@@ -186,10 +351,22 @@ class DataCollection
      * removing all stored documents but keeping all associated mappings.
      *
      * @param array $options Optional parameters
+     * @return DataCollection
      */
     public function truncate(array $options = [])
     {
+        $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'admin',
+                'action' => 'truncateCollection'
+            ],
+            [],
+            $options
+        );
 
+        return $this;
     }
 
     /**
@@ -203,6 +380,22 @@ class DataCollection
      */
     public function updateDocument($documentId, array $content, array $options = [])
     {
+        $data = [
+            '_id' => $documentId,
+            'body' => $content
+        ];
 
+        $response = $this->kuzzle->query(
+            [
+                'index' => $this->index,
+                'collection' => $this->collection,
+                'controller' => 'write',
+                'action' => 'update'
+            ],
+            $data,
+            $options
+        );
+
+        return (new Document($this, $response['result']['_id']))->refresh();
     }
 }

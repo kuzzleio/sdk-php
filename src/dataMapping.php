@@ -27,6 +27,8 @@ class DataMapping
     public function __construct(DataCollection $kuzzleDataCollection, array $mapping = [])
     {
 
+
+        return $this;
     }
 
     /**

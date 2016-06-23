@@ -11,15 +11,11 @@ include "../src/security/profile.php";
 include "../src/security/user.php";
 
 $kuzzle = new \Kuzzle\Kuzzle('http://localhost:7511');
-$response = $kuzzle->query(
-    [
-        'index' => 'myindex',
-        'collection' => 'mycollection',
-        'controller' => 'write',
-        'action' => 'create'
-    ],
-    [
-        'body' => ['foo' => 'bar']
-    ]
-);
+$response = $kuzzle->login('local', ['username' => 'test', 'password' => 'testpwd']);
+var_dump($response);
+$response = $kuzzle->whoAmI();
+var_dump($response);
+$response = $kuzzle->logout();
+var_dump($response);
+$response = $kuzzle->whoAmI();
 var_dump($response);
