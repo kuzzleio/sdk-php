@@ -68,7 +68,7 @@ class Kuzzle
     {
         $this->url = $url;
 
-        $this->getRouteDescription();
+        $this->loadRoutesDescription();
 
         return $this;
     }
@@ -703,7 +703,7 @@ class Kuzzle
     /**
      * @throws Exception
      */
-    private function getRouteDescription()
+    private function loadRoutesDescription()
     {
         $routeConfigFile = realpath(__DIR__ . '/./config/routes.json');
 
