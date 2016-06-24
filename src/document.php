@@ -47,15 +47,12 @@ class Document
     {
         $this->collection = $kuzzleDataCollection;
 
-        if (!empty($documentId))
-        {
+        if (!empty($documentId)) {
             $this->id = $documentId;
         }
 
-        if (!empty($content))
-        {
-            if (array_key_exists('_version', $content))
-            {
+        if (!empty($content)) {
+            if (array_key_exists('_version', $content)) {
                 $this->version = $content['_version'];
                 unset($content['_version']);
             }
@@ -76,8 +73,7 @@ class Document
      */
     public function delete(array $options = [])
     {
-        if (!$this->id)
-        {
+        if (!$this->id) {
             throw new ErrorException('Kuzzle\Document::delete: cannot delete a document without a document ID');
         }
 
@@ -100,8 +96,7 @@ class Document
      */
     public function refresh(array $options = [])
     {
-        if (!$this->id)
-        {
+        if (!$this->id) {
             throw new ErrorException('Kuzzle\Document::delete: cannot retrieve a document without a document ID');
         }
 
@@ -154,14 +149,10 @@ class Document
      */
     public function setContent(array $content, $replace = false)
     {
-        if ($replace)
-        {
+        if ($replace) {
             $this->content = $content;
-        }
-        else
-        {
-            foreach ($content as $key => $value)
-            {
+        } else {
+            foreach ($content as $key => $value) {
                 $this->content[$key] = $value;
             }
         }
@@ -178,14 +169,10 @@ class Document
      */
     public function setHeaders(array $headers, $replace = false)
     {
-        if ($replace)
-        {
+        if ($replace) {
             $this->headers = $headers;
-        }
-        else
-        {
-            foreach ($headers as $key => $value)
-            {
+        } else {
+            foreach ($headers as $key => $value) {
                 $this->headers[$key] = $value;
             }
         }

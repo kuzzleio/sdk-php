@@ -67,8 +67,7 @@ class DataCollection
 
         $documents = [];
 
-        foreach($response['result']['hits'] as $documentInfo)
-        {
+        foreach ($response['result']['hits'] as $documentInfo) {
             $content = $documentInfo['_source'];
 
             $document = new Document($this, $documentInfo['_id'], $content);
@@ -133,25 +132,21 @@ class DataCollection
     {
         $action = 'create';
         $data = [];
-        
+
         if (array_key_exists('updateIfExist', $options)) {
             $action = $options['updateIfExist'] ? 'createOrUpdate' : 'create';
         }
 
-        if ($document instanceof Document)
-        {
+        if ($document instanceof Document) {
             $data = $document->serialize();
-        }
-        else
-        {
+        } else {
             $data['body'] = $document;
         }
 
-        if (!empty($id))
-        {
+        if (!empty($id)) {
             $data['_id'] = $id;
         }
-        
+
         $response = $this->kuzzle->query(
             $this->buildQueryArgs('write', $action),
             $this->kuzzle->addHeaders($data, $this->headers),
@@ -183,13 +178,10 @@ class DataCollection
     {
         $data = [];
 
-        if (is_string($filters))
-        {
+        if (is_string($filters)) {
             $data['_id'] = $filters;
             $action = 'delete';
-        }
-        else
-        {
+        } else {
             $data['body'] = $filters;
             $action = 'deleteByQuery';
         }
@@ -249,14 +241,12 @@ class DataCollection
     public function fetchAllDocuments(array $options = [])
     {
         $filters = [];
-        
-        if (array_key_exists('from', $options))
-        {
+
+        if (array_key_exists('from', $options)) {
             $filters['from'] = $options['from'];
         }
 
-        if (array_key_exists('size', $options))
-        {
+        if (array_key_exists('size', $options)) {
             $filters['size'] = $options['size'];
         }
 
@@ -310,14 +300,10 @@ class DataCollection
      */
     public function setHeaders(array $headers, $replace = false)
     {
-        if ($replace)
-        {
+        if ($replace) {
             $this->headers = $headers;
-        }
-        else
-        {
-            foreach ($headers as $key => $value)
-            {
+        } else {
+            foreach ($headers as $key => $value) {
                 $this->headers[$key] = $value;
             }
         }

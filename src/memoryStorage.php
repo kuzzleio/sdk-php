@@ -8,5 +8,5 @@ namespace Kuzzle;
  */
 class MemoryStorage
 {
-    
+
 }

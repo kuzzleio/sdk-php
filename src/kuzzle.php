@@ -18,7 +18,8 @@ use Kuzzle\Security\User;
  * Class Kuzzle
  * @package kuzzleio/kuzzle-sdk
  */
-class Kuzzle {
+class Kuzzle
+{
 
     /**
      * @var string url of kuzzle http server
@@ -116,23 +117,19 @@ class Kuzzle {
      */
     public function dataCollectionFactory($collection, $index = '')
     {
-        if (empty($index))
-        {
-            if (empty($this->defaultIndex))
-            {
+        if (empty($index)) {
+            if (empty($this->defaultIndex)) {
                 throw new InvalidArgumentException('Unable to create a new data collection object: no index specified');
             }
 
             $index = $this->defaultIndex;
         }
 
-        if (!array_key_exists($index, $this->collections))
-        {
+        if (!array_key_exists($index, $this->collections)) {
             $this->collections[$index] = [];
         }
 
-        if (!array_key_exists($collection, $this->collections[$index]))
-        {
+        if (!array_key_exists($collection, $this->collections[$index])) {
             $this->collections[$index][$collection] = new DataCollection($this, $index, $collection);
         }
 
@@ -212,12 +209,9 @@ class Kuzzle {
     {
         $data = [];
 
-        if (empty($timestamp))
-        {
+        if (empty($timestamp)) {
             $action = 'getLastStats';
-        }
-        else
-        {
+        } else {
             $action = 'getStats';
             $data['body'] = [
                 'startTime' => $timestamp
@@ -246,26 +240,25 @@ class Kuzzle {
     {
         $collectionType = 'all';
 
-        if (empty($index))
-        {
-            if (empty($this->defaultIndex))
-            {
+        if (empty($index)) {
+            if (empty($this->defaultIndex)) {
                 throw new InvalidArgumentException('Unable to list collections: no index specified');
             }
 
             $index = $this->defaultIndex;
         }
-        
-        if (array_key_exists('type', $options))
-        {
+
+        if (array_key_exists('type', $options)) {
             $collectionType = $options['type'];
         }
 
         $response = $this->query(
             $this->buildQueryArgs('read', 'listCollections', $index),
-            ['body' => [
-                'type' => $collectionType
-            ]],
+            [
+                'body' => [
+                    'type' => $collectionType
+                ]
+            ],
             $options
         );
 
@@ -301,8 +294,7 @@ class Kuzzle {
     {
         $body = $credentials;
 
-        if (!empty($expiresIn))
-        {
+        if (!empty($expiresIn)) {
             $body['expiresIn'] = $expiresIn;
         }
 
@@ -317,7 +309,7 @@ class Kuzzle {
                 ]
             ]
         );
-        
+
         if ($response['result']['jwt']) {
             $this->jwtToken = $response['result']['jwt'];
         }
@@ -341,15 +333,14 @@ class Kuzzle {
 
     /**
      * A static Kuzzle\MemoryStorage instance
-     * 
+     *
      * @return MemoryStorage
      */
     public function memoryStorage()
     {
         static $memoryStorage;
 
-        if (is_null($memoryStorage))
-        {
+        if (is_null($memoryStorage)) {
             $memoryStorage = new MemoryStorage($this);
         }
 
@@ -392,36 +383,27 @@ class Kuzzle {
             'metadata' => $this->metadata
         ];
 
-        if (!empty($options))
-        {
-            if (array_key_exists('metadata', $options))
-            {
-                foreach ($options['metadata'] as $meta => $value)
-                {
+        if (!empty($options)) {
+            if (array_key_exists('metadata', $options)) {
+                foreach ($options['metadata'] as $meta => $value) {
                     $request['metadata'][$meta] = $value;
                 }
             }
-            if (array_key_exists('httpParams', $options))
-            {
-                foreach ($options['httpParams'] as $param => $value)
-                {
+            if (array_key_exists('httpParams', $options)) {
+                foreach ($options['httpParams'] as $param => $value) {
                     $httpParams[$param] = $value;
                 }
             }
         }
 
-        if (array_key_exists('metadata', $query))
-        {
-            foreach ($query['metadata'] as $meta => $value)
-            {
+        if (array_key_exists('metadata', $query)) {
+            foreach ($query['metadata'] as $meta => $value) {
                 $request['metadata'][$meta] = $value;
             }
         }
 
-        foreach ($query as $attr => $value)
-        {
-            if ($attr !== 'metadata')
-            {
+        foreach ($query as $attr => $value) {
+            if ($attr !== 'metadata') {
                 $request[$attr] = $value;
             }
         }
@@ -432,28 +414,23 @@ class Kuzzle {
         * Do not add the token for the checkToken route, to avoid getting a token error when
         * a developer simply wish to verify his token
         */
-        if ($this->jwtToken && !($request['controller'] === 'auth' && $request['action'] === 'checkToken'))
-        {
-            if (array_key_exists('headers', $request) && !is_array($request['headers']))
-            {
+        if ($this->jwtToken && !($request['controller'] === 'auth' && $request['action'] === 'checkToken')) {
+            if (array_key_exists('headers', $request) && !is_array($request['headers'])) {
                 $request['headers'] = [];
             }
 
             $request['headers']['authorization'] = 'Bearer ' . $this->jwtToken;
         }
 
-        if (array_key_exists('collection', $queryArgs))
-        {
+        if (array_key_exists('collection', $queryArgs)) {
             $request['collection'] = $queryArgs['collection'];
         }
 
-        if (array_key_exists('index', $queryArgs))
-        {
+        if (array_key_exists('index', $queryArgs)) {
             $request['index'] = $queryArgs['index'];
         }
 
-        if (!array_key_exists('requestId', $request))
-        {
+        if (!array_key_exists('requestId', $request)) {
             $request['requestId'] = Uuid::uuid4()->toString();
         }
 
@@ -470,10 +447,8 @@ class Kuzzle {
      */
     public function refreshIndex($index = '', array $options = [])
     {
-        if (empty($index))
-        {
-            if (empty($this->defaultIndex))
-            {
+        if (empty($index)) {
+            if (empty($this->defaultIndex)) {
                 throw new InvalidArgumentException('Unable to refresh index: no index specified');
             }
 
@@ -515,8 +490,7 @@ class Kuzzle {
     {
         static $security;
 
-        if (is_null($security))
-        {
+        if (is_null($security)) {
             $security = new Security($this);
         }
 
@@ -535,10 +509,8 @@ class Kuzzle {
      */
     public function setAutoRefresh($index = '', $autoRefresh = false, $options = [])
     {
-        if (empty($index))
-        {
-            if (empty($this->defaultIndex))
-            {
+        if (empty($index)) {
+            if (empty($this->defaultIndex)) {
                 throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
             }
 
@@ -547,9 +519,11 @@ class Kuzzle {
 
         $response = $this->query(
             $this->buildQueryArgs('admin', 'setAutoRefresh', $index),
-            ['body' => [
-                'autoRefresh' => $autoRefresh
-            ]],
+            [
+                'body' => [
+                    'autoRefresh' => $autoRefresh
+                ]
+            ],
             $options
         );
 
@@ -598,14 +572,10 @@ class Kuzzle {
      */
     public function setHeaders(array $headers, $replace = false)
     {
-        if ($replace)
-        {
+        if ($replace) {
             $this->headers = $headers;
-        }
-        else
-        {
-            foreach ($headers as $key => $value)
-            {
+        } else {
+            foreach ($headers as $key => $value) {
                 $this->headers[$key] = $value;
             }
         }
@@ -651,10 +621,8 @@ class Kuzzle {
      */
     public function addHeaders(array $query, array $headers)
     {
-        foreach ($headers as $header => $value)
-        {
-            if (!array_key_exists($header, $query))
-            {
+        foreach ($headers as $header => $value) {
+            if (!array_key_exists($header, $query)) {
                 $query[$header] = $value;
             }
         }
@@ -669,13 +637,11 @@ class Kuzzle {
             'action' => $action
         ];
 
-        if (!empty($index))
-        {
+        if (!empty($index)) {
             $queryArgs['index'] = $index;
         }
 
-        if (!empty($collection))
-        {
+        if (!empty($collection)) {
             $queryArgs['collection'] = $collection;
         }
 
@@ -695,8 +661,7 @@ class Kuzzle {
             'Content-type: application/json'
         ];
 
-        if (array_key_exists('headers', $httpRequest['request']))
-        {
+        if (array_key_exists('headers', $httpRequest['request'])) {
             foreach ($httpRequest['request']['headers'] as $header => $value) {
                 $headers[] = ucfirst($header) . ': ' . $value;
             }
@@ -712,9 +677,9 @@ class Kuzzle {
         curl_setopt($curlResource, CURLOPT_TIMEOUT, 30);
         curl_setopt($curlResource, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
-        if (array_key_exists('body', $httpRequest['request']))
-        {
-            curl_setopt($curlResource, CURLOPT_POSTFIELDS, json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT));
+        if (array_key_exists('body', $httpRequest['request'])) {
+            curl_setopt($curlResource, CURLOPT_POSTFIELDS,
+                json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT));
         }
 
         $response = curl_exec($curlResource);
@@ -722,15 +687,13 @@ class Kuzzle {
 
         curl_close($curlResource);
 
-        if (!empty($error))
-        {
+        if (!empty($error)) {
             throw new HttpException($error);
         }
 
         $response = json_decode($response, true);
 
-        if (!empty($response['error']))
-        {
+        if (!empty($response['error'])) {
             throw new ErrorException($response['error']['message']);
         }
 
@@ -744,8 +707,7 @@ class Kuzzle {
     {
         $routeConfigFile = realpath(__DIR__ . '/./config/routes.json');
 
-        if (!file_exists($routeConfigFile))
-        {
+        if (!file_exists($routeConfigFile)) {
             throw new \Exception('Unable to find http routes configuration file (' . __DIR__ . '/./config/routes.json)');
         }
 
@@ -765,57 +727,44 @@ class Kuzzle {
             'request' => $request
         ];
 
-        if (!array_key_exists('route', $request))
-        {
-            if (!array_key_exists($request['controller'], $this->routesDescription))
-            {
+        if (!array_key_exists('route', $request)) {
+            if (!array_key_exists($request['controller'], $this->routesDescription)) {
                 throw new InvalidArgumentException('Unable to retrieve http route: controller "' . $request['controller'] . '" information not found');
             }
 
-            if (!array_key_exists($request['action'], $this->routesDescription[$request['controller']]))
-            {
+            if (!array_key_exists($request['action'], $this->routesDescription[$request['controller']])) {
                 throw new InvalidArgumentException('Unable to retrieve http route: action "' . $request['controller'] . ':' . $request['action'] . '" information not found');
             }
 
             $httpRequest['route'] = $this->routesDescription[$request['controller']][$request['action']]['route'];
-        }
-        else
-        {
+        } else {
             $httpRequest['route'] = $request['route'];
         }
 
         // replace http route parameters
-        if (array_key_exists('collection', $request))
-        {
+        if (array_key_exists('collection', $request)) {
             $httpParams[':collection'] = $request['collection'];
         }
 
-        if (array_key_exists('index', $request))
-        {
+        if (array_key_exists('index', $request)) {
             $httpParams[':index'] = $request['index'];
         }
 
-        foreach ($httpParams as $pattern => $value)
-        {
+        foreach ($httpParams as $pattern => $value) {
             $httpRequest['route'] = str_replace($pattern, $value, $httpRequest['route']);
         }
 
-        if (!array_key_exists('method', $httpRequest))
-        {
-            if (!array_key_exists($request['controller'], $this->routesDescription))
-            {
+        if (!array_key_exists('method', $httpRequest)) {
+            if (!array_key_exists($request['controller'], $this->routesDescription)) {
                 throw new InvalidArgumentException('Unable to retrieve http method: controller "' . $request['controller'] . '" information not found');
             }
 
-            if (!array_key_exists($request['action'], $this->routesDescription[$request['controller']]))
-            {
+            if (!array_key_exists($request['action'], $this->routesDescription[$request['controller']])) {
                 throw new InvalidArgumentException('Unable to retrieve http method: action "' . $request['controller'] . ':' . $request['action'] . '" information not found');
             }
 
             $httpRequest['method'] = mb_strtoupper($this->routesDescription[$request['controller']][$request['action']]['method']);
-        }
-        else
-        {
+        } else {
             $httpRequest['method'] = mb_strtoupper($request['method']);
         }
 

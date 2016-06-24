@@ -47,9 +47,11 @@ class DataMapping
      */
     public function apply(array $options = [])
     {
-        $data = ['body' => [
-            'properties' => $this->mapping
-        ]];
+        $data = [
+            'body' => [
+                'properties' => $this->mapping
+            ]
+        ];
 
         $this->collection->getKuzzle()->query(
             $this->collection->buildQueryArgs('admin', 'updateMapping'),
@@ -76,21 +78,15 @@ class DataMapping
             $options
         );
 
-        if (array_key_exists($this->collection->getIndexName(), $response['result']))
-        {
+        if (array_key_exists($this->collection->getIndexName(), $response['result'])) {
             $indexMappings = $response['result'][$this->collection->getIndexName()]['mappings'];
 
-            if (array_key_exists($this->collection->getCollectionName(), $indexMappings))
-            {
+            if (array_key_exists($this->collection->getCollectionName(), $indexMappings)) {
                 $this->mapping = $indexMappings[$this->collection->getCollectionName()]['properties'];
-            }
-            else
-            {
+            } else {
                 throw new ErrorException('No mapping found for collection ' . $this->collection->getCollectionName());
             }
-        }
-        else
-        {
+        } else {
             throw new ErrorException('No mapping found for index ' . $this->collection->getIndexName());
         }
 
@@ -120,14 +116,10 @@ class DataMapping
      */
     public function setHeaders(array $headers, $replace = false)
     {
-        if ($replace)
-        {
+        if ($replace) {
             $this->headers = $headers;
-        }
-        else
-        {
-            foreach ($headers as $key => $value)
-            {
+        } else {
+            foreach ($headers as $key => $value) {
                 $this->headers[$key] = $value;
             }
         }
