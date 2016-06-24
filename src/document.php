@@ -2,9 +2,11 @@
 
 namespace Kuzzle;
 
+use ErrorException;
+
 /**
  * Class Document
- * @package kuzzle-sdk
+ * @package kuzzleio/kuzzle-sdk
  */
 class Document
 {
@@ -39,6 +41,7 @@ class Document
      * @param DataCollection $kuzzleDataCollection An instantiated KuzzleDataCollection object
      * @param string $documentId ID of an existing document.
      * @param array $content Initializes this document with the provided content
+     * @return Document
      */
     public function __construct(DataCollection $kuzzleDataCollection, $documentId = '', array $content = [])
     {
@@ -67,10 +70,24 @@ class Document
      * Deletes this document in Kuzzle
      *
      * @param array $options Optional parameters
+     * @return integer Id of document deleted
+     *
+     * @throws ErrorException
      */
     public function delete(array $options = [])
     {
+        if (!$this->id)
+        {
+            throw new ErrorException('Kuzzle\Document::delete: cannot delete a document without a document ID');
+        }
 
+        $this->collection->getKuzzle()->query(
+            $this->collection->buildQueryArgs('read', 'search'),
+            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+            $options
+        );
+
+        return $this->id;
     }
 
     /**
@@ -78,11 +95,30 @@ class Document
      *
      * @param array $options Optional parameters
      * @return Document
+     *
+     * @throws ErrorException
      */
     public function refresh(array $options = [])
     {
+        if (!$this->id)
+        {
+            throw new ErrorException('Kuzzle\Document::delete: cannot retrieve a document without a document ID');
+        }
 
-        return $this;
+        $data = [
+            '_id' => $this->id
+        ];
+
+        $response = $this->collection->getKuzzle()->query(
+            $this->collection->buildQueryArgs('read', 'get'),
+            $this->collection->getKuzzle()->addHeaders($data, $this->headers),
+            $options
+        );
+
+        $content = $response['result']['_source'];
+        $content['_version'] = $response['result']['_version'];
+
+        return new Document($this->collection, $response['result']['_id'], $content);
     }
 
     /**
@@ -96,6 +132,14 @@ class Document
      */
     public function save(array $options = [])
     {
+        $response = $this->collection->getKuzzle()->query(
+            $this->collection->buildQueryArgs('write', 'createOrReplace'),
+            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+            $options
+        );
+
+        $this->id = $response['result']['_id'];
+        $this->version = $response['result']['_version'];
 
         return $this;
     }
@@ -128,12 +172,25 @@ class Document
     /**
      * This is a helper function returning itself, allowing to easily chain calls.
      *
-     * @param array $content New content
+     * @param array $headers New content
      * @param bool $replace true: replace the current content with the provided data, false: merge it
+     * @return Document
      */
-    public function setHeaders(array $content, $replace = false)
+    public function setHeaders(array $headers, $replace = false)
     {
+        if ($replace)
+        {
+            $this->headers = $headers;
+        }
+        else
+        {
+            foreach ($headers as $key => $value)
+            {
+                $this->headers[$key] = $value;
+            }
+        }
 
+        return $this;
     }
 
     /**

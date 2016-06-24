@@ -7,14 +7,16 @@ use ErrorException;
 use Exception;
 use HttpException;
 use InvalidArgumentException;
+
+use Ramsey\Uuid\Uuid;
+
 use Kuzzle\DataCollection;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
-use Ramsey\Uuid\Uuid;
 
 /**
  * Class Kuzzle
- * @package kuzzle-sdk
+ * @package kuzzleio/kuzzle-sdk
  */
 class Kuzzle {
 
@@ -93,7 +95,14 @@ class Kuzzle {
      */
     public function checkToken($token)
     {
+        $response = $this->query(
+            $this->buildQueryArgs('auth', 'checkToken'),
+            [
+                'body' => ['token' => $token]
+            ]
+        );
 
+        return $response['result'];
     }
 
     /**
@@ -105,7 +114,7 @@ class Kuzzle {
      *
      * @throws InvalidArgumentException
      */
-    public function dataCollectionFactory($collection, $index = "")
+    public function dataCollectionFactory($collection, $index = '')
     {
         if (empty($index))
         {
@@ -139,7 +148,13 @@ class Kuzzle {
      */
     public function getAllStatistics(array $options = [])
     {
+        $response = $this->query(
+            $this->buildQueryArgs('admin', 'getAllStats'),
+            [],
+            $options
+        );
 
+        return $response['result']['hits'];
     }
 
     /**
@@ -160,7 +175,11 @@ class Kuzzle {
      */
     public function getMyRights(array $options = [])
     {
+        $response = $this->query(
+            $this->buildQueryArgs('auth', 'getMyRights')
+        );
 
+        return $response['result']['hits'];
     }
 
     /**
@@ -171,7 +190,13 @@ class Kuzzle {
      */
     public function getServerInfo(array $options = [])
     {
+        $response = $this->query(
+            $this->buildQueryArgs('read', 'serverInfo'),
+            [],
+            $options
+        );
 
+        return $response['result']['serverInfo'];
     }
 
     /**
@@ -185,7 +210,27 @@ class Kuzzle {
      */
     public function getStatistics($timestamp = '', array $options = [])
     {
+        $data = [];
 
+        if (empty($timestamp))
+        {
+            $action = 'getLastStats';
+        }
+        else
+        {
+            $action = 'getStats';
+            $data['body'] = [
+                'startTime' => $timestamp
+            ];
+        }
+
+        $response = $this->query(
+            $this->buildQueryArgs('admin', $action),
+            $data,
+            $options
+        );
+
+        return empty($timestamp) ? [$response['result']] : $response['result']['hits'];
     }
 
     /**
@@ -194,10 +239,37 @@ class Kuzzle {
      * @param string $index Index containing the collections to be listed
      * @param array $options Optional parameters
      * @return array containing the list of stored and/or realtime collections on the provided index
+     *
+     * @throws InvalidArgumentException
      */
     public function listCollections($index = '', array $options = [])
     {
+        $collectionType = 'all';
 
+        if (empty($index))
+        {
+            if (empty($this->defaultIndex))
+            {
+                throw new InvalidArgumentException('Unable to list collections: no index specified');
+            }
+
+            $index = $this->defaultIndex;
+        }
+        
+        if (array_key_exists('type', $options))
+        {
+            $collectionType = $options['type'];
+        }
+
+        $response = $this->query(
+            $this->buildQueryArgs('read', 'listCollections', $index),
+            ['body' => [
+                'type' => $collectionType
+            ]],
+            $options
+        );
+
+        return $response['result']['collections'];
     }
 
     /**
@@ -208,7 +280,13 @@ class Kuzzle {
      */
     public function listIndexes(array $options = [])
     {
+        $response = $this->query(
+            $this->buildQueryArgs('read', 'listIndexes'),
+            [],
+            $options
+        );
 
+        return $response['result']['indexes'];
     }
 
     /**
@@ -229,10 +307,7 @@ class Kuzzle {
         }
 
         $response = $this->query(
-            [
-                'controller' => 'auth',
-                'action' => 'login'
-            ],
+            $this->buildQueryArgs('auth', 'login'),
             [
                 'body' => $body
             ],
@@ -256,10 +331,7 @@ class Kuzzle {
     public function logout()
     {
         $response = $this->query(
-            [
-                'controller' => 'auth',
-                'action' => 'logout'
-            ]
+            $this->buildQueryArgs('auth', 'logout')
         );
 
         $this->jwtToken = null;
@@ -293,10 +365,7 @@ class Kuzzle {
     public function now(array $options = [])
     {
         $response = $this->query(
-            [
-                'controller' => 'read',
-                'action' => 'now'
-            ],
+            $this->buildQueryArgs('read', 'now')
             [],
             $options
         );
@@ -357,13 +426,7 @@ class Kuzzle {
             }
         }
 
-        foreach ($this->headers as $header)
-        {
-            if (!array_key_exists($header, $request['headers']))
-            {
-                $request['headers'][$header] = $this->headers[$header];
-            }
-        }
+        $request = $this->addHeaders($request, $this->headers);
 
         /*
         * Do not add the token for the checkToken route, to avoid getting a token error when
@@ -407,7 +470,23 @@ class Kuzzle {
      */
     public function refreshIndex($index = '', array $options = [])
     {
+        if (empty($index))
+        {
+            if (empty($this->defaultIndex))
+            {
+                throw new InvalidArgumentException('Unable to refresh index: no index specified');
+            }
 
+            $index = $this->defaultIndex;
+        }
+
+        $response = $this->query(
+            $this->buildQueryArgs('admin', 'refreshIndex', $index),
+            [],
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
@@ -452,31 +531,62 @@ class Kuzzle {
      * @param string $index Optional The index to set the autoRefresh for. If not set, defaults to Kuzzle->defaultIndex
      * @param bool $autoRefresh The value to set for the autoRefresh setting.
      * @param array $options Optional parameters
+     * @return boolean
      */
     public function setAutoRefresh($index = '', $autoRefresh = false, $options = [])
     {
+        if (empty($index))
+        {
+            if (empty($this->defaultIndex))
+            {
+                throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
+            }
 
+            $index = $this->defaultIndex;
+        }
+
+        $response = $this->query(
+            $this->buildQueryArgs('admin', 'setAutoRefresh', $index),
+            ['body' => [
+                'autoRefresh' => $autoRefresh
+            ]],
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
      * Set the default data index. Has the same effect than the defaultIndex constructor option.
      *
      * @param $index
+     * @return Kuzzle
      */
     public function setDefaultIndex($index)
     {
+        $this->defaultIndex = $index;
 
+        return $this;
     }
 
     /**
      * Performs a partial update on the current user.
      *
-     * @param array $content
-     * @param array $options
+     * @param array $content a plain javascript object representing the user's modification
+     * @param array $options (optional) arguments
+     * @return array
      */
     public function updateSelf(array $content, $options = [])
     {
+        $response = $this->query(
+            $this->buildQueryArgs('auth', 'updateSelf'),
+            [
+                'body' => $content
+            ],
+            $options
+        );
 
+        return $response['result'];
     }
 
     /**
@@ -488,6 +598,17 @@ class Kuzzle {
      */
     public function setHeaders(array $headers, $replace = false)
     {
+        if ($replace)
+        {
+            $this->headers = $headers;
+        }
+        else
+        {
+            foreach ($headers as $key => $value)
+            {
+                $this->headers[$key] = $value;
+            }
+        }
 
         return $this;
     }
@@ -500,6 +621,7 @@ class Kuzzle {
      */
     public function setJwtToken($jwtToken)
     {
+        $this->jwtToken = $jwtToken;
 
         return $this;
     }
@@ -507,18 +629,57 @@ class Kuzzle {
     /**
      * Retrieves current user object.
      *
+     * @param array $options (optional) arguments
      * @return User
      */
-    public function whoAmI()
+    public function whoAmI($options = [])
     {
         $response = $this->query(
-            [
-                'controller' => 'auth',
-                'action' => 'getCurrentUser'
-            ]
+            $this->buildQueryArgs('auth', 'getCurrentUser'),
+            [],
+            $options
         );
 
-        return $response;
+        return new User($this->security(), $response['result']['_id'], $response['result']['_source']);
+    }
+
+
+    /**
+     * @param array $query
+     * @param array $headers
+     * @return array
+     */
+    public function addHeaders(array $query, array $headers)
+    {
+        foreach ($headers as $header => $value)
+        {
+            if (!array_key_exists($header, $query))
+            {
+                $query[$header] = $value;
+            }
+        }
+
+        return $query;
+    }
+
+    public function buildQueryArgs($controller, $action, $index = '', $collection = '')
+    {
+        $queryArgs = [
+            'controller' => $controller,
+            'action' => $action
+        ];
+
+        if (!empty($index))
+        {
+            $queryArgs['index'] = $index;
+        }
+
+        if (!empty($collection))
+        {
+            $queryArgs['collection'] = $collection;
+        }
+
+        return $queryArgs;
     }
 
     /**

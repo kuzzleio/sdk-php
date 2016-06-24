@@ -4,7 +4,7 @@ namespace Kuzzle\Security;
 
 /**
  * Class Security
- * @package kuzzle-sdk
+ * @package kuzzleio/kuzzle-sdk
  */
 class Security
 {

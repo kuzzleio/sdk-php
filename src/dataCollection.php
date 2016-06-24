@@ -2,9 +2,11 @@
 
 namespace Kuzzle;
 
+use Kuzzle\Util\AdvancedSearchResult;
+
 /**
  * Class DataCollection
- * @package kuzzle-sdk
+ * @package kuzzleio/kuzzle-sdk
  */
 class DataCollection
 {
@@ -49,20 +51,17 @@ class DataCollection
      *
      * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
-     * @return array
+     * @return AdvancedSearchResult
      */
     public function advancedSearch(array $filters, array $options = [])
     {
+        $data = [
+            'body' => $filters
+        ];
+
         $response = $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'read',
-                'action' => 'search'
-            ],
-            [
-                'body' => $filters
-            ],
+            $this->buildQueryArgs('read', 'search'),
+            $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
@@ -71,17 +70,13 @@ class DataCollection
         foreach($response['result']['hits'] as $documentInfo)
         {
             $content = $documentInfo['_source'];
-            $content['_version'] = $documentInfo['_version'];
 
             $document = new Document($this, $documentInfo['_id'], $content);
 
             $documents[] = $document;
         }
 
-        return [
-            'total' => $response['result']['total'],
-            'documents' => $documents
-        ];
+        return new AdvancedSearchResult($response['result']['total'], $documents);
     }
 
     /**
@@ -94,16 +89,13 @@ class DataCollection
      */
     public function count(array $filters, array $options = [])
     {
+        $data = [
+            'body' => $filters
+        ];
+
         $response = $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'read',
-                'action' => 'count'
-            ],
-            [
-                'body' => $filters
-            ],
+            $this->buildQueryArgs('read', 'count'),
+            $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
@@ -120,13 +112,8 @@ class DataCollection
     public function create(array $options = [])
     {
         $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'write',
-                'action' => 'createCollection'
-            ],
-            [],
+            $this->buildQueryArgs('write', 'createCollection'),
+            $this->kuzzle->addHeaders([], $this->headers),
             $options
         );
 
@@ -166,13 +153,8 @@ class DataCollection
         }
         
         $response = $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'write',
-                'action' => $action
-            ],
-            $data,
+            $this->buildQueryArgs('write', $action),
+            $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
@@ -213,13 +195,8 @@ class DataCollection
         }
 
         $response = $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'write',
-                'action' => $action
-            ],
-            $data,
+            $this->buildQueryArgs('write', $action),
+            $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
@@ -247,16 +224,13 @@ class DataCollection
      */
     public function fetchDocument($documentId, array $options = [])
     {
+        $data = [
+            '_id' => $documentId
+        ];
+
         $response = $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'read',
-                'action' => 'get'
-            ],
-            [
-                '_id' => $documentId
-            ],
+            $this->buildQueryArgs('read', 'get'),
+            $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
@@ -316,13 +290,8 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'write',
-                'action' => 'createOrReplace'
-            ],
-            $data,
+            $this->buildQueryArgs('write', 'createOrReplace'),
+            $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
@@ -335,14 +304,24 @@ class DataCollection
     /**
      * This is a helper function returning itself, allowing to easily set headers while chaining calls.
      *
-     * @param array $content New content
+     * @param array $headers New content
      * @param bool $replace true: replace the current content with the provided data, false: merge it
      * @return DataCollection
      */
-    public function setHeaders(array $content, $replace = false)
+    public function setHeaders(array $headers, $replace = false)
     {
-        $this->kuzzle->setHeaders($content, $replace);
-        
+        if ($replace)
+        {
+            $this->headers = $headers;
+        }
+        else
+        {
+            foreach ($headers as $key => $value)
+            {
+                $this->headers[$key] = $value;
+            }
+        }
+
         return $this;
     }
 
@@ -356,13 +335,8 @@ class DataCollection
     public function truncate(array $options = [])
     {
         $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'admin',
-                'action' => 'truncateCollection'
-            ],
-            [],
+            $this->buildQueryArgs('admin', 'truncateCollection'),
+            $this->kuzzle->addHeaders([], $this->headers),
             $options
         );
 
@@ -386,16 +360,50 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            [
-                'index' => $this->index,
-                'collection' => $this->collection,
-                'controller' => 'write',
-                'action' => 'update'
-            ],
-            $data,
+            $this->buildQueryArgs('write', 'update'),
+            $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
         return (new Document($this, $response['result']['_id']))->refresh();
+    }
+
+    /**
+     * @return Kuzzle
+     */
+    public function getKuzzle()
+    {
+        return $this->kuzzle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCollectionName()
+    {
+        return $this->collection;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIndexName()
+    {
+        return $this->index;
+    }
+
+    /**
+     * @param $controller
+     * @param $action
+     * @return array
+     */
+    public function buildQueryArgs($controller, $action)
+    {
+        return $this->kuzzle->buildQueryArgs(
+            $controller,
+            $action,
+            $this->index,
+            $this->collection
+        );
     }
 }

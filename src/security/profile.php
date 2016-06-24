@@ -3,10 +3,10 @@
 namespace Kuzzle\Security;
 
 /**
- * Class User
- * @package kuzzle-sdk
+ * Class Profile
+ * @package kuzzleio/kuzzle-sdk
  */
-class User
+class Profile
 {
 
 }

@@ -4,7 +4,7 @@ namespace Kuzzle;
 
 /**
  * Class MemoryStorage
- * @package kuzzle-sdk
+ * @package kuzzleio/kuzzle-sdk
  */
 class MemoryStorage
 {

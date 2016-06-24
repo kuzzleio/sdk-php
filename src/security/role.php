@@ -4,7 +4,7 @@ namespace Kuzzle\Security;
 
 /**
  * Class Role
- * @package kuzzle-sdk
+ * @package kuzzleio/kuzzle-sdk
  */
 class Role
 {
