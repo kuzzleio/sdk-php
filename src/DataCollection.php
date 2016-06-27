@@ -259,6 +259,33 @@ class DataCollection
     }
 
     /**
+     * Create a new document in Kuzzle.
+     *
+     * @param array|Document $document either an instance of a KuzzleDocument object, or a document
+     * @param array $options Optional parameters
+     *
+     * @return DataCollection
+     */
+    public function publishMessage($document, array $options = [])
+    {
+        $data = [];
+
+        if ($document instanceof Document) {
+            $data = $document->serialize();
+        } else {
+            $data['body'] = $document;
+        }
+
+        $this->kuzzle->query(
+            $this->buildQueryArgs('write', 'publish'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $this;
+    }
+
+    /**
      * Replace an existing document with a new one.
      *
      * @param string $documentId Unique document identifier
