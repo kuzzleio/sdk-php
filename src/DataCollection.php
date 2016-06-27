@@ -65,17 +65,11 @@ class DataCollection
             $options
         );
 
-        $documents = [];
+        $response['result']['hits'] = array_map(function ($document) {
+            return new Document($this, $document['_id'], $document['_source']);
+        }, $response['result']['hits']);
 
-        foreach ($response['result']['hits'] as $documentInfo) {
-            $content = $documentInfo['_source'];
-
-            $document = new Document($this, $documentInfo['_id'], $content);
-
-            $documents[] = $document;
-        }
-
-        return new AdvancedSearchResult($response['result']['total'], $documents);
+        return new AdvancedSearchResult($response['result']['total'], $response['result']['hits']);
     }
 
     /**

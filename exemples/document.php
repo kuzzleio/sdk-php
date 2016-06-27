@@ -1,15 +1,18 @@
 <?php
 include "../vendor/autoload.php";
-include "../src/kuzzle.php";
-include "../src/document.php";
-include "../src/dataMapping.php";
-include "../src/dataCollection.php";
-include "../src/memoryStorage.php";
-include "../src/util/advancedSearchResult.php";
-include "../src/security/security.php";
-include "../src/security/role.php";
-include "../src/security/profile.php";
-include "../src/security/user.php";
+include "../src/Kuzzle.php";
+include "../src/Document.php";
+include "../src/DataMapping.php";
+include "../src/DataCollection.php";
+include "../src/MemoryStorage.php";
+include "../src/Util/AdvancedSearchResult.php";
+include "../src/Util/ProfilesSearchResult.php";
+include "../src/Util/RolesSearchResult.php";
+include "../src/Util/UsersSearchResult.php";
+include "../src/Security/Security.php";
+include "../src/Security/Role.php";
+include "../src/Security/Profile.php";
+include "../src/Security/User.php";
 
 $kuzzle = new \Kuzzle\Kuzzle('http://localhost:7511');
 

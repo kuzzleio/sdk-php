@@ -5,7 +5,6 @@ namespace Kuzzle;
 use DateTime;
 use ErrorException;
 use Exception;
-use HttpException;
 use InvalidArgumentException;
 
 use Ramsey\Uuid\Uuid;
@@ -173,7 +172,9 @@ class Kuzzle
     public function getMyRights(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('auth', 'getMyRights')
+            $this->buildQueryArgs('auth', 'getMyRights'),
+            [],
+            $options
         );
 
         return $response['result']['hits'];
@@ -652,7 +653,6 @@ class Kuzzle
      * @param array $httpRequest
      * @return array
      *
-     * @throws HttpException
      * @throws ErrorException
      */
     private function emitRestRequest(array $httpRequest)
@@ -676,10 +676,14 @@ class Kuzzle
         curl_setopt($curlResource, CURLOPT_MAXREDIRS, 10);
         curl_setopt($curlResource, CURLOPT_TIMEOUT, 30);
         curl_setopt($curlResource, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        
+        /**
+         * @todo: handle http proxy via options
+         */
 
         if (array_key_exists('body', $httpRequest['request'])) {
-            curl_setopt($curlResource, CURLOPT_POSTFIELDS,
-                json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT));
+            $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
+            curl_setopt($curlResource, CURLOPT_POSTFIELDS, $body);
         }
 
         $response = curl_exec($curlResource);
@@ -688,7 +692,7 @@ class Kuzzle
         curl_close($curlResource);
 
         if (!empty($error)) {
-            throw new HttpException($error);
+            throw new ErrorException($error);
         }
 
         $response = json_decode($response, true);
@@ -711,6 +715,9 @@ class Kuzzle
             throw new \Exception('Unable to find http routes configuration file (' . __DIR__ . '/./config/routes.json)');
         }
 
+        /**
+         * @todo: handle configuration file format
+         */
         $this->routesDescription = json_decode(file_get_contents($routeConfigFile), true);
     }
 
