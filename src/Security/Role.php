@@ -8,6 +8,11 @@ namespace Kuzzle\Security;
  */
 class Role extends Document
 {
+    protected $deleteActionName = 'deleteRole';
+
+    protected $updateActionName = 'createOrReplaceRole';
+
+    protected $saveActionName = 'updateRole';
     /**
      * Role constructor.
      *

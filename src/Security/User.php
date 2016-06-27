@@ -8,6 +8,12 @@ namespace Kuzzle\Security;
  */
 class User extends Document
 {
+    protected $deleteActionName = 'deleteUser';
+
+    protected $updateActionName = 'createOrReplaceUser';
+
+    protected $saveActionName = 'updateUser';
+
     const DEFAULT_PROFILE = 'default';
 
     /**
