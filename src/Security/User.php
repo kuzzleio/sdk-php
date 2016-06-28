@@ -23,7 +23,7 @@ class User extends Document
      * @param array $content User content
      * @return User
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content)
+    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [])
     {
         parent::__construct($kuzzleSecurity, $id, $content);
 

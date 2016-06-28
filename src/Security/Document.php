@@ -2,7 +2,7 @@
 
 namespace Kuzzle\Security;
 
-Abstract Class Document
+abstract class Document
 {
     protected $deleteActionName = '';
 
@@ -33,7 +33,7 @@ Abstract Class Document
      * @param array $content Document content
      * @return Document
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content)
+    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [])
     {
         $this->security = $kuzzleSecurity;
         $this->id = $id;
@@ -145,5 +145,4 @@ Abstract Class Document
 
         return $data;
     }
-
 }

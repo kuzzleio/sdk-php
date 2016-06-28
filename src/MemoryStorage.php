@@ -300,5 +300,4 @@ class MemoryStorage
 
         return $this->kuzzle->query($query, $data);
     }
-
 }

@@ -21,7 +21,7 @@ class Profile extends Document
      * @param array $content Profile content
      * @return Profile
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content)
+    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [])
     {
         parent::__construct($kuzzleSecurity, $id, $content);
 

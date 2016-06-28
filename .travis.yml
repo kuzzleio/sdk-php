@@ -7,6 +7,8 @@ php:
   - hhvm
   - nightly
 before_script: composer install
-script: php ./vendor/bin/phpunit
+script:
+  - php ./vendor/bin/phpcs -p -n --standard=PSR2 src
+  - php ./vendor/bin/phpunit
 after_success:
   - bash <(curl -s https://codecov.io/bash)
