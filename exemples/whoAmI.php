@@ -1,18 +1,5 @@
 <?php
-include "../vendor/autoload.php";
-include "../src/Kuzzle.php";
-include "../src/Document.php";
-include "../src/DataMapping.php";
-include "../src/DataCollection.php";
-include "../src/MemoryStorage.php";
-include "../src/Util/AdvancedSearchResult.php";
-include "../src/Util/ProfilesSearchResult.php";
-include "../src/Util/RolesSearchResult.php";
-include "../src/Util/UsersSearchResult.php";
-include "../src/Security/Security.php";
-include "../src/Security/Role.php";
-include "../src/Security/Profile.php";
-include "../src/Security/User.php";
+include __DIR__ . '/../tests/bootstrap.php';
 
 $kuzzle = new \Kuzzle\Kuzzle('http://localhost:7511');
 
