@@ -13,6 +13,7 @@ class Role extends Document
     protected $updateActionName = 'createOrReplaceRole';
 
     protected $saveActionName = 'updateRole';
+
     /**
      * Role constructor.
      *

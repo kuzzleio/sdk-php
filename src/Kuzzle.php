@@ -676,7 +676,7 @@ class Kuzzle
         curl_setopt($curlResource, CURLOPT_MAXREDIRS, 10);
         curl_setopt($curlResource, CURLOPT_TIMEOUT, 30);
         curl_setopt($curlResource, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        
+
         /**
          * @todo: handle http proxy via options
          */

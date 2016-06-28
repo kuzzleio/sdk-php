@@ -43,7 +43,6 @@ Abstract Class Document
     }
 
 
-
     /**
      * Replaces the content of the Kuzzle\Security\Role object.
      *
@@ -53,7 +52,7 @@ Abstract Class Document
     public function setContent(array $content)
     {
         $this->content = $content;
-        
+
         return $this;
     }
 
@@ -146,5 +145,5 @@ Abstract Class Document
 
         return $data;
     }
-    
+
 }

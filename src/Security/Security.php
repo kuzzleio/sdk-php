@@ -341,19 +341,19 @@ class Security
     public function isActionAllowed(array $rights, $controller, $action, $index = '', $collection = '')
     {
         // We filter in all the rights that match the request (including wildcards).
-        $filteredRights = array_filter($rights, function(array $right) use ($controller) {
+        $filteredRights = array_filter($rights, function (array $right) use ($controller) {
             return $right['controller'] === $controller || $right['controller'] === '*';
         });
 
-        $filteredRights = array_filter($filteredRights, function(array $right) use ($action) {
+        $filteredRights = array_filter($filteredRights, function (array $right) use ($action) {
             return $right['action'] === $action || $right['action'] === '*';
         });
 
-        $filteredRights = array_filter($filteredRights, function(array $right) use ($index) {
+        $filteredRights = array_filter($filteredRights, function (array $right) use ($index) {
             return $right['index'] === $index || $right['index'] === '*';
         });
 
-        $filteredRights = array_filter($filteredRights, function(array $right) use ($collection) {
+        $filteredRights = array_filter($filteredRights, function (array $right) use ($collection) {
             return $right['collection'] === $collection || $right['collection'] === '*';
         });
 
@@ -362,9 +362,7 @@ class Security
         // Then, if at least one right allows the action, we return Security::ACTION_ALLOWED
         if (array_search(Security::ACTION_ALLOWED, $rightsValues) !== false) {
             return Security::ACTION_ALLOWED;
-        }
-
-        // If no right allows the action, we check for Security::ACTION_CONDITIONAL.
+        } // If no right allows the action, we check for Security::ACTION_CONDITIONAL.
         elseif (array_search(Security::ACTION_CONDITIONAL, $rightsValues) !== false) {
             return Security::ACTION_CONDITIONAL;
         }

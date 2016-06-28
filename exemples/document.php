@@ -36,7 +36,6 @@ $searchResult = $collection->advancedSearch([]);
 $searchCount = $collection->count([]);
 var_dump('documents found:', $searchResult->getTotal(), $searchCount);
 
-foreach ($searchResult->getDocuments() as $document)
-{
+foreach ($searchResult->getDocuments() as $document) {
     var_dump($document->serialize());
 }
