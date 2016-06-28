@@ -357,7 +357,7 @@ class Kuzzle
     public function now(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('read', 'now')
+            $this->buildQueryArgs('read', 'now'),
             [],
             $options
         );
