@@ -16,6 +16,10 @@ var_dump($deleteResult);
 $document = $collection->createDocument(['foo' => 'bar']);
 var_dump($document->serialize());
 
+// get document
+$document = $collection->fetchDocument($document->getId());
+var_dump($document->serialize());
+
 // search all documents
 $searchResult = $collection->advancedSearch([]);
 

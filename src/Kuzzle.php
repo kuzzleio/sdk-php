@@ -253,6 +253,10 @@ class Kuzzle
             $collectionType = $options['type'];
         }
 
+        $options['httpParams'] = [
+            ':type' => $collectionType
+        ];
+
         $response = $this->query(
             $this->buildQueryArgs('read', 'listCollections', $index),
             [
@@ -755,6 +759,10 @@ class Kuzzle
 
         if (array_key_exists('index', $request)) {
             $httpParams[':index'] = $request['index'];
+        }
+
+        if (array_key_exists('_id', $request)) {
+            $httpParams[':id'] = $request['_id'];
         }
 
         foreach ($httpParams as $pattern => $value) {

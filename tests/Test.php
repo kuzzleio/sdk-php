@@ -2,8 +2,6 @@
 
 class MoneyTest extends \PHPUnit_Framework_TestCase
 {
-    // ...
-
     public function testTrue()
     {
         // Assert
@@ -18,6 +16,4 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
         // Assert
         $this->assertInstanceOf('\Kuzzle\Kuzzle', $a);
     }
-
-    // ...
 }

@@ -200,4 +200,12 @@ class Document
 
         return $data;
     }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }
