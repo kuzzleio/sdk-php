@@ -51,6 +51,11 @@ class Kuzzle
     protected $collections = [];
 
     /**
+     * @var array[]
+     */
+    protected $listeners = [];
+
+    /**
      * @var array
      */
     private $routesDescription = [];
@@ -79,10 +84,24 @@ class Kuzzle
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      * @param callable $listener The function to call each time one of the registered event is fired
      * @return string containing an unique listener ID.
+     *
+     * @throws InvalidArgumentException
      */
     public function addListener($event, $listener)
     {
+        if (!is_callable($listener)) {
+            throw new InvalidArgumentException('Unable to add a listener on event "' . $event . '": given listener is not callable');
+        }
 
+        $listenerId = uniqid();
+
+        if (array_key_exists($event, $this->listeners)) {
+            $this->listeners[$event] = [];
+        }
+
+        $this->listeners[$event][$listenerId] = $listener;
+
+        return $listenerId;
     }
 
     /**
@@ -474,7 +493,12 @@ class Kuzzle
      */
     public function removeAllListeners($event = '')
     {
-
+        if (empty($event)) {
+            $this->listeners = [];
+        }
+        elseif (array_key_exists($event, $this->listeners)) {
+            unset($this->listeners[$event]);
+        }
     }
 
     /**
@@ -483,7 +507,11 @@ class Kuzzle
      */
     public function removeListener($event, $listenerID)
     {
-
+        if (array_key_exists($event, $this->listeners)) {
+            if (array_key_exists($listenerID, $this->listeners[$event])) {
+                unset($this->listeners[$event][$listenerID]);
+            }
+        }
     }
 
     /**
