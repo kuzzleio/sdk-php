@@ -19,6 +19,7 @@ use Kuzzle\Security\User;
  */
 class Kuzzle
 {
+    const ROUTE_DESCRIPTION_FILE = './config/routes.json';
 
     /**
      * @var string url of kuzzle http server
@@ -60,6 +61,11 @@ class Kuzzle
      */
     private $routesDescription = [];
 
+    /**
+     * @var string
+     */
+    private $routesDescriptionFile;
+
 
     /**
      * Kuzzle constructor.
@@ -68,11 +74,20 @@ class Kuzzle
      * @param array $options Optional Kuzzle connection configuration
      * @return Kuzzle
      */
-    public function __construct($url, array $options = array())
+    public function __construct($url, array $options = [])
     {
         $this->url = $url;
+        $this->routesDescriptionFile = self::ROUTE_DESCRIPTION_FILE;
+        
+        if (array_key_exists('routesDescriptionFile', $options)) {
+            $this->routesDescriptionFile = $options['routesDescriptionFile'];
+        }
 
-        $this->loadRoutesDescription();
+        if (array_key_exists('defaultIndex', $options)) {
+            $this->defaultIndex = $options['defaultIndex'];
+        }
+
+        $this->loadRoutesDescription($this->routesDescriptionFile);
 
         return $this;
     }
@@ -108,17 +123,19 @@ class Kuzzle
      * Checks the validity of a JSON Web Token.
      *
      * @param string $token The token to check
+     * @param array $options Optional parameters
      * @return array with a valid boolean property.
      *         If the token is valid, a expiresAt property is set with the expiration timestamp.
      *         If not, a state property is set explaining why the token is invalid.
      */
-    public function checkToken($token)
+    public function checkToken($token, array $options = [])
     {
         $response = $this->query(
             $this->buildQueryArgs('auth', 'checkToken'),
             [
                 'body' => ['token' => $token]
-            ]
+            ],
+            $options
         );
 
         return $response['result'];
@@ -312,9 +329,10 @@ class Kuzzle
      * @param string $strategy Authentication strategy (local, facebook, github, …)
      * @param array $credentials Optional login credentials, depending on the strategy
      * @param string $expiresIn Login expiration time
+     * @param array $options Optional options
      * @return array
      */
-    public function login($strategy, array $credentials = [], $expiresIn = '')
+    public function login($strategy, array $credentials = [], $expiresIn = '', array $options = [])
     {
         $body = $credentials;
 
@@ -322,37 +340,45 @@ class Kuzzle
             $body['expiresIn'] = $expiresIn;
         }
 
+        if (!array_key_exists('httpParams', $options)) {
+            $options['httpParams'] = [];
+        }
+
+        if (!array_key_exists(':strategy', $options['httpParams'])) {
+            $options['httpParams'][':strategy'] = $strategy;
+        }
+
         $response = $this->query(
             $this->buildQueryArgs('auth', 'login'),
             [
                 'body' => $body
             ],
-            [
-                'httpParams' => [
-                    ':strategy' => $strategy
-                ]
-            ]
+            $options
         );
 
         if ($response['result']['jwt']) {
             $this->jwtToken = $response['result']['jwt'];
         }
 
-        return $response;
+        return $response['result'];
     }
 
     /**
      * Logs the user out.
+     * @param array $options Optional parameters
+     * @return array
      */
-    public function logout()
+    public function logout(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('auth', 'logout')
+            $this->buildQueryArgs('auth', 'logout'),
+            [],
+            $options
         );
 
         $this->jwtToken = null;
 
-        return $response;
+        return $response['result'];
     }
 
     /**
@@ -412,6 +438,9 @@ class Kuzzle
                 foreach ($options['metadata'] as $meta => $value) {
                     $request['metadata'][$meta] = $value;
                 }
+            }
+            if (array_key_exists('requestId', $options)) {
+                $request['requestId'] = $options['requestId'];
             }
             if (array_key_exists('httpParams', $options)) {
                 foreach ($options['httpParams'] as $param => $value) {
@@ -540,7 +569,7 @@ class Kuzzle
      * @param array $options Optional parameters
      * @return boolean
      */
-    public function setAutoRefresh($index = '', $autoRefresh = false, $options = [])
+    public function setAutoRefresh($index = '', $autoRefresh = false, array $options = [])
     {
         if (empty($index)) {
             if (empty($this->defaultIndex)) {
@@ -583,7 +612,7 @@ class Kuzzle
      * @param array $options (optional) arguments
      * @return array
      */
-    public function updateSelf(array $content, $options = [])
+    public function updateSelf(array $content, array $options = [])
     {
         $response = $this->query(
             $this->buildQueryArgs('auth', 'updateSelf'),
@@ -635,7 +664,7 @@ class Kuzzle
      * @param array $options (optional) arguments
      * @return User
      */
-    public function whoAmI($options = [])
+    public function whoAmI(array $options = [])
     {
         $response = $this->query(
             $this->buildQueryArgs('auth', 'getCurrentUser'),
@@ -645,8 +674,7 @@ class Kuzzle
 
         return new User($this->security(), $response['result']['_id'], $response['result']['_source']);
     }
-
-
+    
     /**
      * @param array $query
      * @param array $headers
@@ -663,6 +691,13 @@ class Kuzzle
         return $query;
     }
 
+    /**
+     * @param $controller
+     * @param $action
+     * @param string $index
+     * @param string $collection
+     * @return array
+     */
     public function buildQueryArgs($controller, $action, $index = '', $collection = '')
     {
         $queryArgs = [
@@ -687,7 +722,7 @@ class Kuzzle
      *
      * @throws ErrorException
      */
-    private function emitRestRequest(array $httpRequest)
+    protected function emitRestRequest(array $httpRequest)
     {
         $headers = [
             'Content-type: application/json'
@@ -737,20 +772,32 @@ class Kuzzle
     }
 
     /**
+     * @param string $routeDescriptionFile
      * @throws Exception
      */
-    private function loadRoutesDescription()
+    protected function loadRoutesDescription($routeDescriptionFile)
     {
-        $routeConfigFile = realpath(__DIR__ . '/./config/routes.json');
+        $routeDescriptionFilePath = realpath(__DIR__ . DIRECTORY_SEPARATOR . $routeDescriptionFile);
 
-        if (!file_exists($routeConfigFile)) {
-            throw new \Exception('Unable to find http routes configuration file (' . __DIR__ . '/./config/routes.json)');
+        if (!file_exists($routeDescriptionFilePath)) {
+            throw new Exception('Unable to find http routes configuration file (' . $routeDescriptionFile . ')');
         }
 
-        /**
-         * @todo: handle configuration file format
-         */
-        $this->routesDescription = json_decode(file_get_contents($routeConfigFile), true);
+        $routesDescription = json_decode(file_get_contents($routeDescriptionFilePath), true);
+
+        if (!is_array($routesDescription)) {
+            throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
+        }
+
+        if (!array_key_exists('read', $routesDescription)) {
+            throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
+        }
+
+        if (!is_array($routesDescription['read']) || !array_key_exists('now', $routesDescription['read'])) {
+            throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
+        }
+
+        $this->routesDescription = $routesDescription;
     }
 
     /**
@@ -760,7 +807,7 @@ class Kuzzle
      *
      * @throws InvalidArgumentException
      */
-    private function convertRestRequest(array $request, array $httpParams = [])
+    protected function convertRestRequest(array $request, array $httpParams = [])
     {
         $httpRequest = [
             'request' => $request

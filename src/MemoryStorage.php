@@ -251,6 +251,7 @@ class MemoryStorage
         "zrevrange" => ["id", "start", "stop", ["__opts__" => ["withscores"]]],
         "zscore" => ["id", "member"]
     ];
+    
     protected $kuzzle;
 
     public function __construct(Kuzzle $kuzzle)
