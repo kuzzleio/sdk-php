@@ -524,8 +524,7 @@ class Kuzzle
     {
         if (empty($event)) {
             $this->listeners = [];
-        }
-        elseif (array_key_exists($event, $this->listeners)) {
+        } elseif (array_key_exists($event, $this->listeners)) {
             unset($this->listeners[$event]);
         }
     }
