@@ -1033,4 +1033,204 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($whoAmIResponse['_id'], 'id', $response);
         $this->assertAttributeEquals($whoAmIResponse['_source'], 'content', $response);
     }
+
+    public function testBuildQueryArgs()
+    {
+        /**
+         * @todo
+         */
+    }
+
+    public function testEmitRestRequest()
+    {
+        $curlRequestHandler = $this
+            ->getMockBuilder('\Kuzzle\Util\CurlRequest')
+            ->setMethods(['execute'])
+            ->setConstructorArgs([])
+            ->getMock();
+
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL, ['requestHandler' => $curlRequestHandler]);
+
+        $httpRequest = [
+            'request' => [
+                'headers' => ['authorization' => 'Bearer ' . uniqid()],
+                'body' => ['foo' => 'bar']
+            ],
+            'route' => '/api/1.0/foo/bar',
+            'method' => 'POST'
+        ];
+
+        $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
+
+        $curlRequest = [
+            'url' => self::FAKE_KUZZLE_URL . $httpRequest['route'],
+            'method' => $httpRequest['method'],
+            'headers' => [
+                'Content-type: application/json',
+                'Authorization: ' . $httpRequest['request']['headers']['authorization'],
+                'Content-length: ' . strlen($body)
+            ],
+            'body' => $body
+        ];
+
+        $reflection = new \ReflectionClass(get_class($kuzzle));
+        $method = $reflection->getMethod('emitRestRequest');
+        $method->setAccessible(true);
+
+        $curlRequestHandler
+            ->expects($this->once())
+            ->method('execute')
+            ->with($curlRequest)
+            ->willReturn(['error' => '', 'response' => '{"foo": "bar"}']);
+
+        try {
+            $result = $method->invokeArgs($kuzzle, [$httpRequest]);
+
+            $this->assertEquals(["foo" => "bar"], $result);
+        }
+        catch (\Exception $e) {
+            $this->fail("KuzzleTest::testEmitRestRequest => Should not raise an exception");
+        }
+    }
+
+    public function testEmitRestRequestWithHTTPError()
+    {
+        $curlRequestHandler = $this
+            ->getMockBuilder('\Kuzzle\Util\CurlRequest')
+            ->setMethods(['execute'])
+            ->setConstructorArgs([])
+            ->getMock();
+
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL, ['requestHandler' => $curlRequestHandler]);
+
+        $httpRequest = [
+            'request' => [
+                'headers' => ['authorization' => 'Bearer ' . uniqid()],
+                'body' => ['foo' => 'bar']
+            ],
+            'route' => '/api/1.0/foo/bar',
+            'method' => 'POST'
+        ];
+
+        $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
+
+        $curlRequest = [
+            'url' => self::FAKE_KUZZLE_URL . $httpRequest['route'],
+            'method' => $httpRequest['method'],
+            'headers' => [
+                'Content-type: application/json',
+                'Authorization: ' . $httpRequest['request']['headers']['authorization'],
+                'Content-length: ' . strlen($body)
+            ],
+            'body' => $body
+        ];
+
+        $reflection = new \ReflectionClass(get_class($kuzzle));
+        $method = $reflection->getMethod('emitRestRequest');
+        $method->setAccessible(true);
+
+        $curlRequestHandler
+            ->expects($this->once())
+            ->method('execute')
+            ->with($curlRequest)
+            ->willReturn(['error' => 'HTTP Error', 'response' => '']);
+
+        try {
+            $method->invokeArgs($kuzzle, [$httpRequest]);
+
+            $this->fail("KuzzleTest::testEmitRestRequestWithHTTPError => Should raise an exception");
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('ErrorException', $e);
+            $this->assertEquals('HTTP Error', $e->getMessage());
+        }
+    }
+
+    public function testEmitRestRequestWithKuzzleError()
+    {
+        $curlRequestHandler = $this
+            ->getMockBuilder('\Kuzzle\Util\CurlRequest')
+            ->setMethods(['execute'])
+            ->setConstructorArgs([])
+            ->getMock();
+
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL, ['requestHandler' => $curlRequestHandler]);
+
+        $reflection = new \ReflectionClass(get_class($kuzzle));
+        $emitRestRequest = $reflection->getMethod('emitRestRequest');
+        $emitRestRequest->setAccessible(true);
+        
+        $httpRequest = [
+            'request' => [
+                'headers' => ['authorization' => 'Bearer ' . uniqid()],
+                'body' => ['foo' => 'bar']
+            ],
+            'route' => '/api/1.0/foo/bar',
+            'method' => 'POST'
+        ];
+
+        $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
+
+        $curlRequest = [
+            'url' => self::FAKE_KUZZLE_URL . $httpRequest['route'],
+            'method' => $httpRequest['method'],
+            'headers' => [
+                'Content-type: application/json',
+                'Authorization: ' . $httpRequest['request']['headers']['authorization'],
+                'Content-length: ' . strlen($body)
+            ],
+            'body' => $body
+        ];
+
+        $curlRequestHandler
+            ->expects($this->once())
+            ->method('execute')
+            ->with($curlRequest)
+            ->willReturn(['error' => '', 'response' => '{"error": {"message": "Kuzzle Error"}}']);
+
+        try {
+            $emitRestRequest->invokeArgs($kuzzle, [$httpRequest]);
+
+            $this->fail("KuzzleTest::testEmitRestRequestWithKuzzleError => Should raise an exception");
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('ErrorException', $e);
+            $this->assertEquals('Kuzzle Error', $e->getMessage());
+        }
+    }
+
+    public function testConvertRestRequest()
+    {
+        /**
+         * @todo
+         */
+    }
+
+    public function testRemoveAllListeners()
+    {
+        /**
+         * @todo
+         */
+    }
+
+    public function testRemoveListener()
+    {
+        /**
+         * @todo
+         */
+    }
+
+    public function testAddListener()
+    {
+        /**
+         * @todo
+         */
+    }
+
+    public function testAddHeaders()
+    {
+        /**
+         * @todo
+         */
+    }
 }

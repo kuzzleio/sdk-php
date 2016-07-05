@@ -7,8 +7,10 @@ use ErrorException;
 use Exception;
 use InvalidArgumentException;
 
+use Kuzzle\Util\RequestInterface;
 use Ramsey\Uuid\Uuid;
 
+use Kuzzle\Util\CurlRequest;
 use Kuzzle\DataCollection;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
@@ -20,6 +22,7 @@ use Kuzzle\Security\User;
 class Kuzzle
 {
     const ROUTE_DESCRIPTION_FILE = './config/routes.json';
+    const DEFAULT_REQUEST_HANDLER = 'Kuzzle\Util\CurlRequest';
 
     /**
      * @var string url of kuzzle http server
@@ -59,12 +62,17 @@ class Kuzzle
     /**
      * @var array
      */
-    private $routesDescription = [];
+    protected $routesDescription = [];
 
     /**
      * @var string
      */
-    private $routesDescriptionFile;
+    protected $routesDescriptionFile;
+
+    /**
+     * @var RequestInterface
+     */
+    protected $requestHandler;
 
 
     /**
@@ -85,6 +93,13 @@ class Kuzzle
 
         if (array_key_exists('defaultIndex', $options)) {
             $this->defaultIndex = $options['defaultIndex'];
+        }
+
+        if (array_key_exists('requestHandler', $options)) {
+            $this->setRequestHandler($options['requestHandler']);
+        }
+        else {
+            $this->requestHandler = new CurlRequest();
         }
 
         $this->loadRoutesDescription($this->routesDescriptionFile);
@@ -715,6 +730,17 @@ class Kuzzle
         return $queryArgs;
     }
 
+    protected function setRequestHandler($handler)
+    {
+
+        if (!$handler instanceof RequestInterface) {
+            throw new InvalidArgumentException('Unable to set request handler: "' . get_class($handler) . '" does not implement "Kuzzle\Util\RequestInterface" interface');
+        }
+        
+        $this->requestHandler = $handler;
+    }
+
+
     /**
      * @param array $httpRequest
      * @return array
@@ -723,6 +749,7 @@ class Kuzzle
      */
     protected function emitRestRequest(array $httpRequest)
     {
+        $body = '';
         $headers = [
             'Content-type: application/json'
         ];
@@ -733,35 +760,23 @@ class Kuzzle
             }
         }
 
-        $curlResource = curl_init();
-        curl_setopt($curlResource, CURLOPT_URL, $this->url . $httpRequest['route']);
-        curl_setopt($curlResource, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curlResource, CURLOPT_CUSTOMREQUEST, $httpRequest['method']);
-        curl_setopt($curlResource, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curlResource, CURLOPT_ENCODING, '');
-        curl_setopt($curlResource, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($curlResource, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curlResource, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-
-        /**
-         * @todo: handle http proxy via options
-         */
-
         if (array_key_exists('body', $httpRequest['request'])) {
             $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
-            curl_setopt($curlResource, CURLOPT_POSTFIELDS, $body);
+            $headers[] = 'Content-length: ' . strlen($body);
         }
 
-        $response = curl_exec($curlResource);
-        $error = curl_error($curlResource);
-
-        curl_close($curlResource);
-
-        if (!empty($error)) {
-            throw new ErrorException($error);
+        $result = $this->requestHandler->execute([
+            'url' => $this->url . $httpRequest['route'],
+            'method' => $httpRequest['method'],
+            'headers' => $headers,
+            'body' => $body
+        ]);
+        
+        if (!empty($result['error'])) {
+            throw new ErrorException($result['error']);
         }
 
-        $response = json_decode($response, true);
+        $response = json_decode($result['response'], true);
 
         if (!empty($response['error'])) {
             throw new ErrorException($response['error']['message']);
