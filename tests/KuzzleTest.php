@@ -560,6 +560,59 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($listCollectionsResponse['collections'], $response);
     }
 
+    public function testListAllCollectionsWithDefaultIndex()
+    {
+        $url = self::FAKE_KUZZLE_URL;
+        $index = 'index';
+        $collectionType = 'all';
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url, ['defaultIndex' => $index]])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/api/1.0/' . $index . '/_listCollections/' . $collectionType,
+            'request' => [
+                'index' => $index,
+                'action' => 'listCollections',
+                'controller' => 'read',
+                'metadata' => [],
+                'body' => [
+                    'type' => $collectionType
+                ],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET'
+        ];
+
+        // mock response
+        $listCollectionsResponse = ['collections' => []];
+        $httpResponse = [
+            'error' => null,
+            'result' => $listCollectionsResponse
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        $response = $kuzzle->listCollections('', $options);
+
+        $this->assertEquals($listCollectionsResponse['collections'], $response);
+    }
+
     public function testListRealtimeCollections()
     {
         $url = self::FAKE_KUZZLE_URL;
@@ -882,6 +935,55 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($refreshIndexResponse, $response);
     }
 
+    public function testRefreshIndexWithDefaultIndex()
+    {
+        $url = self::FAKE_KUZZLE_URL;
+        $index = 'index';
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url, ['defaultIndex' => $index]])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/api/1.0/' . $index . '/_refresh',
+            'request' => [
+                'index' => $index,
+                'action' => 'refreshIndex',
+                'controller' => 'admin',
+                'metadata' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'POST'
+        ];
+
+        // mock response
+        $refreshIndexResponse = [];
+        $httpResponse = [
+            'error' => null,
+            'result' => $refreshIndexResponse
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        $response = $kuzzle->refreshIndex('', $options);
+
+        $this->assertEquals($refreshIndexResponse, $response);
+    }
+
     public function testRefreshIndexWithoutIndex()
     {
         // Arrange
@@ -948,6 +1050,59 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
          * @var \Kuzzle\Kuzzle $kuzzle
          */
         $response = $kuzzle->setAutoRefresh($index, $autoRefresh, $options);
+
+        $this->assertEquals($setAutoRefreshResponse, $response);
+    }
+
+    public function testSetAutoRefreshWithDefaultIndex()
+    {
+        $url = self::FAKE_KUZZLE_URL;
+        $index = 'index';
+        $autoRefresh = true;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url, ['defaultIndex' => $index]])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/api/1.0/' . $index . '/_autoRefresh',
+            'request' => [
+                'index' => $index,
+                'action' => 'setAutoRefresh',
+                'controller' => 'admin',
+                'metadata' => [],
+                'body' => [
+                    'autoRefresh' => $autoRefresh
+                ],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'POST'
+        ];
+
+        // mock response
+        $setAutoRefreshResponse = [];
+        $httpResponse = [
+            'error' => null,
+            'result' => $setAutoRefreshResponse
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        $response = $kuzzle->setAutoRefresh('', $autoRefresh, $options);
 
         $this->assertEquals($setAutoRefreshResponse, $response);
     }
@@ -1388,9 +1543,178 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testQuery()
     {
+        $url = self::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+        $token = uniqid();
+
+        $httpRequest = [
+            'route' => '/api/1.0/my-foo',
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [
+                    'foo' => 'bar',
+                    'bar' => 'baz'
+                ],
+                'action' => '',
+                'controller' => '',
+                'requestId' => $requestId,
+                'headers' => [
+                    'authorization' => 'Bearer ' . $token
+                ]
+            ]
+        ];
+        $httpResponse = [];
+
+        $queryArgs = [
+            'route' => '/api/1.0/:foo',
+            'method' => 'post'
+        ];
+        $query = [
+            'metadata' => [
+                'bar' => 'baz'
+            ]
+        ];
+        $options = [
+            'metadata' => [
+                'foo' => 'bar'
+            ],
+            'httpParams' => [
+                ':foo' => 'my-foo'
+            ],
+            'requestId' => $requestId
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
         /**
-         * @todo
+         * @var \Kuzzle\Kuzzle $kuzzle
          */
+        try {
+            $kuzzle->setJwtToken($token);
+            $kuzzle->query($queryArgs, $query, $options);
+        }
+        catch (Exception $e) {
+            $this->fail('KuzzleTest::testQuery => Should not raise an exception');
+        }
+    }
+
+    public function testQueryAuthCheckToken()
+    {
+        $url = self::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+        $token = uniqid();
+
+        $httpRequest = [
+            'route' => '/api/1.0/_checkToken',
+            'method' => 'POST',
+            'request' => [
+                'action' => 'checkToken',
+                'controller' => 'auth',
+                'requestId' => $requestId,
+                'metadata' => []
+            ]
+        ];
+        $httpResponse = [];
+
+        $queryArgs = [
+            'controller' => 'auth',
+            'action' => 'checkToken',
+        ];
+        $query = [];
+        $options = [
+            'requestId' => $requestId
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        try {
+            $kuzzle->setJwtToken($token);
+            $kuzzle->query($queryArgs, $query, $options);
+        }
+        catch (Exception $e) {
+            $this->fail('KuzzleTest::testQueryAuthCheckToken => Should not raise an exception');
+        }
+    }
+
+    public function testQueryWithoutRouteNorController()
+    {
+        $url = self::FAKE_KUZZLE_URL;
+
+        $queryArgs = [];
+        $query = [];
+        $options = [];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        try {
+            $kuzzle->query($queryArgs, $query, $options);
+
+            $this->fail('KuzzleTest::testQueryWithoutRouteNorController => Should raise an exception');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Unable to execute query: missing controller or route/method', $e->getMessage());
+        }
+    }
+
+    public function testQueryWithoutRouteNorAction()
+    {
+        $url = self::FAKE_KUZZLE_URL;
+
+        $queryArgs = [
+            'controller' => 'foo'
+        ];
+        $query = [];
+        $options = [];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        try {
+            $kuzzle->query($queryArgs, $query, $options);
+
+            $this->fail('KuzzleTest::testQueryWithoutRouteNorAction => Should raise an exception');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Unable to execute query: missing action or route/method', $e->getMessage());
+        }
     }
 
     public function testRemoveAllListeners()

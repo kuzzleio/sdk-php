@@ -442,10 +442,28 @@ class Kuzzle
     {
         $httpParams = [];
         $request = [
-            'action' => $queryArgs['action'],
-            'controller' => $queryArgs['controller'],
             'metadata' => $this->metadata
         ];
+
+        if (array_key_exists('controller', $queryArgs)) {
+            $request['controller'] = $queryArgs['controller'];
+        } else {
+            if (!array_key_exists('route', $queryArgs) || !array_key_exists('method', $queryArgs)) {
+                throw new InvalidArgumentException('Unable to execute query: missing controller or route/method');
+            }
+
+            $request['controller'] = '';
+        }
+
+        if (array_key_exists('action', $queryArgs)) {
+            $request['action'] = $queryArgs['action'];
+        } else {
+            if (!array_key_exists('route', $queryArgs) || !array_key_exists('method', $queryArgs)) {
+                throw new InvalidArgumentException('Unable to execute query: missing action or route/method');
+            }
+
+            $request['action'] = '';
+        }
 
         if (!empty($options)) {
             if (array_key_exists('metadata', $options)) {
@@ -453,9 +471,11 @@ class Kuzzle
                     $request['metadata'][$meta] = $value;
                 }
             }
+            
             if (array_key_exists('requestId', $options)) {
                 $request['requestId'] = $options['requestId'];
             }
+            
             if (array_key_exists('httpParams', $options)) {
                 foreach ($options['httpParams'] as $param => $value) {
                     $httpParams[$param] = $value;
@@ -491,6 +511,14 @@ class Kuzzle
 
         if (array_key_exists('collection', $queryArgs)) {
             $request['collection'] = $queryArgs['collection'];
+        }
+
+        if (array_key_exists('route', $queryArgs)) {
+            $request['route'] = $queryArgs['route'];
+        }
+
+        if (array_key_exists('method', $queryArgs)) {
+            $request['method'] = $queryArgs['method'];
         }
 
         if (array_key_exists('index', $queryArgs)) {
@@ -798,15 +826,11 @@ class Kuzzle
 
         $routesDescription = json_decode(file_get_contents($routeDescriptionFilePath), true);
 
-        if (!is_array($routesDescription)) {
-            throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
-        }
-
-        if (!array_key_exists('read', $routesDescription)) {
-            throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
-        }
-
-        if (!is_array($routesDescription['read']) || !array_key_exists('now', $routesDescription['read'])) {
+        if (!is_array($routesDescription)
+            || !array_key_exists('read', $routesDescription)
+            || !is_array($routesDescription['read'])
+            || !array_key_exists('now', $routesDescription['read'])
+        ) {
             throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
         }
 
