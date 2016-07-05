@@ -729,7 +729,7 @@ class Kuzzle
         return $queryArgs;
     }
 
-    protected function setRequestHandler($handler)
+    public function setRequestHandler($handler)
     {
 
         if (!$handler instanceof RequestInterface) {
@@ -822,9 +822,7 @@ class Kuzzle
      */
     protected function convertRestRequest(array $request, array $httpParams = [])
     {
-        $httpRequest = [
-            'request' => $request
-        ];
+        $httpRequest = [];
 
         if (!array_key_exists('route', $request)) {
             if (!array_key_exists($request['controller'], $this->routesDescription)) {
@@ -838,6 +836,7 @@ class Kuzzle
             $httpRequest['route'] = $this->routesDescription[$request['controller']][$request['action']]['route'];
         } else {
             $httpRequest['route'] = $request['route'];
+            unset($request['route']);
         }
 
         // replace http route parameters
@@ -857,7 +856,7 @@ class Kuzzle
             $httpRequest['route'] = str_replace($pattern, $value, $httpRequest['route']);
         }
 
-        if (!array_key_exists('method', $httpRequest)) {
+        if (!array_key_exists('method', $request)) {
             if (!array_key_exists($request['controller'], $this->routesDescription)) {
                 throw new InvalidArgumentException('Unable to retrieve http method: controller "' . $request['controller'] . '" information not found');
             }
@@ -869,7 +868,10 @@ class Kuzzle
             $httpRequest['method'] = mb_strtoupper($this->routesDescription[$request['controller']][$request['action']]['method']);
         } else {
             $httpRequest['method'] = mb_strtoupper($request['method']);
+            unset($request['method']);
         }
+
+        $httpRequest['request'] = $request;
 
         return $httpRequest;
     }

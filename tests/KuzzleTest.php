@@ -1,5 +1,7 @@
 <?php
 
+use Kuzzle\Util\CurlRequest;
+
 class KuzzleTest extends \PHPUnit_Framework_TestCase
 {
     const FAKE_KUZZLE_URL = 'http://127.0.0.1:7511';
@@ -103,6 +105,43 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // Assert Properties
         $this->assertAttributeEquals($token, 'jwtToken', $kuzzle);
+    }
+
+    public function testSetRequestHandler()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_URL;
+
+        $handler = new CurlRequest();
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->setRequestHandler($handler);
+
+            // Assert Properties
+            $this->assertAttributeEquals($handler, 'requestHandler', $kuzzle);
+        }
+        catch (Exception $e) {
+            $this->fail('KuzzleTest::testSetRequestHandler => Should not raise an exception');
+        }
+    }
+
+    public function testSetRequestHandlerWithBadHandler()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_URL;
+
+        $handler = new stdClass();
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->setRequestHandler($handler);
+            $this->fail('KuzzleTest::testSetRequestHandlerWithBadHandler => Should raise an exception');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Unable to set request handler: "' . get_class($handler) . '" does not implement "Kuzzle\Util\RequestInterface" interface', $e->getMessage());
+        }
     }
 
     public function testDataCollectionFactoryDefaultIndex()
@@ -1159,7 +1198,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $reflection = new \ReflectionClass(get_class($kuzzle));
         $emitRestRequest = $reflection->getMethod('emitRestRequest');
         $emitRestRequest->setAccessible(true);
-        
+
         $httpRequest = [
             'request' => [
                 'headers' => ['authorization' => 'Bearer ' . uniqid()],
@@ -1204,6 +1243,154 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         /**
          * @todo
          */
+        $request = [
+            'route' => '/api/1.0/:index/:collection/:id/:custom/_foobar',
+            'method' => 'post',
+            'controller' => 'foo',
+            'action' => 'bar',
+            'collection' => 'my-collection',
+            'index' => 'my-index',
+            '_id' => 'my-id',
+            'body' => ['foo' => 'bar']
+        ];
+        $httpParams = [
+            ':custom' => 'custom-param'
+        ];
+
+        $expectedHttpRequest = [
+            'route' => '/api/1.0/my-index/my-collection/my-id/custom-param/_foobar',
+            'method' => 'POST',
+            'request' => [
+                'controller' => $request['controller'],
+                'action' => $request['action'],
+                'collection' => $request['collection'],
+                'index' => $request['index'],
+                '_id' => $request['_id'],
+                'body' => $request['body']
+            ]
+        ];
+
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+
+        $reflection = new \ReflectionClass(get_class($kuzzle));
+        $convertRestRequest = $reflection->getMethod('convertRestRequest');
+        $convertRestRequest->setAccessible(true);
+
+        try {
+            $httpRequest = $convertRestRequest->invokeArgs($kuzzle, [$request, $httpParams]);
+
+            $this->assertEquals($expectedHttpRequest, $httpRequest);
+        }
+        catch (Exception $e) {
+            $this->fail("KuzzleTest::testConvertRestRequest => Should not raise an exception");
+        }
+    }
+
+    public function testConvertRestRequestWithBadController()
+    {
+        $request = [
+            'controller' => 'foo'
+        ];
+        $httpParams = [];
+
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+
+        $reflection = new \ReflectionClass(get_class($kuzzle));
+        $convertRestRequest = $reflection->getMethod('convertRestRequest');
+        $convertRestRequest->setAccessible(true);
+
+        try {
+            $convertRestRequest->invokeArgs($kuzzle, [$request, $httpParams]);
+
+            $this->fail("KuzzleTest::testConvertRestRequestWithBadController => Should raise an exception");
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Unable to retrieve http route: controller "foo" information not found', $e->getMessage());
+        }
+    }
+
+    public function testConvertRestRequestWithRouteAndBadController()
+    {
+        $request = [
+            'route' => '/api/1.0/foo/bar',
+            'controller' => 'foo'
+        ];
+        $httpParams = [];
+
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+
+        $reflection = new \ReflectionClass(get_class($kuzzle));
+        $convertRestRequest = $reflection->getMethod('convertRestRequest');
+        $convertRestRequest->setAccessible(true);
+
+        try {
+            $convertRestRequest->invokeArgs($kuzzle, [$request, $httpParams]);
+
+            $this->fail("KuzzleTest::testConvertRestRequestWithRouteAndBadController => Should raise an exception");
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Unable to retrieve http method: controller "foo" information not found', $e->getMessage());
+        }
+    }
+
+    public function testConvertRestRequestWithBadAction()
+    {
+        $request = [
+            'controller' => 'read',
+            'action' => 'foo'
+        ];
+        $httpParams = [];
+
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+
+        $reflection = new \ReflectionClass(get_class($kuzzle));
+        $convertRestRequest = $reflection->getMethod('convertRestRequest');
+        $convertRestRequest->setAccessible(true);
+
+        try {
+            $convertRestRequest->invokeArgs($kuzzle, [$request, $httpParams]);
+
+            $this->fail("KuzzleTest::testConvertRestRequestWithBadController => Should raise an exception");
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Unable to retrieve http route: action "read:foo" information not found', $e->getMessage());
+        }
+    }
+
+    public function testConvertRestRequestWithRouteAndBadAction()
+    {
+        $request = [
+            'route' => '/api/1.0/foo/bar',
+            'controller' => 'read',
+            'action' => 'foo'
+        ];
+        $httpParams = [];
+
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+
+        $reflection = new \ReflectionClass(get_class($kuzzle));
+        $convertRestRequest = $reflection->getMethod('convertRestRequest');
+        $convertRestRequest->setAccessible(true);
+
+        try {
+            $convertRestRequest->invokeArgs($kuzzle, [$request, $httpParams]);
+
+            $this->fail("KuzzleTest::testConvertRestRequestWithRouteAndBadAction => Should raise an exception");
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Unable to retrieve http method: action "read:foo" information not found', $e->getMessage());
+        }
+    }
+
+    public function testQuery()
+    {
+        /**
+         * @todo
+         */
     }
 
     public function testRemoveAllListeners()
@@ -1228,6 +1415,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testAddHeaders()
+    {
+        /**
+         * @todo
+         */
+    }
+
+    public function testSetHeaders()
     {
         /**
          * @todo
