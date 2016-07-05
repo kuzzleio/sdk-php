@@ -97,8 +97,7 @@ class Kuzzle
 
         if (array_key_exists('requestHandler', $options)) {
             $this->setRequestHandler($options['requestHandler']);
-        }
-        else {
+        } else {
             $this->requestHandler = new CurlRequest();
         }
 
