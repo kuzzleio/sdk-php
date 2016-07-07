@@ -104,7 +104,7 @@ class DataCollection
      */
     public function create(array $options = [])
     {
-       $response = $this->kuzzle->query(
+        $response = $this->kuzzle->query(
             $this->buildQueryArgs('write', 'createCollection'),
             $this->kuzzle->addHeaders([], $this->headers),
             $options
