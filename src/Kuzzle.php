@@ -124,7 +124,7 @@ class Kuzzle
 
         $listenerId = uniqid();
 
-        if (array_key_exists($event, $this->listeners)) {
+        if (!array_key_exists($event, $this->listeners)) {
             $this->listeners[$event] = [];
         }
 
@@ -757,18 +757,17 @@ class Kuzzle
         return $queryArgs;
     }
 
-    public function setRequestHandler($handler)
+    /**
+     * @param RequestInterface $handler
+     */
+    public function setRequestHandler(RequestInterface $handler)
     {
-
-        if (!$handler instanceof RequestInterface) {
-            throw new InvalidArgumentException('Unable to set request handler: "' . get_class($handler) . '" does not implement "Kuzzle\Util\RequestInterface" interface');
-        }
-        
         $this->requestHandler = $handler;
     }
 
 
     /**
+     * @internal
      * @param array $httpRequest
      * @return array
      *
@@ -805,6 +804,9 @@ class Kuzzle
 
         $response = json_decode($result['response'], true);
 
+        /**
+         * @todo: manage custom exceptions
+         */
         if (!empty($response['error'])) {
             throw new ErrorException($response['error']['message']);
         }
@@ -813,6 +815,7 @@ class Kuzzle
     }
 
     /**
+     * @internal
      * @param string $routeDescriptionFile
      * @throws Exception
      */
@@ -838,6 +841,7 @@ class Kuzzle
     }
 
     /**
+     * @internal
      * @param array $request
      * @param array $httpParams
      * @return array

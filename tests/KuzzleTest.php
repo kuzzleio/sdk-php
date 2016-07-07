@@ -1,5 +1,4 @@
 <?php
-
 use Kuzzle\Util\CurlRequest;
 
 class KuzzleTest extends \PHPUnit_Framework_TestCase
@@ -123,24 +122,6 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->fail('KuzzleTest::testSetRequestHandler => Should not raise an exception');
-        }
-    }
-
-    public function testSetRequestHandlerWithBadHandler()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_URL;
-
-        $handler = new stdClass();
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->setRequestHandler($handler);
-            $this->fail('KuzzleTest::testSetRequestHandlerWithBadHandler => Should raise an exception');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Unable to set request handler: "' . get_class($handler) . '" does not implement "Kuzzle\Util\RequestInterface" interface', $e->getMessage());
         }
     }
 
@@ -1717,25 +1698,81 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testRemoveAllListeners()
+    public function testAddListener()
     {
-        /**
-         * @todo
-         */
+        $url = self::FAKE_KUZZLE_URL;
+
+        $event = 'foo';
+        $listener = function() {};
+
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        $listenerId = $kuzzle->addListener($event, $listener);
+
+        $this->assertAttributeEquals([$event => [$listenerId => $listener]], 'listeners', $kuzzle);
+    }
+
+    public function testAddListenerWithBadListener()
+    {
+        $url = self::FAKE_KUZZLE_URL;
+
+        $event = 'foo';
+        $listener = null;
+
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        try {
+            $kuzzle->addListener($event, $listener);
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Unable to add a listener on event "' . $event . '": given listener is not callable', $e->getMessage());
+        }
     }
 
     public function testRemoveListener()
     {
-        /**
-         * @todo
-         */
+        $url = self::FAKE_KUZZLE_URL;
+
+        $event = 'foo';
+        $listener = function() {};
+
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        $listenerId = $kuzzle->addListener($event, $listener);
+        $kuzzle->removeListener($event, $listenerId);
+
+        $this->assertAttributeEquals([$event => []], 'listeners', $kuzzle);
     }
 
-    public function testAddListener()
+    public function testRemoveAllListenersForOneEvent()
     {
-        /**
-         * @todo
-         */
+        $url = self::FAKE_KUZZLE_URL;
+
+        $listener = function() {};
+
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        $kuzzle->addListener('foo', $listener);
+        $listenerId = $kuzzle->addListener('bar', $listener);
+        $kuzzle->removeAllListeners('foo');
+
+        $this->assertAttributeEquals(['bar' => [$listenerId => $listener]], 'listeners', $kuzzle);
+    }
+
+    public function testRemoveAllListeners()
+    {
+        $url = self::FAKE_KUZZLE_URL;
+
+        $listener = function() {};
+
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        $kuzzle->addListener('foo', $listener);
+        $kuzzle->addListener('bar', $listener);
+        $kuzzle->removeAllListeners();
+
+        $this->assertAttributeEquals([], 'listeners', $kuzzle);
     }
 
     public function testAddHeaders()

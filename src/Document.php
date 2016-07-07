@@ -78,7 +78,7 @@ class Document
         }
 
         $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('read', 'search'),
+            $this->collection->buildQueryArgs('write', 'delete'),
             $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
             $options
         );
