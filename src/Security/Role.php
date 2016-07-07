@@ -10,9 +10,9 @@ class Role extends Document
 {
     protected $deleteActionName = 'deleteRole';
 
-    protected $updateActionName = 'createOrReplaceRole';
+    protected $updateActionName = 'updateRole';
 
-    protected $saveActionName = 'updateRole';
+    protected $saveActionName = 'createOrReplaceRole';
 
     /**
      * Role constructor.
