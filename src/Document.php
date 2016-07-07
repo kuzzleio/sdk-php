@@ -2,7 +2,7 @@
 
 namespace Kuzzle;
 
-use ErrorException;
+use InvalidArgumentException;
 
 /**
  * Class Document
@@ -69,12 +69,12 @@ class Document
      * @param array $options Optional parameters
      * @return integer Id of document deleted
      *
-     * @throws ErrorException
+     * @throws InvalidArgumentException
      */
     public function delete(array $options = [])
     {
         if (!$this->id) {
-            throw new ErrorException('Kuzzle\Document::delete: cannot delete a document without a document ID');
+            throw new InvalidArgumentException('Kuzzle\Document::delete: cannot delete a document without a document ID');
         }
 
         $this->collection->getKuzzle()->query(
@@ -92,12 +92,12 @@ class Document
      * @param array $options Optional parameters
      * @return Document
      *
-     * @throws ErrorException
+     * @throws InvalidArgumentException
      */
     public function refresh(array $options = [])
     {
         if (!$this->id) {
-            throw new ErrorException('Kuzzle\Document::delete: cannot retrieve a document without a document ID');
+            throw new InvalidArgumentException('Kuzzle\Document::refresh: cannot retrieve a document without a document ID');
         }
 
         $data = [
