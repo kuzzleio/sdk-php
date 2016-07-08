@@ -13,6 +13,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
 
         $roleId = uniqid();
         $roleContent = [
+            'allowInternalIndex' => false,
             'controllers' => [
                 '*' => [
                     'actions'=> [
@@ -80,6 +81,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
             'foo' => 'bar'
         ];
         $roleContent = [
+            'allowInternalIndex' => false,
             'controllers' => [
                 '*' => [
                     'actions'=> [

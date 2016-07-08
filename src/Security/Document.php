@@ -42,9 +42,8 @@ abstract class Document
         return $this;
     }
 
-
     /**
-     * Replaces the content of the Kuzzle\Security\Role object.
+     * Replaces the content of the Kuzzle\Security\Document object.
      *
      * @param array $content
      * @return Document
@@ -144,5 +143,13 @@ abstract class Document
 
 
         return $data;
+    }
+
+    /**
+     * @return Security
+     */
+    public function getSecurity()
+    {
+        return $this->security;
     }
 }
