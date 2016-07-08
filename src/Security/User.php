@@ -10,9 +10,9 @@ class User extends Document
 {
     protected $deleteActionName = 'deleteUser';
 
-    protected $updateActionName = 'createOrReplaceUser';
+    protected $updateActionName = 'updateUser';
 
-    protected $saveActionName = 'updateUser';
+    protected $saveActionName = 'createOrReplaceUser';
 
     const DEFAULT_PROFILE = 'default';
 
@@ -27,16 +27,7 @@ class User extends Document
     {
         parent::__construct($kuzzleSecurity, $id, $content);
 
-        if (!array_key_exists('profile', $this->content)) {
-            $this->content['profile'] = User::DEFAULT_PROFILE;
-        }
-
-        /*
-         * Remove profile data to keep only it's id
-         * @todo: refactor this at repository refactor
-         */
-        $this->content['profile'] = $this->extractProfileId($this->content['profile']);
-
+        $this->syncProfile();
 
         return $this;
     }
@@ -48,39 +39,54 @@ class User extends Document
      */
     public function getProfile()
     {
-        return $this->security->getProfile($this->content['profile']);
+        return $this->security->getProfile($this->content['profileId']);
     }
 
     /**
      * Replaces the profile associated to this user.
      *
-     * @param string|Profile $profile Unique id or Kuzzle\Security\Role instance corresponding to the new associated role
+     * @param string|Profile $profile Unique id or Kuzzle\Security\Profile instance corresponding to the new associated profile
      * @return User
      */
     public function setProfile($profile)
     {
-        /*
-         * @todo: refactor this at repository refactor
-         */
-        $this->content['profile'] = $this->extractProfileId($profile);
+        $this->content['profileId'] = $this->extractProfileId($profile);
 
         return $this;
     }
 
+    /**
+     * Replaces the content of the Kuzzle\Security\Profile object.
+     *
+     * @param array $content
+     * @return Profile
+     */
+    public function setContent(array $content)
+    {
+        parent::setContent($content);
+
+        $this->syncProfile();
+
+        return $this;
+    }
+
+    protected function syncProfile()
+    {
+        if (!array_key_exists('profileId', $this->content)) {
+            $this->content['profileId'] = User::DEFAULT_PROFILE;
+        }
+
+        $this->content['profileId'] = $this->extractProfileId($this->content['profileId']);
+    }
 
     /**
      * @param Profile|array|string $profile
      * @return string
-     * @todo: refactor this at repository refactor
      */
     protected function extractProfileId($profile)
     {
-        if (is_array($profile) && array_key_exists('_id', $profile)) {
-            $profile = $profile['_id'];
-        }
-
         if ($profile instanceof Profile) {
-            $profile = $profile->getId();
+            return $profile->getId();
         }
 
         return $profile;

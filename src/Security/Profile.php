@@ -81,11 +81,11 @@ class Profile extends Document
      * Replaces the content of the Kuzzle\Security\Profile object.
      *
      * @param array $content
-     * @return Document
+     * @return Profile
      */
     public function setContent(array $content)
     {
-        $this->content = $content;
+        parent::setContent($content);
 
         $this->syncPolicies();
 

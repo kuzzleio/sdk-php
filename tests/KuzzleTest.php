@@ -1184,7 +1184,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $whoAmIResponse = [
             '_id' => 'alovelace',
             '_source' => [
-                'profile' => 'admin',
+                'profileId' => 'admin',
                 'foo' => 'bar'
             ]
         ];
