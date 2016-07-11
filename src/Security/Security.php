@@ -323,7 +323,7 @@ class Security
             return array_key_exists('collection', $right) && ($right['collection'] === $collection || $right['collection'] === '*');
         });
 
-        $rightsValues = array_map(function($element) {
+        $rightsValues = array_map(function ($element) {
             return $element['value'];
         }, $filteredRights);
 
