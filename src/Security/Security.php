@@ -323,7 +323,9 @@ class Security
             return array_key_exists('collection', $right) && ($right['collection'] === $collection || $right['collection'] === '*');
         });
 
-        $rightsValues = array_column($filteredRights, 'value');
+        $rightsValues = array_map(function($element) {
+            return $element['value'];
+        }, $filteredRights);
 
         // Then, if at least one right allows the action, we return Security::ACTION_ALLOWED
         if (array_search(Security::ACTION_ALLOWED, $rightsValues) !== false) {
