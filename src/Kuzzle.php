@@ -529,6 +529,7 @@ class Kuzzle
             $request['requestId'] = Uuid::uuid4()->toString();
         }
 
+         // @todo move this into RequestHandler
         return $this->emitRestRequest($this->convertRestRequest($request, $httpParams));
     }
 
@@ -768,6 +769,7 @@ class Kuzzle
 
     /**
      * @internal
+     * @todo move this into RequestHandler
      * @param array $httpRequest
      * @return array
      *
@@ -816,6 +818,7 @@ class Kuzzle
 
     /**
      * @internal
+     * @todo move this into RequestHandler
      * @param string $routeDescriptionFile
      * @throws Exception
      */
@@ -842,6 +845,7 @@ class Kuzzle
 
     /**
      * @internal
+     * @todo move this into RequestHandler
      * @param array $request
      * @param array $httpParams
      * @return array

@@ -1,4 +1,5 @@
 <?php
+
 use Kuzzle\Util\CurlRequest;
 
 class KuzzleTest extends \PHPUnit_Framework_TestCase
@@ -1376,9 +1377,6 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testConvertRestRequest()
     {
-        /**
-         * @todo
-         */
         $request = [
             'route' => '/api/1.0/:index/:collection/:id/:custom/_foobar',
             'method' => 'post',
