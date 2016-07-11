@@ -2,7 +2,7 @@
 
 namespace Kuzzle;
 
-use Exception;
+use InvalidArgumentException;
 
 /**
  * Class MemoryStorage
@@ -251,6 +251,7 @@ class MemoryStorage
         "zrevrange" => ["id", "start", "stop", ["__opts__" => ["withscores"]]],
         "zscore" => ["id", "member"]
     ];
+    
     protected $kuzzle;
 
     public function __construct(Kuzzle $kuzzle)
@@ -261,7 +262,19 @@ class MemoryStorage
     public function __call($command, $arguments)
     {
         if (!array_key_exists($command, $this->COMMANDS)) {
-            throw new Exception('MemoryStorage: Command "' . $command . '" not found');
+            throw new InvalidArgumentException('MemoryStorage: Command "' . $command . '" not found');
+        }
+
+        if (is_array($arguments[count($arguments) - 1])) {
+            $options = array_pop($arguments);
+        } else {
+            $options = [
+                'httpParams' => []
+            ];
+        }
+
+        if (!array_key_exists('httpParams', $options)) {
+            $options['httpParams'] = [];
         }
 
         $data = [];
@@ -275,10 +288,6 @@ class MemoryStorage
                 continue;
             }
 
-            if (is_array($value)) {
-                $value = is_array($arguments[$key]) ? $value[1] : $value[0];
-            }
-
             if ($value === 'id') {
                 $data['_id'] = $arguments[$key];
             } else {
@@ -286,18 +295,19 @@ class MemoryStorage
                     $data['body'] = [];
                 }
 
-                if (array_key_exists('__opts__', $value)) {
-                    foreach ($value['__opts__'] as $arg) {
+                if (is_array($value) && array_key_exists('__opts__', $value)) {
+                    foreach ($value['__opts__'] as $k => $arg) {
                         if (array_key_exists($arg, $arguments[$key])) {
                             $data['body'][$arg] = $arguments[$key][$arg];
                         }
                     }
                 } else {
                     $data['body'][$value] = $arguments[$key];
+                    $options['httpParams'][':' . $value] = $arguments[$key];
                 }
             }
         }
 
-        return $this->kuzzle->query($query, $data);
+        return $this->kuzzle->query($query, $data, $options);
     }
 }

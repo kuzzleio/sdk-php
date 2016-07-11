@@ -7,8 +7,10 @@ use ErrorException;
 use Exception;
 use InvalidArgumentException;
 
+use Kuzzle\Util\RequestInterface;
 use Ramsey\Uuid\Uuid;
 
+use Kuzzle\Util\CurlRequest;
 use Kuzzle\DataCollection;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
@@ -19,6 +21,8 @@ use Kuzzle\Security\User;
  */
 class Kuzzle
 {
+    const ROUTE_DESCRIPTION_FILE = './config/routes.json';
+    const DEFAULT_REQUEST_HANDLER = 'Kuzzle\Util\CurlRequest';
 
     /**
      * @var string url of kuzzle http server
@@ -51,9 +55,24 @@ class Kuzzle
     protected $collections = [];
 
     /**
+     * @var array[]
+     */
+    protected $listeners = [];
+
+    /**
      * @var array
      */
-    private $routesDescription = [];
+    protected $routesDescription = [];
+
+    /**
+     * @var string
+     */
+    protected $routesDescriptionFile;
+
+    /**
+     * @var RequestInterface
+     */
+    protected $requestHandler;
 
 
     /**
@@ -63,11 +82,26 @@ class Kuzzle
      * @param array $options Optional Kuzzle connection configuration
      * @return Kuzzle
      */
-    public function __construct($url, array $options = array())
+    public function __construct($url, array $options = [])
     {
         $this->url = $url;
+        $this->routesDescriptionFile = self::ROUTE_DESCRIPTION_FILE;
+        
+        if (array_key_exists('routesDescriptionFile', $options)) {
+            $this->routesDescriptionFile = $options['routesDescriptionFile'];
+        }
 
-        $this->loadRoutesDescription();
+        if (array_key_exists('defaultIndex', $options)) {
+            $this->defaultIndex = $options['defaultIndex'];
+        }
+
+        if (array_key_exists('requestHandler', $options)) {
+            $this->setRequestHandler($options['requestHandler']);
+        } else {
+            $this->requestHandler = new CurlRequest();
+        }
+
+        $this->loadRoutesDescription($this->routesDescriptionFile);
 
         return $this;
     }
@@ -79,27 +113,43 @@ class Kuzzle
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      * @param callable $listener The function to call each time one of the registered event is fired
      * @return string containing an unique listener ID.
+     *
+     * @throws InvalidArgumentException
      */
     public function addListener($event, $listener)
     {
+        if (!is_callable($listener)) {
+            throw new InvalidArgumentException('Unable to add a listener on event "' . $event . '": given listener is not callable');
+        }
 
+        $listenerId = uniqid();
+
+        if (!array_key_exists($event, $this->listeners)) {
+            $this->listeners[$event] = [];
+        }
+
+        $this->listeners[$event][$listenerId] = $listener;
+
+        return $listenerId;
     }
 
     /**
      * Checks the validity of a JSON Web Token.
      *
      * @param string $token The token to check
+     * @param array $options Optional parameters
      * @return array with a valid boolean property.
      *         If the token is valid, a expiresAt property is set with the expiration timestamp.
      *         If not, a state property is set explaining why the token is invalid.
      */
-    public function checkToken($token)
+    public function checkToken($token, array $options = [])
     {
         $response = $this->query(
             $this->buildQueryArgs('auth', 'checkToken'),
             [
                 'body' => ['token' => $token]
-            ]
+            ],
+            $options
         );
 
         return $response['result'];
@@ -293,9 +343,10 @@ class Kuzzle
      * @param string $strategy Authentication strategy (local, facebook, github, …)
      * @param array $credentials Optional login credentials, depending on the strategy
      * @param string $expiresIn Login expiration time
+     * @param array $options Optional options
      * @return array
      */
-    public function login($strategy, array $credentials = [], $expiresIn = '')
+    public function login($strategy, array $credentials = [], $expiresIn = '', array $options = [])
     {
         $body = $credentials;
 
@@ -303,37 +354,45 @@ class Kuzzle
             $body['expiresIn'] = $expiresIn;
         }
 
+        if (!array_key_exists('httpParams', $options)) {
+            $options['httpParams'] = [];
+        }
+
+        if (!array_key_exists(':strategy', $options['httpParams'])) {
+            $options['httpParams'][':strategy'] = $strategy;
+        }
+
         $response = $this->query(
             $this->buildQueryArgs('auth', 'login'),
             [
                 'body' => $body
             ],
-            [
-                'httpParams' => [
-                    ':strategy' => $strategy
-                ]
-            ]
+            $options
         );
 
         if ($response['result']['jwt']) {
             $this->jwtToken = $response['result']['jwt'];
         }
 
-        return $response;
+        return $response['result'];
     }
 
     /**
      * Logs the user out.
+     * @param array $options Optional parameters
+     * @return array
      */
-    public function logout()
+    public function logout(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('auth', 'logout')
+            $this->buildQueryArgs('auth', 'logout'),
+            [],
+            $options
         );
 
         $this->jwtToken = null;
 
-        return $response;
+        return $response['result'];
     }
 
     /**
@@ -383,10 +442,28 @@ class Kuzzle
     {
         $httpParams = [];
         $request = [
-            'action' => $queryArgs['action'],
-            'controller' => $queryArgs['controller'],
             'metadata' => $this->metadata
         ];
+
+        if (array_key_exists('controller', $queryArgs)) {
+            $request['controller'] = $queryArgs['controller'];
+        } else {
+            if (!array_key_exists('route', $queryArgs) || !array_key_exists('method', $queryArgs)) {
+                throw new InvalidArgumentException('Unable to execute query: missing controller or route/method');
+            }
+
+            $request['controller'] = '';
+        }
+
+        if (array_key_exists('action', $queryArgs)) {
+            $request['action'] = $queryArgs['action'];
+        } else {
+            if (!array_key_exists('route', $queryArgs) || !array_key_exists('method', $queryArgs)) {
+                throw new InvalidArgumentException('Unable to execute query: missing action or route/method');
+            }
+
+            $request['action'] = '';
+        }
 
         if (!empty($options)) {
             if (array_key_exists('metadata', $options)) {
@@ -394,6 +471,11 @@ class Kuzzle
                     $request['metadata'][$meta] = $value;
                 }
             }
+            
+            if (array_key_exists('requestId', $options)) {
+                $request['requestId'] = $options['requestId'];
+            }
+            
             if (array_key_exists('httpParams', $options)) {
                 foreach ($options['httpParams'] as $param => $value) {
                     $httpParams[$param] = $value;
@@ -431,6 +513,14 @@ class Kuzzle
             $request['collection'] = $queryArgs['collection'];
         }
 
+        if (array_key_exists('route', $queryArgs)) {
+            $request['route'] = $queryArgs['route'];
+        }
+
+        if (array_key_exists('method', $queryArgs)) {
+            $request['method'] = $queryArgs['method'];
+        }
+
         if (array_key_exists('index', $queryArgs)) {
             $request['index'] = $queryArgs['index'];
         }
@@ -439,6 +529,7 @@ class Kuzzle
             $request['requestId'] = Uuid::uuid4()->toString();
         }
 
+         // @todo move this into RequestHandler
         return $this->emitRestRequest($this->convertRestRequest($request, $httpParams));
     }
 
@@ -474,7 +565,11 @@ class Kuzzle
      */
     public function removeAllListeners($event = '')
     {
-
+        if (empty($event)) {
+            $this->listeners = [];
+        } elseif (array_key_exists($event, $this->listeners)) {
+            unset($this->listeners[$event]);
+        }
     }
 
     /**
@@ -483,7 +578,11 @@ class Kuzzle
      */
     public function removeListener($event, $listenerID)
     {
-
+        if (array_key_exists($event, $this->listeners)) {
+            if (array_key_exists($listenerID, $this->listeners[$event])) {
+                unset($this->listeners[$event][$listenerID]);
+            }
+        }
     }
 
     /**
@@ -512,7 +611,7 @@ class Kuzzle
      * @param array $options Optional parameters
      * @return boolean
      */
-    public function setAutoRefresh($index = '', $autoRefresh = false, $options = [])
+    public function setAutoRefresh($index = '', $autoRefresh = false, array $options = [])
     {
         if (empty($index)) {
             if (empty($this->defaultIndex)) {
@@ -555,7 +654,7 @@ class Kuzzle
      * @param array $options (optional) arguments
      * @return array
      */
-    public function updateSelf(array $content, $options = [])
+    public function updateSelf(array $content, array $options = [])
     {
         $response = $this->query(
             $this->buildQueryArgs('auth', 'updateSelf'),
@@ -607,7 +706,7 @@ class Kuzzle
      * @param array $options (optional) arguments
      * @return User
      */
-    public function whoAmI($options = [])
+    public function whoAmI(array $options = [])
     {
         $response = $this->query(
             $this->buildQueryArgs('auth', 'getCurrentUser'),
@@ -617,8 +716,7 @@ class Kuzzle
 
         return new User($this->security(), $response['result']['_id'], $response['result']['_source']);
     }
-
-
+    
     /**
      * @param array $query
      * @param array $headers
@@ -635,6 +733,13 @@ class Kuzzle
         return $query;
     }
 
+    /**
+     * @param $controller
+     * @param $action
+     * @param string $index
+     * @param string $collection
+     * @return array
+     */
     public function buildQueryArgs($controller, $action, $index = '', $collection = '')
     {
         $queryArgs = [
@@ -654,13 +759,25 @@ class Kuzzle
     }
 
     /**
+     * @param RequestInterface $handler
+     */
+    public function setRequestHandler(RequestInterface $handler)
+    {
+        $this->requestHandler = $handler;
+    }
+
+
+    /**
+     * @internal
+     * @todo move this into RequestHandler
      * @param array $httpRequest
      * @return array
      *
      * @throws ErrorException
      */
-    private function emitRestRequest(array $httpRequest)
+    protected function emitRestRequest(array $httpRequest)
     {
+        $body = '';
         $headers = [
             'Content-type: application/json'
         ];
@@ -671,36 +788,27 @@ class Kuzzle
             }
         }
 
-        $curlResource = curl_init();
-        curl_setopt($curlResource, CURLOPT_URL, $this->url . $httpRequest['route']);
-        curl_setopt($curlResource, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curlResource, CURLOPT_CUSTOMREQUEST, $httpRequest['method']);
-        curl_setopt($curlResource, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curlResource, CURLOPT_ENCODING, '');
-        curl_setopt($curlResource, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($curlResource, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curlResource, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-
-        /**
-         * @todo: handle http proxy via options
-         */
-
         if (array_key_exists('body', $httpRequest['request'])) {
             $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
-            curl_setopt($curlResource, CURLOPT_POSTFIELDS, $body);
+            $headers[] = 'Content-length: ' . strlen($body);
         }
 
-        $response = curl_exec($curlResource);
-        $error = curl_error($curlResource);
-
-        curl_close($curlResource);
-
-        if (!empty($error)) {
-            throw new ErrorException($error);
+        $result = $this->requestHandler->execute([
+            'url' => $this->url . $httpRequest['route'],
+            'method' => $httpRequest['method'],
+            'headers' => $headers,
+            'body' => $body
+        ]);
+        
+        if (!empty($result['error'])) {
+            throw new ErrorException($result['error']);
         }
 
-        $response = json_decode($response, true);
+        $response = json_decode($result['response'], true);
 
+        /**
+         * @todo: manage custom exceptions
+         */
         if (!empty($response['error'])) {
             throw new ErrorException($response['error']['message']);
         }
@@ -709,34 +817,44 @@ class Kuzzle
     }
 
     /**
+     * @internal
+     * @todo move this into RequestHandler
+     * @param string $routeDescriptionFile
      * @throws Exception
      */
-    private function loadRoutesDescription()
+    protected function loadRoutesDescription($routeDescriptionFile)
     {
-        $routeConfigFile = realpath(__DIR__ . '/./config/routes.json');
+        $routeDescriptionFilePath = realpath(__DIR__ . DIRECTORY_SEPARATOR . $routeDescriptionFile);
 
-        if (!file_exists($routeConfigFile)) {
-            throw new \Exception('Unable to find http routes configuration file (' . __DIR__ . '/./config/routes.json)');
+        if (!file_exists($routeDescriptionFilePath)) {
+            throw new Exception('Unable to find http routes configuration file (' . $routeDescriptionFile . ')');
         }
 
-        /**
-         * @todo: handle configuration file format
-         */
-        $this->routesDescription = json_decode(file_get_contents($routeConfigFile), true);
+        $routesDescription = json_decode(file_get_contents($routeDescriptionFilePath), true);
+
+        if (!is_array($routesDescription)
+            || !array_key_exists('read', $routesDescription)
+            || !is_array($routesDescription['read'])
+            || !array_key_exists('now', $routesDescription['read'])
+        ) {
+            throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
+        }
+
+        $this->routesDescription = $routesDescription;
     }
 
     /**
+     * @internal
+     * @todo move this into RequestHandler
      * @param array $request
      * @param array $httpParams
      * @return array
      *
      * @throws InvalidArgumentException
      */
-    private function convertRestRequest(array $request, array $httpParams = [])
+    protected function convertRestRequest(array $request, array $httpParams = [])
     {
-        $httpRequest = [
-            'request' => $request
-        ];
+        $httpRequest = [];
 
         if (!array_key_exists('route', $request)) {
             if (!array_key_exists($request['controller'], $this->routesDescription)) {
@@ -750,6 +868,7 @@ class Kuzzle
             $httpRequest['route'] = $this->routesDescription[$request['controller']][$request['action']]['route'];
         } else {
             $httpRequest['route'] = $request['route'];
+            unset($request['route']);
         }
 
         // replace http route parameters
@@ -769,7 +888,7 @@ class Kuzzle
             $httpRequest['route'] = str_replace($pattern, $value, $httpRequest['route']);
         }
 
-        if (!array_key_exists('method', $httpRequest)) {
+        if (!array_key_exists('method', $request)) {
             if (!array_key_exists($request['controller'], $this->routesDescription)) {
                 throw new InvalidArgumentException('Unable to retrieve http method: controller "' . $request['controller'] . '" information not found');
             }
@@ -781,7 +900,10 @@ class Kuzzle
             $httpRequest['method'] = mb_strtoupper($this->routesDescription[$request['controller']][$request['action']]['method']);
         } else {
             $httpRequest['method'] = mb_strtoupper($request['method']);
+            unset($request['method']);
         }
+
+        $httpRequest['request'] = $request;
 
         return $httpRequest;
     }

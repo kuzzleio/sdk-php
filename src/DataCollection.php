@@ -100,17 +100,17 @@ class DataCollection
      * Create a new empty data collection, with no associated mapping.
      *
      * @param array $options Optional parameters
-     * @return DataCollection
+     * @return boolean
      */
     public function create(array $options = [])
     {
-        $this->kuzzle->query(
+        $response = $this->kuzzle->query(
             $this->buildQueryArgs('write', 'createCollection'),
             $this->kuzzle->addHeaders([], $this->headers),
             $options
         );
 
-        return $this;
+        return $response['result']['acknowledged'];
     }
 
     /**
@@ -128,7 +128,7 @@ class DataCollection
         $data = [];
 
         if (array_key_exists('updateIfExist', $options)) {
-            $action = $options['updateIfExist'] ? 'createOrUpdate' : 'create';
+            $action = $options['updateIfExist'] ? 'createOrReplace' : 'create';
         }
 
         if ($document instanceof Document) {
@@ -147,7 +147,10 @@ class DataCollection
             $options
         );
 
-        return new Document($this, $response['result']['_id'], $response['result']['_source']);
+        $content = $response['result']['_source'];
+        $content['_version'] = $response['result']['_version'];
+
+        return new Document($this, $response['result']['_id'], $content);
     }
 
     /**
@@ -230,7 +233,7 @@ class DataCollection
      * Retrieves all documents stored in this data collection.
      *
      * @param array $options Optional parameters
-     * @return array containing the total number of retrieved documents and an array of Kuzzle/Document objects
+     * @return AdvancedSearchResult containing the total number of retrieved documents and an array of Kuzzle/Document objects
      */
     public function fetchAllDocuments(array $options = [])
     {
@@ -264,7 +267,7 @@ class DataCollection
      * @param array|Document $document either an instance of a KuzzleDocument object, or a document
      * @param array $options Optional parameters
      *
-     * @return DataCollection
+     * @return bool
      */
     public function publishMessage($document, array $options = [])
     {
@@ -276,13 +279,13 @@ class DataCollection
             $data['body'] = $document;
         }
 
-        $this->kuzzle->query(
+        $response = $this->kuzzle->query(
             $this->buildQueryArgs('write', 'publish'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
-        return $this;
+        return $response['result']['published'];
     }
 
     /**
@@ -337,17 +340,17 @@ class DataCollection
      * removing all stored documents but keeping all associated mappings.
      *
      * @param array $options Optional parameters
-     * @return DataCollection
+     * @return array ids of deleted documents
      */
     public function truncate(array $options = [])
     {
-        $this->kuzzle->query(
+        $response = $this->kuzzle->query(
             $this->buildQueryArgs('admin', 'truncateCollection'),
             $this->kuzzle->addHeaders([], $this->headers),
             $options
         );
 
-        return $this;
+        return $response['result']['ids'];
     }
 
     /**
@@ -365,14 +368,18 @@ class DataCollection
             '_id' => $documentId,
             'body' => $content
         ];
+        
+        $queryArgs = $this->buildQueryArgs('write', 'update');
+        $queryArgs['route'] = '/api/1.0/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
+        $queryArgs['method'] = 'put';
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', 'update'),
+            $queryArgs,
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
-        return (new Document($this, $response['result']['_id']))->refresh();
+        return (new Document($this, $response['result']['_id']))->refresh($options);
     }
 
     /**
