@@ -710,13 +710,15 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $requestId = uniqid();
 
         $userId = uniqid();
-        $userRightsContent = [[
-            "action" => "*",
-            "collection" => "*",
-            "controller" => "*",
-            "index" => "*",
-            "value" => "allowed"
-        ]];
+        $userRightsContent = [
+            [
+                "action" => "*",
+                "collection" => "*",
+                "controller" => "*",
+                "index" => "*",
+                "value" => "allowed"
+            ]
+        ];
 
         $httpRequest = [
             'route' => '/api/1.0/users/' . $userId . '/_rights',
@@ -758,4 +760,502 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($userRightsContent, $result);
     }
+
+    function testIsActionAllowed()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_URL;
+
+        $kuzzle = new Kuzzle($url);
+        $security = $kuzzle->security();
+
+        $userRights = [
+            [
+                "controller" => "read",
+                "action" => "now",
+                "collection" => "*",
+                "index" => "*",
+                "value" => "allowed"
+            ],
+            [
+                "controller" => "read",
+                "action" => "get",
+                "collection" => "*",
+                "index" => "*",
+                "value" => "conditional"
+            ]
+        ];
+
+        $result = $security->isActionAllowed($userRights, 'read', 'now');
+        $this->assertEquals(Security::ACTION_ALLOWED, $result);
+
+        $result = $security->isActionAllowed($userRights, 'read', 'get');
+        $this->assertEquals(Security::ACTION_CONDITIONAL, $result);
+
+        $result = $security->isActionAllowed($userRights, 'read', 'listIndexes');
+        $this->assertEquals(Security::ACTION_DENIED, $result);
+    }
+
+    function testSearchProfiles()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+
+        $filter = [
+            'query' => [
+                'bool' => [
+                    'should' => [
+                        'term' => ['foo' =>  'bar']
+                    ]
+                ]
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/profiles/_search',
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'security',
+                'action' => 'searchProfiles',
+                'requestId' => $requestId,
+                'body' => $filter
+            ]
+        ];
+        $advancedSearchResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test',
+                    '_source' => [
+                        'foo' => 'bar',
+                        'policies' => [
+                            [
+                                '_id' => 'default',
+                                'restrictedTo' => [],
+                                'allowInternalIndex'=> true
+                            ]
+                        ]
+                    ]
+                ],
+                1 => [
+                    '_id' => 'test1',
+                    '_source' => [
+                        'foo' => 'bar',
+                        'policies' => [
+                            [
+                                '_id' => 'default',
+                                'restrictedTo' => [],
+                                'allowInternalIndex'=> true
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'total' => 2
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $advancedSearchResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $security = new Security($kuzzle);
+
+        $searchResult = $security->searchProfiles($filter, ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Util\ProfilesSearchResult', $searchResult);
+        $this->assertEquals(2, $searchResult->getTotal());
+
+        $profiles = $searchResult->getProfiles();
+        $this->assertInstanceOf('Kuzzle\Security\Profile', $profiles[0]);
+        $this->assertAttributeEquals('test', 'id', $profiles[0]);
+        $this->assertAttributeEquals('test1', 'id', $profiles[1]);
+    }
+
+    function testSearchRoles()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+
+        $filter = [
+            'query' => [
+                'bool' => [
+                    'should' => [
+                        'term' => ['foo' =>  'bar']
+                    ]
+                ]
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/roles/_search',
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'security',
+                'action' => 'searchRoles',
+                'requestId' => $requestId,
+                'body' => $filter
+            ]
+        ];
+        $advancedSearchResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test',
+                    '_source' => [
+                        'foo' => 'bar',
+                        'allowInternalIndex' => false,
+                        'controllers' => [
+                            '*' => [
+                                'actions'=> [
+                                    ['*' => true]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                1 => [
+                    '_id' => 'test1',
+                    '_source' => [
+                        'foo' => 'bar',
+                        'allowInternalIndex' => false,
+                        'controllers' => [
+                            '*' => [
+                                'actions'=> [
+                                    ['*' => true]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'total' => 2
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $advancedSearchResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $security = new Security($kuzzle);
+
+        $searchResult = $security->searchRoles($filter, ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Util\RolesSearchResult', $searchResult);
+        $this->assertEquals(2, $searchResult->getTotal());
+
+        $profiles = $searchResult->getRoles();
+        $this->assertInstanceOf('Kuzzle\Security\Role', $profiles[0]);
+        $this->assertAttributeEquals('test', 'id', $profiles[0]);
+        $this->assertAttributeEquals('test1', 'id', $profiles[1]);
+    }
+
+    function testSearchUsers()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+
+        $filter = [
+            'query' => [
+                'bool' => [
+                    'should' => [
+                        'term' => ['foo' =>  'bar']
+                    ]
+                ]
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/users/_search',
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'security',
+                'action' => 'searchUsers',
+                'requestId' => $requestId,
+                'body' => $filter
+            ]
+        ];
+        $advancedSearchResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test',
+                    '_source' => [
+                        'foo' => 'bar',
+                        'profile' => 'default'
+                    ]
+                ],
+                1 => [
+                    '_id' => 'test1',
+                    '_source' => [
+                        'foo' => 'bar',
+                        'profile' => 'default'
+                    ]
+                ]
+            ],
+            'total' => 2
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $advancedSearchResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $security = new Security($kuzzle);
+
+        $searchResult = $security->searchUsers($filter, ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Util\UsersSearchResult', $searchResult);
+        $this->assertEquals(2, $searchResult->getTotal());
+
+        $profiles = $searchResult->getUsers();
+        $this->assertInstanceOf('Kuzzle\Security\User', $profiles[0]);
+        $this->assertAttributeEquals('test', 'id', $profiles[0]);
+        $this->assertAttributeEquals('test1', 'id', $profiles[1]);
+    }
+
+
+
+    function testUpdateProfile()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+
+        $profileId = uniqid();
+        $profileBaseContent = [
+            'policies' => [
+                [
+                    '_id' => 'anonymous',
+                    'restrictedTo' => [
+                        ['index' => 'my-second-index', 'collection' => ['my-collection']]
+                    ]
+                ]
+            ]
+        ];
+        $profileContent = [
+            'policies' => [
+                [
+                    '_id' => 'default',
+                    'restrictedTo' => [
+                        ['index' => 'my-index'],
+                        ['index' => 'my-second-index', 'collection' => ['my-collection']]
+                    ],
+                    'allowInternalIndex'=> false
+                ]
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/profiles/' . $profileId,
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'security',
+                'action' => 'updateProfile',
+                'requestId' => $requestId,
+                '_id' => $profileId,
+                'body' => $profileContent
+            ]
+        ];
+        $updateResponse = [
+            '_id' => $profileId,
+            '_source' => array_merge($profileBaseContent, $profileContent),
+            '_version' => 1
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $updateResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $security = new Security($kuzzle);
+
+        $result = $security->updateProfile($profileId, $profileContent, ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
+        $this->assertAttributeEquals($profileId, 'id', $result);
+        $this->assertAttributeEquals(array_merge($profileBaseContent, $profileContent), 'content', $result);
+    }
+
+    function testUpdateRole()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+
+        $roleId = uniqid();
+        $roleUpdateContent = [
+            'foo' => 'bar'
+        ];
+        $roleContent = [
+            'allowInternalIndex' => false,
+            'controllers' => [
+                '*' => [
+                    'actions'=> [
+                        ['*' => true]
+                    ]
+                ]
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/roles/' . $roleId,
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'security',
+                'action' => 'updateRole',
+                'requestId' => $requestId,
+                '_id' => $roleId,
+                'body' => $roleUpdateContent
+            ]
+        ];
+        $updateResponse = [
+            '_id' => $roleId,
+            '_source' => array_merge($roleContent, $roleUpdateContent),
+            '_version' => 1
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $updateResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $security = new Security($kuzzle);
+
+        $result = $security->updateRole($roleId, $roleUpdateContent, ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Security\Role', $result);
+        $this->assertAttributeEquals($roleId, 'id', $result);
+        $this->assertAttributeEquals(array_merge($roleContent, $roleUpdateContent), 'content', $result);
+    }
+
+    function testUpdate()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+
+        $userId = uniqid();
+
+        $userContent = [
+            'profileId' => uniqid()
+        ];
+        $userBaseContent = [
+            'foo' => 'bar'
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/users/' . $userId,
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'security',
+                'action' => 'updateUser',
+                'requestId' => $requestId,
+                '_id' => $userId,
+                'body' => $userContent
+            ]
+        ];
+        $updateResponse = [
+            '_id' => $userId,
+            '_source' => array_merge($userBaseContent, $userContent),
+            '_version' => 1
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $updateResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $security = new Security($kuzzle);
+
+        $result = $security->updateUser($userId, $userContent, ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Security\User', $result);
+        $this->assertAttributeEquals($userId, 'id', $result);
+        $this->assertAttributeEquals(array_merge($userBaseContent, $userContent), 'content', $result);
+    }
+
 }

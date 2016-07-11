@@ -308,19 +308,19 @@ class Security
     {
         // We filter in all the rights that match the request (including wildcards).
         $filteredRights = array_filter($rights, function (array $right) use ($controller) {
-            return $right['controller'] === $controller || $right['controller'] === '*';
+            return array_key_exists('controller', $right) && ($right['controller'] === $controller || $right['controller'] === '*');
         });
 
         $filteredRights = array_filter($filteredRights, function (array $right) use ($action) {
-            return $right['action'] === $action || $right['action'] === '*';
+            return array_key_exists('action', $right) && ($right['action'] === $action || $right['action'] === '*');
         });
 
         $filteredRights = array_filter($filteredRights, function (array $right) use ($index) {
-            return $right['index'] === $index || $right['index'] === '*';
+            return array_key_exists('index', $right) && ($right['index'] === $index || $right['index'] === '*');
         });
 
         $filteredRights = array_filter($filteredRights, function (array $right) use ($collection) {
-            return $right['collection'] === $collection || $right['collection'] === '*';
+            return array_key_exists('collection', $right) && ($right['collection'] === $collection || $right['collection'] === '*');
         });
 
         $rightsValues = array_column($filteredRights, 'value');
@@ -382,12 +382,6 @@ class Security
      */
     public function searchProfiles(array $filters, array $options = [])
     {
-        $filters['hydrate'] = true;
-
-        if (array_key_exists('hydrate', $options)) {
-            $filters['hydrate'] = $options['hydrate'];
-        }
-
         $data = [
             'body' => $filters
         ];
@@ -440,12 +434,6 @@ class Security
      */
     public function searchUsers(array $filters, array $options = [])
     {
-        $filters['hydrate'] = true;
-
-        if (array_key_exists('hydrate', $options)) {
-            $filters['hydrate'] = $options['hydrate'];
-        }
-
         $data = [
             'body' => $filters
         ];
@@ -478,13 +466,13 @@ class Security
             'body' => $content
         ];
 
-        $this->kuzzle->query(
+        $response = $this->kuzzle->query(
             $this->buildQueryArgs('updateProfile'),
             $data,
             $options
         );
 
-        return new Profile($this, $id, $content);
+        return new Profile($this, $id, $response['result']['_source']);
     }
 
     /**
@@ -502,13 +490,13 @@ class Security
             'body' => $content
         ];
 
-        $this->kuzzle->query(
+        $response = $this->kuzzle->query(
             $this->buildQueryArgs('updateRole'),
             $data,
             $options
         );
 
-        return new Role($this, $id, $content);
+        return new Role($this, $id, $response['result']['_source']);
     }
 
     /**
@@ -526,13 +514,13 @@ class Security
             'body' => $content
         ];
 
-        $this->kuzzle->query(
+        $response = $this->kuzzle->query(
             $this->buildQueryArgs('updateUser'),
             $data,
             $options
         );
 
-        return new User($this, $id, $content);
+        return new User($this, $id, $response['result']['_source']);
     }
 
     /**
