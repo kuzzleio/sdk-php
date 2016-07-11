@@ -210,40 +210,15 @@ class Security
      */
     public function getProfile($id, array $options = [])
     {
-        $hydrate = true;
         $data = [
             '_id' => $id
         ];
-
-        if (array_key_exists('hydrate', $options)) {
-            $hydrate = $options['hydrate'];
-        }
 
         $response = $this->kuzzle->query(
             $this->buildQueryArgs('getProfile'),
             $data,
             $options
         );
-
-        if (!$hydrate) {
-            $roles = [];
-
-            foreach ($response['result']['_source']['roles'] as $role) {
-                $formattedRole = ['_id' => $role['_id']];
-
-                if (array_key_exists('restrictedTo', $role['_source'])) {
-                    $formattedRole['restrictedTo'] = $role['_source']['restrictedTo'];
-                }
-
-                if (array_key_exists('allowInternalIndex', $role['_source'])) {
-                    $formattedRole['allowInternalIndex'] = $role['_source']['allowInternalIndex'];
-                }
-
-                $roles[] = $formattedRole;
-            }
-
-            $response['result']['_source']['roles'] = $roles;
-        }
 
         return new Profile($this, $response['result']['_id'], $response['result']['_source']);
     }
@@ -279,24 +254,15 @@ class Security
      */
     public function getUser($id, array $options = [])
     {
-        $hydrate = true;
         $data = [
             '_id' => $id
         ];
-
-        if (array_key_exists('hydrate', $options)) {
-            $hydrate = $options['hydrate'];
-        }
 
         $response = $this->kuzzle->query(
             $this->buildQueryArgs('getUser'),
             $data,
             $options
         );
-
-        if (!$hydrate) {
-            $response['result']['_source']['profile'] = $response['result']['_source']['profile']['_id'];
-        }
 
         return new User($this, $response['result']['_id'], $response['result']['_source']);
     }
