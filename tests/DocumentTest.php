@@ -170,6 +170,66 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals(1, 'version', $result);
     }
 
+    function testPublish()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+        $documentContent = [
+            'foo' => 'bar'
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/' . $index . '/' . $collection,
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'write',
+                'action' => 'publish',
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index,
+                '_id' => $documentId,
+                'body' => array_merge($documentContent, ['baz' => 'baz'])
+            ]
+        ];
+        $publishResponse = [
+            'published' => true
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $publishResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new DataCollection($kuzzle, $index, $collection);
+        $document = new Document($dataCollection, $documentId, $documentContent);
+
+        $document->setContent(['baz' => 'baz']);
+        $result = $document->publish(['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Document', $result);
+        $this->assertAttributeEquals($documentId, 'id', $result);
+        $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
+    }
+
     function testSerialize()
     {
         $url = KuzzleTest::FAKE_KUZZLE_URL;

@@ -152,7 +152,7 @@ class Document
     public function publish(array $options = [])
     {
         $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('write', 'publishMessage'),
+            $this->collection->buildQueryArgs('write', 'publish'),
             $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
             $options
         );
