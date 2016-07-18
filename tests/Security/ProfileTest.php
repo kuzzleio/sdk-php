@@ -17,7 +17,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         $profileContent = [
             'policies' => [
                 [
-                    '_id' => 'default',
+                    'roleId' => 'default',
                     'restrictedTo' => [],
                     'allowInternalIndex'=> true
                 ]
@@ -25,7 +25,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         ];
 
         $profileAdditionalPolicy = [
-            '_id' => 'admin',
+            'roleId' => 'admin',
             'restrictedTo' => [
                 ['index' => 'my-admin-index'],
             ],
@@ -73,7 +73,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         $security = new Security($kuzzle);
         $profile = new Profile($security, $profileId, $profileContent);
 
-        $additionalPolicy = new Policy($profile, $profileAdditionalPolicy['_id']);
+        $additionalPolicy = new Policy($profile, $profileAdditionalPolicy['roleId']);
         $additionalPolicy->setRestrictedTo($profileAdditionalPolicy['restrictedTo']);
         $additionalPolicy->setAllowInternalIndex($profileAdditionalPolicy['allowInternalIndex']);
 
@@ -95,7 +95,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         $profileBaseContent = [
             'policies' => [
                 [
-                    '_id' => 'anonymous',
+                    'roleId' => 'anonymous',
                     'restrictedTo' => [
                         ['index' => 'my-second-index', 'collection' => ['my-collection']]
                     ]
@@ -105,7 +105,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         $profileContent = [
             'policies' => [
                 [
-                    '_id' => 'default',
+                    'roleId' => 'default',
                     'restrictedTo' => [
                         ['index' => 'my-index'],
                         ['index' => 'my-second-index', 'collection' => ['my-collection']]
@@ -221,7 +221,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         $roleId = uniqid();
 
         $policyDescription = [
-            '_id' => 'admin',
+            'roleId' => 'admin',
             'restrictedTo' => [
                 ['index' => 'my-admin-index'],
             ],
@@ -249,7 +249,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, count($policies));
         $this->assertInstanceOf('\Kuzzle\Security\Policy', $policies[0]);
-        $this->assertAttributeEquals($policyDescription['_id'], 'roleId', $policies[0]);
+        $this->assertAttributeEquals($policyDescription['roleId'], 'roleId', $policies[0]);
         $this->assertAttributeEquals($policyDescription['restrictedTo'], 'restrictedTo', $policies[0]);
         $this->assertAttributeEquals($policyDescription['allowInternalIndex'], 'allowInternalIndex', $policies[0]);
 
@@ -259,7 +259,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, count($policies));
         $this->assertInstanceOf('\Kuzzle\Security\Policy', $policies[0]);
-        $this->assertAttributeEquals($policyDescription['_id'], 'roleId', $policies[0]);
+        $this->assertAttributeEquals($policyDescription['roleId'], 'roleId', $policies[0]);
         $this->assertAttributeEquals($policyDescription['restrictedTo'], 'restrictedTo', $policies[0]);
         $this->assertAttributeEquals($policyDescription['allowInternalIndex'], 'allowInternalIndex', $policies[0]);
 

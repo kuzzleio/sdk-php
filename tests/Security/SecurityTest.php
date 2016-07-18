@@ -20,7 +20,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $profileContent = [
             'policies' => [
                 [
-                    '_id' => 'default',
+                    'roleId' => 'default',
                     'restrictedTo' => [],
                     'allowInternalIndex'=> true
                 ]
@@ -82,7 +82,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $profileContent = [
             'policies' => [
                 [
-                    '_id' => 'default',
+                    'roleId' => 'default',
                     'restrictedTo' => [],
                     'allowInternalIndex'=> true
                 ]
@@ -274,7 +274,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profileId' => 'admin'
+            'profilesIds' => ['admin']
         ];
 
         $httpRequest = [
@@ -330,7 +330,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profileId' => 'admin'
+            'profilesIds' => ['admin']
         ];
 
         $httpRequest = [
@@ -538,7 +538,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $profileContent = [
             'policies' => [
                 [
-                    '_id' => 'default',
+                    'roleId' => 'default',
                     'restrictedTo' => [],
                     'allowInternalIndex'=> true
                 ]
@@ -657,7 +657,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profileId' => 'admin'
+            'profilesIds' => ['admin']
         ];
 
         $httpRequest = [
@@ -829,7 +829,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                         'foo' => 'bar',
                         'policies' => [
                             [
-                                '_id' => 'default',
+                                'roleId' => 'default',
                                 'restrictedTo' => [],
                                 'allowInternalIndex'=> true
                             ]
@@ -842,7 +842,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                         'foo' => 'bar',
                         'policies' => [
                             [
-                                '_id' => 'default',
+                                'roleId' => 'default',
                                 'restrictedTo' => [],
                                 'allowInternalIndex'=> true
                             ]
@@ -1066,7 +1066,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $profileBaseContent = [
             'policies' => [
                 [
-                    '_id' => 'anonymous',
+                    'roleId' => 'anonymous',
                     'restrictedTo' => [
                         ['index' => 'my-second-index', 'collection' => ['my-collection']]
                     ]
@@ -1076,7 +1076,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $profileContent = [
             'policies' => [
                 [
-                    '_id' => 'default',
+                    'roleId' => 'default',
                     'restrictedTo' => [
                         ['index' => 'my-index'],
                         ['index' => 'my-second-index', 'collection' => ['my-collection']]
@@ -1206,7 +1206,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $userId = uniqid();
 
         $userContent = [
-            'profileId' => uniqid()
+            'profilesIds' => [uniqid()]
         ];
         $userBaseContent = [
             'foo' => 'bar'

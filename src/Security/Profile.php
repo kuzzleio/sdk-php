@@ -63,7 +63,7 @@ class Profile extends Document
     /**
      * Replaces the roles associated to the profile.
      *
-     * @param string[]|Role[] $policies List of unique id or Kuzzle\Security\Role instances corresponding to the new associated roles
+     * @param array[]|Role[] $policies List of policies descriptions or Kuzzle\Security\Role instances corresponding to the new associated roles
      * @return Profile
      */
     public function setPolicies(array $policies)
@@ -137,7 +137,7 @@ class Profile extends Document
         }
 
         if (is_array($policy)) {
-            $policyObject = new Policy($this, $policy['_id']);
+            $policyObject = new Policy($this, $policy['roleId']);
     
             if (array_key_exists('restrictedTo', $policy)) {
                 $policyObject->setRestrictedTo($policy['restrictedTo']);

@@ -635,6 +635,32 @@ class Kuzzle
     }
 
     /**
+     * Returns de current autoRefresh status for the given index
+     *
+     * @param string $index Optional TThe index to get the status from. Defaults to Kuzzle->defaultIndex
+     * @param array $options Optional parameters
+     * @return boolean
+     */
+    public function getAutoRefresh($index = '', array $options = [])
+    {
+        if (empty($index)) {
+            if (empty($this->defaultIndex)) {
+                throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
+            }
+
+            $index = $this->defaultIndex;
+        }
+
+        $response = $this->query(
+            $this->buildQueryArgs('admin', 'getAutoRefresh', $index),
+            [],
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
      * Set the default data index. Has the same effect than the defaultIndex constructor option.
      *
      * @param $index

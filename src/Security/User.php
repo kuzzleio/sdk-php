@@ -18,6 +18,7 @@ class User extends Document
 
     /**
      * Role constructor.
+     *
      * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
      * @param string $id Unique user identifier
      * @param array $content User content
@@ -35,22 +36,47 @@ class User extends Document
     /**
      * Returns this user associated profile.
      *
-     * @return Profile
+     * @return Profile[]
      */
-    public function getProfile()
+    public function getProfiles()
     {
-        return $this->security->getProfile($this->content['profileId']);
+        $profiles = [];
+
+        foreach ($this->content['profilesIds'] as $profileId) {
+            $profiles[] = $this->security->getProfile($profileId);
+        }
+
+        return $profiles;
     }
 
     /**
-     * Replaces the profile associated to this user.
+     * Replaces the profiles associated to this user.
      *
-     * @param string|Profile $profile Unique id or Kuzzle\Security\Profile instance corresponding to the new associated profile
-     * @return User
+     * @param string[]|Profile[] $profiles Unique ids or Kuzzle\Security\Profile instances corresponding to the new associated profiles
+     * @return $this
      */
-    public function setProfile($profile)
+    public function setProfiles($profiles)
     {
-        $this->content['profileId'] = $this->extractProfileId($profile);
+        $profilesIds = [];
+
+        foreach ($profiles as $profile) {
+            $profilesIds[] = $this->extractProfileId($profile);
+        }
+
+        $this->content['profilesIds'] = $profilesIds;
+
+        return $this;
+    }
+
+    /**
+     * Add a profile to this user.
+     *
+     * @param string|Profile $profile Unique id or Kuzzle\Security\Profile instances corresponding to the new associated profile
+     * @return $this
+     */
+    public function addProfile($profile)
+    {
+        $this->content['profilesIds'][] = $this->extractProfileId($profile);
 
         return $this;
     }
@@ -59,7 +85,7 @@ class User extends Document
      * Replaces the content of the Kuzzle\Security\Profile object.
      *
      * @param array $content
-     * @return Profile
+     * @return User
      */
     public function setContent(array $content)
     {
@@ -72,11 +98,17 @@ class User extends Document
 
     protected function syncProfile()
     {
-        if (!array_key_exists('profileId', $this->content)) {
-            $this->content['profileId'] = User::DEFAULT_PROFILE;
+        if (!array_key_exists('profilesIds', $this->content)) {
+            $this->content['profilesIds'] = [User::DEFAULT_PROFILE];
         }
 
-        $this->content['profileId'] = $this->extractProfileId($this->content['profileId']);
+        $profilesIds = [];
+
+        foreach ($this->content['profilesIds'] as $profile) {
+            $profilesIds[] = $this->extractProfileId($profile);
+        }
+
+        $this->content['profilesIds'] = $profilesIds;
     }
 
     /**

@@ -114,7 +114,7 @@ class Policy
     {
         $data = [];
 
-        $data['_id'] = $this->roleId;
+        $data['roleId'] = $this->roleId;
         $data['restrictedTo'] = $this->restrictedTo;
         $data['allowInternalIndex'] = $this->allowInternalIndex;
 

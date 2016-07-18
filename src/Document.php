@@ -140,6 +140,28 @@ class Document
     }
 
     /**
+     * Sends the content of this document as a realtime message.
+     *
+     * Takes an optional argument object with the following properties:
+     *    - metadata (object, default: null):
+     *        Additional information passed to notifications to other users
+     *
+     * @param array $options
+     * @return Document
+     */
+    public function publish(array $options = [])
+    {
+        $this->collection->getKuzzle()->query(
+            $this->collection->buildQueryArgs('write', 'publishMessage'),
+            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+            $options
+        );
+
+        return $this;
+    }
+
+
+    /**
      * Replaces the current content with new data.
      * This is a helper function returning itself, allowing to easily chain calls.
      *
