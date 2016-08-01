@@ -815,7 +815,7 @@ class Kuzzle
         }
 
         if (array_key_exists('body', $httpRequest['request'])) {
-            $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
+            $body = json_encode($httpRequest['request']['body']);
             $headers[] = 'Content-length: ' . strlen($body);
         }
 
