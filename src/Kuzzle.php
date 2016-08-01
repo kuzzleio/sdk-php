@@ -204,6 +204,22 @@ class Kuzzle
     }
 
     /**
+     * @return string
+     */
+    public function getDefaultIndex()
+    {
+        return $this->defaultIndex;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
      * Get internal jwtToken used to request kuzzle.
      *
      * @return string
@@ -211,6 +227,11 @@ class Kuzzle
     public function getJwtToken()
     {
         return $this->jwtToken;
+    }
+
+    public function getMetadata()
+    {
+        return $this->metadata;
     }
 
     /**
@@ -722,6 +743,24 @@ class Kuzzle
     public function setJwtToken($jwtToken)
     {
         $this->jwtToken = $jwtToken;
+
+        return $this;
+    }
+
+    /**
+     * @param array $metadata
+     * @param bool $replace
+     * @return Kuzzle
+     */
+    public function setMetadata(array $metadata, $replace = false)
+    {
+        if ($replace) {
+            $this->metadata = $metadata;
+        } else {
+            foreach ($metadata as $key => $value) {
+                $this->metadata[$key] = $value;
+            }
+        }
 
         return $this;
     }

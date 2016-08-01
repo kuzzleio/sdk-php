@@ -183,6 +183,14 @@ class Document
     }
 
     /**
+     * @return array
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
      * This is a helper function returning itself, allowing to easily chain calls.
      *
      * @param array $headers New content
@@ -200,6 +208,14 @@ class Document
         }
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 
     /**
@@ -229,5 +245,13 @@ class Document
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 }
