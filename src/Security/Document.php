@@ -56,6 +56,16 @@ abstract class Document
     }
 
     /**
+     * Return the content of the SecurityDocument
+     *
+     * @return array
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
      * @return string
      */
     public function getId()
