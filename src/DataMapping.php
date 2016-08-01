@@ -126,4 +126,28 @@ class DataMapping
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @return DataCollection
+     */
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMapping()
+    {
+        return $this->mapping;
+    }
 }
