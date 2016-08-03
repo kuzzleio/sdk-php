@@ -1,7 +1,7 @@
 <?php
 include __DIR__ . '/../tests/bootstrap.php';
 
-$kuzzle = new \Kuzzle\Kuzzle('http://localhost:7511');
+$kuzzle = new \Kuzzle\Kuzzle('localhost');
 
 // enabling auto refresh (avoiding sleep between add/deletion and search)
 $kuzzle->setAutoRefresh('myindex');

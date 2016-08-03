@@ -6,7 +6,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 {
     function testAdvancedSearch()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -85,7 +85,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testCount()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -144,7 +144,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testCreate()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -193,7 +193,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testCreateDocument()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -254,7 +254,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testCreateDocumentFromObject()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -317,7 +317,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testDeleteDocument()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -370,7 +370,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testDeleteDocumentByQuery()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -424,7 +424,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testFetchDocument()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -484,7 +484,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testFetchAllDocuments()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -558,7 +558,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testPublishDocument()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -612,7 +612,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testPublishMessageFromObject()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -670,7 +670,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testReplaceDocument()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -731,7 +731,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testTruncateCollection()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -782,7 +782,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
     function testUpdateDocument()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';

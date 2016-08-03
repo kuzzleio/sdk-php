@@ -1,7 +1,7 @@
-Official Kuzzle PHP SDK 
+Official Kuzzle PHP SDK
 ======
 
-This SDK version is compatible with Kuzzle 1.0.0-beta.5 and higher
+This SDK version is compatible with Kuzzle 1.0.0-RC5 and higher
 
 ## About Kuzzle
 
@@ -36,7 +36,7 @@ composer require kuzzleio/kuzzle-sdk
 ```php
 <?php
 
-$kuzzle = new \Kuzzle\Kuzzle('http://localhost:7511');
+$kuzzle = new \Kuzzle\Kuzzle('localhost');
 $collection = $kuzzle->dataCollectionFactory('mycollection', 'myindex');
 
 $myDocument = [

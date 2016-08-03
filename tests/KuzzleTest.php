@@ -4,21 +4,22 @@ use Kuzzle\Util\CurlRequest;
 
 class KuzzleTest extends \PHPUnit_Framework_TestCase
 {
+    const FAKE_KUZZLE_ADDRESS = '127.0.0.1';
     const FAKE_KUZZLE_URL = 'http://127.0.0.1:7511';
-    
+
     public function testSimpleConstructor()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $address = self::FAKE_KUZZLE_ADDRESS;
 
         try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle = new \Kuzzle\Kuzzle($address, ['port' => 1234]);
 
             // Assert type
             $this->assertInstanceOf('\Kuzzle\Kuzzle', $kuzzle);
 
             // Assert Url
-            $this->assertAttributeEquals($url, 'url', $kuzzle);
+            $this->assertAttributeEquals('http://' . $address . ':1234', 'url', $kuzzle);
 
             // Assert if one (random) route is loaded
             $routesDescription = $this->readAttribute($kuzzle, 'routesDescription');
@@ -31,14 +32,14 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($routesNow, $routesDescription['read']['now']);
         }
         catch (Exception $e) {
-            $this->fail('KuzzleTest::testSimpleConstructor => Should not raise an exception (base configuration file should be valid)');
+            $this->fail('KuzzleTest::testSimpleConstructor => Should not raise an exception (base configuration file should be valid): ' . $e);
         }
     }
 
     public function testDataCollectionFactory()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
         $collection = 'collection';
 
@@ -63,7 +64,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testMemoryStorage()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         try {
 
@@ -84,7 +85,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testSetDefaultIndex()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
@@ -97,7 +98,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testSetJwtToken()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $token = uniqid();
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
@@ -110,7 +111,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testSetRequestHandler()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $handler = new CurlRequest();
 
@@ -129,7 +130,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testDataCollectionFactoryDefaultIndex()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
         $collection = 'collection';
 
@@ -152,7 +153,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testDataCollectionFactoryWithoutIndex()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $collection = 'collection';
 
         try {
@@ -170,7 +171,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testRouteDescriptionWithoutConfigurationFile()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $routeDescriptionFile = 'fakeFile.json';
 
         try {
@@ -186,7 +187,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testRouteDescriptionWithBadConfigurationFile()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $routeDescriptionFile = '../tests/config/mockRoutes.json';
 
         try {
@@ -202,7 +203,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testCheckToken()
     {
         $fakeToken = uniqid();
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -252,7 +253,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAllStatistics()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -299,7 +300,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMyRights()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -349,7 +350,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         /**
          * @todo: missing server info http route in kuzzle
          */
-        /*$url = self::FAKE_KUZZLE_URL;
+        /*$url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -393,7 +394,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testGetLastStatistics()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -440,7 +441,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStatistics()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $statsTime = time();
 
         $kuzzle = $this
@@ -491,7 +492,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testListAllCollections()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
         $collectionType = 'all';
 
@@ -544,7 +545,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testListAllCollectionsWithDefaultIndex()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
         $collectionType = 'all';
 
@@ -597,7 +598,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testListRealtimeCollections()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
         $collectionType = 'realtime';
 
@@ -652,7 +653,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testListCollectionsWithoutIndex()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
@@ -668,7 +669,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testListIndexes()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -715,7 +716,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testLogin()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $strategy = 'local';
         $expiresIn = '1h';
         $credentials = [
@@ -774,7 +775,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testLogout()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -822,7 +823,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testNow()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -870,7 +871,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testRefreshIndex()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
 
         $kuzzle = $this
@@ -919,7 +920,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testRefreshIndexWithDefaultIndex()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
 
         $kuzzle = $this
@@ -969,7 +970,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testRefreshIndexWithoutIndex()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
@@ -985,7 +986,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testSetAutoRefresh()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
         $autoRefresh = true;
 
@@ -1038,7 +1039,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testSetAutoRefreshWithDefaultIndex()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $index = 'index';
         $autoRefresh = true;
 
@@ -1092,7 +1093,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testSetAutoRefreshWithoutIndex()
     {
         // Arrange
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
@@ -1108,7 +1109,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testUpdateSelf()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $content = ['foo' => 'bar'];
 
         $kuzzle = $this
@@ -1157,7 +1158,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testWhoAmI()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -1225,7 +1226,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->setConstructorArgs([])
             ->getMock();
 
-        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL, ['requestHandler' => $curlRequestHandler]);
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_ADDRESS, ['requestHandler' => $curlRequestHandler]);
 
         $httpRequest = [
             'request' => [
@@ -1265,7 +1266,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(["foo" => "bar"], $result);
         }
         catch (\Exception $e) {
-            $this->fail("KuzzleTest::testEmitRestRequest => Should not raise an exception");
+            $this->fail($e);
         }
     }
 
@@ -1277,7 +1278,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->setConstructorArgs([])
             ->getMock();
 
-        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL, ['requestHandler' => $curlRequestHandler]);
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_ADDRESS, ['requestHandler' => $curlRequestHandler]);
 
         $httpRequest = [
             'request' => [
@@ -1330,7 +1331,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->setConstructorArgs([])
             ->getMock();
 
-        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL, ['requestHandler' => $curlRequestHandler]);
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_ADDRESS, ['requestHandler' => $curlRequestHandler]);
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
         $emitRestRequest = $reflection->getMethod('emitRestRequest');
@@ -1404,7 +1405,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_ADDRESS);
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
         $convertRestRequest = $reflection->getMethod('convertRestRequest');
@@ -1427,7 +1428,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         ];
         $httpParams = [];
 
-        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_ADDRESS);
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
         $convertRestRequest = $reflection->getMethod('convertRestRequest');
@@ -1452,7 +1453,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         ];
         $httpParams = [];
 
-        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_ADDRESS);
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
         $convertRestRequest = $reflection->getMethod('convertRestRequest');
@@ -1477,7 +1478,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         ];
         $httpParams = [];
 
-        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_ADDRESS);
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
         $convertRestRequest = $reflection->getMethod('convertRestRequest');
@@ -1503,7 +1504,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         ];
         $httpParams = [];
 
-        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_URL);
+        $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_ADDRESS);
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
         $convertRestRequest = $reflection->getMethod('convertRestRequest');
@@ -1522,7 +1523,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testQuery()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $token = uniqid();
 
@@ -1589,7 +1590,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testQueryAuthCheckToken()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
         $requestId = uniqid();
         $token = uniqid();
 
@@ -1640,7 +1641,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testQueryWithoutRouteNorController()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $queryArgs = [];
         $query = [];
@@ -1668,7 +1669,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testQueryWithoutRouteNorAction()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $queryArgs = [
             'controller' => 'foo'
@@ -1698,7 +1699,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testAddListener()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $event = 'foo';
         $listener = function() {};
@@ -1712,7 +1713,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testAddListenerWithBadListener()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $event = 'foo';
         $listener = null;
@@ -1730,7 +1731,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testRemoveListener()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $event = 'foo';
         $listener = function() {};
@@ -1745,7 +1746,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testRemoveAllListenersForOneEvent()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $listener = function() {};
 
@@ -1760,7 +1761,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testRemoveAllListeners()
     {
-        $url = self::FAKE_KUZZLE_URL;
+        $url = self::FAKE_KUZZLE_ADDRESS;
 
         $listener = function() {};
 
