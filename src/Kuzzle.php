@@ -106,7 +106,7 @@ class Kuzzle
         }
 
         if (array_key_exists('port', $options)) {
-          $this->port = $options['port'];
+            $this->port = $options['port'];
         }
 
 
