@@ -8,7 +8,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 {
     function testDelete()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -65,7 +65,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 
     function testDeleteWithoutId()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -87,7 +87,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 
     function testRefreshWithoutId()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -109,7 +109,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 
     function testSave()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -172,7 +172,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 
     function testPublish()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
@@ -232,7 +232,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 
     function testSerialize()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $index = 'index';
         $collection = 'collection';
 

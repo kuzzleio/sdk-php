@@ -10,7 +10,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 {
     function testSave()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $profileId = uniqid();
@@ -88,7 +88,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 
     function testUpdate()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $profileId = uniqid();
@@ -164,7 +164,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 
     function testDelete()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $profileId = uniqid();
@@ -215,7 +215,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 
     function testPolicies()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_ADDRESS;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
 
         $profileId = uniqid();
         $roleId = uniqid();

@@ -83,11 +83,11 @@ class Kuzzle
     /**
      * Kuzzle constructor.
      *
-     * @param string $address Server address to the target Kuzzle instance
+     * @param string $host Server name/IP address to the target Kuzzle instance
      * @param array $options Optional Kuzzle connection configuration
      * @return Kuzzle
      */
-    public function __construct($address, array $options = [])
+    public function __construct($host, array $options = [])
     {
         $this->routesDescriptionFile = self::ROUTE_DESCRIPTION_FILE;
 
@@ -110,7 +110,7 @@ class Kuzzle
         }
 
 
-        $this->url = 'http://' . $address . ':' . $this->port;
+        $this->url = 'http://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
 
         return $this;
