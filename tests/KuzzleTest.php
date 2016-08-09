@@ -32,7 +32,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($routesNow, $routesDescription['read']['now']);
         }
         catch (Exception $e) {
-            $this->fail('KuzzleTest::testSimpleConstructor => Should not raise an exception (base configuration file should be valid): ' . $e);
+            $this->fail($e->message);
         }
     }
 
