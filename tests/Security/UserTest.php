@@ -9,7 +9,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 {
     function testSave()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
@@ -75,7 +75,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     function testUpdate()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
@@ -136,7 +136,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     function testDelete()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
