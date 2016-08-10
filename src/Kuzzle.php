@@ -30,6 +30,11 @@ class Kuzzle
     protected $url;
 
     /**
+     * @var string port of kuzzle http server (default: 7511)
+     */
+    protected $port = 7511;
+
+    /**
      * @var string Kuzzle’s default index to use
      */
     protected $defaultIndex;
@@ -78,15 +83,14 @@ class Kuzzle
     /**
      * Kuzzle constructor.
      *
-     * @param string $url URL to the target Kuzzle instance
+     * @param string $host Server name/IP address to the target Kuzzle instance
      * @param array $options Optional Kuzzle connection configuration
      * @return Kuzzle
      */
-    public function __construct($url, array $options = [])
+    public function __construct($host, array $options = [])
     {
-        $this->url = $url;
         $this->routesDescriptionFile = self::ROUTE_DESCRIPTION_FILE;
-        
+
         if (array_key_exists('routesDescriptionFile', $options)) {
             $this->routesDescriptionFile = $options['routesDescriptionFile'];
         }
@@ -101,6 +105,12 @@ class Kuzzle
             $this->requestHandler = new CurlRequest();
         }
 
+        if (array_key_exists('port', $options)) {
+            $this->port = $options['port'];
+        }
+
+
+        $this->url = 'http://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
 
         return $this;
@@ -492,11 +502,11 @@ class Kuzzle
                     $request['metadata'][$meta] = $value;
                 }
             }
-            
+
             if (array_key_exists('requestId', $options)) {
                 $request['requestId'] = $options['requestId'];
             }
-            
+
             if (array_key_exists('httpParams', $options)) {
                 foreach ($options['httpParams'] as $param => $value) {
                     $httpParams[$param] = $value;
@@ -781,7 +791,7 @@ class Kuzzle
 
         return new User($this->security(), $response['result']['_id'], $response['result']['_source']);
     }
-    
+
     /**
      * @param array $query
      * @param array $headers
@@ -864,7 +874,7 @@ class Kuzzle
             'headers' => $headers,
             'body' => $body
         ]);
-        
+
         if (!empty($result['error'])) {
             throw new ErrorException($result['error']);
         }

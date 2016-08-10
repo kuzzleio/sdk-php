@@ -13,7 +13,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 {
     function testCreateProfile()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $profileId = uniqid();
@@ -75,7 +75,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testCreateOrReplaceProfile()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $profileId = uniqid();
@@ -140,7 +140,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testCreateRole()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $roleId = uniqid();
@@ -203,7 +203,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testCreateOrReplaceRole()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $roleId = uniqid();
@@ -269,7 +269,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testCreateUser()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
@@ -325,7 +325,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testCreateOrReplaceUser()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
@@ -384,7 +384,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testDeleteProfile()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $profileId = uniqid();
@@ -433,7 +433,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testDeleteUser()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
@@ -482,7 +482,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testDeleteRole()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $roleId = uniqid();
@@ -531,7 +531,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testGetProfile()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $profileId = uniqid();
@@ -591,7 +591,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testGetRole()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $roleId = uniqid();
@@ -652,7 +652,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testGetUser()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
@@ -706,7 +706,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testGetUserRights()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
@@ -763,7 +763,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testIsActionAllowed()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
 
         $kuzzle = new Kuzzle($url);
         $security = $kuzzle->security();
@@ -797,7 +797,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testSearchProfiles()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $filter = [
@@ -887,7 +887,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testSearchRoles()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $filter = [
@@ -979,7 +979,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testSearchUsers()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $filter = [
@@ -1059,7 +1059,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testUpdateProfile()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $profileId = uniqid();
@@ -1134,7 +1134,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testUpdateRole()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $roleId = uniqid();
@@ -1200,7 +1200,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
     function testUpdate()
     {
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();

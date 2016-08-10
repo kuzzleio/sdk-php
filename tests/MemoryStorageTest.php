@@ -7,7 +7,7 @@ class MemoryStorageTest extends \PHPUnit_Framework_TestCase
     public function testCallUndefinedCommand()
     {
         // Arrange
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
 
         try {
             $kuzzle = new Kuzzle($url);
@@ -25,7 +25,7 @@ class MemoryStorageTest extends \PHPUnit_Framework_TestCase
     public function testCommand()
     {
         // Arrange
-        $url = KuzzleTest::FAKE_KUZZLE_URL;
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $id = uniqid();
         $start = 10;
         $stop = 15;
