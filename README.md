@@ -59,9 +59,9 @@ catch (Exception $error) {
 
 ```
 
-#### <a name="bundle"></a> Bundle Symfony
+#### <a name="bundle"></a> Symfony Bridge Bundle
 
-You can find a bridge bundle for Symfony [here](https://github.com/kuzzleio/kuzzle-symfony-bridge)
+You can find a Symfony bridge bundle for this module [here](https://github.com/kuzzleio/kuzzle-symfony-bridge)
 
 
 ```
