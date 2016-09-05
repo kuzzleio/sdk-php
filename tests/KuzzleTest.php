@@ -1697,6 +1697,59 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testQueryWithEmptyBody()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+
+        $queryArgs = [
+            'route' => '/api/1.0/my-foo',
+            'method' => 'POST',
+        ];
+        $query = [
+          'body' => []
+        ];
+        $options = [
+            'metadata' => [],
+            'requestId' => $requestId
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/my-foo',
+            'method' => 'POST',
+            'request' => [
+              'body' => (object)[],
+              'metadata' => [],
+              'controller' => '',
+              'action' => '',
+              'requestId' => $requestId
+            ]
+        ];
+        $httpResponse = [];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        try {
+            $result = $kuzzle->query($queryArgs, $query, $options);
+        }
+        catch (Exception $e) {
+            $this->fail('KuzzleTest::testQuery => Should not raise an exception');
+        }
+    }
+
     public function testAddListener()
     {
         $url = self::FAKE_KUZZLE_HOST;
