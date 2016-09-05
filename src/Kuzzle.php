@@ -522,9 +522,8 @@ class Kuzzle
 
         foreach ($query as $attr => $value) {
             if ($attr === 'body' && empty($value)) {
-              $request['body'] = (object)[];
-            }
-            else if ($attr !== 'metadata') {
+                $request['body'] = (object)[];
+            } else if ($attr !== 'metadata') {
                 $request[$attr] = $value;
             }
         }
