@@ -388,7 +388,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
-                'body' => $filters
+                'body' => (object)$filters
             ]
         ];
 
