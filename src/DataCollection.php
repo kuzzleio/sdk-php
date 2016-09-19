@@ -34,10 +34,10 @@ class DataCollection
      * DataCollection constructor.
      *
      * @param Kuzzle $kuzzle Kuzzle object
-     * @param string $index Name of the index containing the data collection
      * @param string $collection The name of the data collection you want to manipulate
+     * @param string $index Name of the index containing the data collection
      */
-    public function __construct(Kuzzle $kuzzle, $index, $collection)
+    public function __construct(Kuzzle $kuzzle, $collection, $index)
     {
         $this->kuzzle = $kuzzle;
         $this->index = $index;
@@ -368,7 +368,7 @@ class DataCollection
             '_id' => $documentId,
             'body' => $content
         ];
-        
+
         $queryArgs = $this->buildQueryArgs('write', 'update');
         $queryArgs['route'] = '/api/1.0/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
         $queryArgs['method'] = 'put';

@@ -189,7 +189,7 @@ class Kuzzle
         }
 
         if (!array_key_exists($collection, $this->collections[$index])) {
-            $this->collections[$index][$collection] = new DataCollection($this, $index, $collection);
+            $this->collections[$index][$collection] = new DataCollection($this, $collection, $index);
         }
 
         return $this->collections[$index][$collection];
