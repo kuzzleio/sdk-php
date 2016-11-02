@@ -12,44 +12,85 @@ $collection = $kuzzle->dataCollectionFactory('mycollection', 'myindex');
 // delete documents in collection
 try {
     $deleteResult = $collection->deleteDocument([]);
-    var_dump($deleteResult);
+    print_r('delete documents in collection');
+    print_r("\n");
+    print_r($deleteResult);
 }
 catch (ErrorException $e) {
+    $kuzzle->createIndex('myindex');
     $collection->create();
 }
 
 
 // add a document
+print_r('add a document');
+print_r("\n");
 $document = $collection->createDocument(['foo' => 'bar']);
-var_dump($document->serialize());
+print_r($document->serialize());
 
 // add another document
+print_r('add another document');
+print_r("\n");
 $document = $collection->createDocument(['foo' => 'baz']);
-var_dump($document->serialize());
+print_r($document->serialize());
+
+// add a third document
+print_r('add a third document');
+print_r("\n");
+$document = $collection->createDocument(['foo' => 'qux']);
+print_r($document->serialize());
 
 // get document
+print_r('get document');
+print_r("\n");
 $document = $collection->fetchDocument($document->getId());
-var_dump($document->serialize());
+print_r($document->serialize());
+
+// search with scroll results
+print_r('search with scroll results:');
+print_r("\n");
 
 $filter = [
+    'scroll' => '1m',
+    'from' => 0,
+    'size' => 1,
     'query' => [
         'bool' => [
             'should' => [
-                'term' => ['foo' => 'bar']
+                'exists' => ['field' => 'foo']
             ]
         ]
     ]
 ];
+$searchResult = $collection->search($filter);
 
-sleep(1);
+while ($searchResult) {
+    foreach ($searchResult->getDocuments() as $document) {
+        print_r($document->serialize());
+    }
+    $searchResult = $searchResult->getNext();
+}
 
-// search all documents
-$searchResult = $collection->advancedSearch($filter);
+// search without scroll results
+print_r('search without scroll results:');
+print_r("\n");
 
-// count without fetch
-$searchCount = $collection->count($filter);
-var_dump('documents found:', $searchResult->getTotal(), $searchCount);
+$filter = [
+    'from' => 0,
+    'size' => 1,
+    'query' => [
+        'bool' => [
+            'should' => [
+                'exists' => ['field' => 'foo']
+            ]
+        ]
+    ]
+];
+$searchResult = $collection->search($filter);
 
-foreach ($searchResult->getDocuments() as $document) {
-    var_dump($document->serialize());
+while ($searchResult) {
+    foreach ($searchResult->getDocuments() as $document) {
+        print_r($document->serialize());
+    }
+    $searchResult = $searchResult->getNext();
 }

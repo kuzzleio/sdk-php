@@ -49,11 +49,26 @@ class DataCollection
     /**
      * Executes an advanced search on the data collection.
      *
+     * @deprecated
+     * @see search
+     *
      * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
      * @return AdvancedSearchResult
      */
     public function advancedSearch(array $filters, array $options = [])
+    {
+        return $this->search($filters, $options);
+    }
+
+    /**
+     * Executes an advanced search on the data collection.
+     *
+     * @param array $filters Filters in ElasticSearch Query DSL format
+     * @param array $options Optional parameters
+     * @return AdvancedSearchResult
+     */
+    public function search(array $filters, array $options = [])
     {
         $data = [
             'body' => $filters
@@ -69,7 +84,12 @@ class DataCollection
             return new Document($this, $document['_id'], $document['_source']);
         }, $response['result']['hits']);
 
-        return new AdvancedSearchResult($response['result']['total'], $response['result']['hits']);
+
+        if (array_key_exists('_scroll_id', $response['result'])) {
+            $options['scrollId'] = $response['result']['_scroll_id'];
+        }
+
+        return new AdvancedSearchResult($this, $response['result']['total'], $response['result']['hits'], ['filters' => $filters, 'options' => $options]);
     }
 
     /**
