@@ -58,6 +58,8 @@ class DataCollection
      */
     public function advancedSearch(array $filters, array $options = [])
     {
+        trigger_error('Usage of Kuzzle\\DataCollection::advancedSearch is deprecated. Use Kuzzle\\DataCollection::search instead', E_USER_WARNING);
+
         return $this->search($filters, $options);
     }
 
