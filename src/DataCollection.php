@@ -255,21 +255,39 @@ class DataCollection
      * Retrieves all documents stored in this data collection.
      *
      * @param array $options Optional parameters
-     * @return AdvancedSearchResult containing the total number of retrieved documents and an array of Kuzzle/Document objects
+     * @return Document[] containing all documents objects
      */
     public function fetchAllDocuments(array $options = [])
     {
+        $documents = [];
         $filters = [];
+
+        if (array_key_exists('scroll', $options)) {
+            $filters['scroll'] = $options['scroll'];
+        }
 
         if (array_key_exists('from', $options)) {
             $filters['from'] = $options['from'];
+        } else {
+            $filters['from'] = 0;
         }
 
         if (array_key_exists('size', $options)) {
             $filters['size'] = $options['size'];
+        } else {
+            $filters['size'] = 1000;
         }
 
-        return $this->advancedSearch($filters, $options);
+        $searchResult = $this->search($filters, $options);
+
+        while ($searchResult) {
+            foreach ($searchResult->getDocuments() as $document) {
+                $documents[] = $document;
+            }
+            $searchResult = $searchResult->getNext();
+        }
+
+        return $documents;
     }
 
     /**

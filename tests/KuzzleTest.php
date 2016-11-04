@@ -32,7 +32,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($routesNow, $routesDescription['read']['now']);
         }
         catch (Exception $e) {
-            $this->fail($e->message);
+            $this->fail($e->getMessage());
         }
     }
 
@@ -249,6 +249,121 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $response = $kuzzle->checkToken($fakeToken, $options);
 
         $this->assertEquals($checkTokenResponse, $response);
+    }
+
+    public function testCreateIndex()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+        $index = 'foo';
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/api/1.0/' . $index,
+            'request' => [
+                'action' => 'createIndex',
+                'controller' => 'admin',
+                'metadata' => [],
+                'body' => [
+                    'index' => $index
+                ],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'PUT'
+        ];
+
+        // mock response
+        $createIndexResponse = ['acknowledged' => true];
+        $httpResponse = [
+            'error' => null,
+            'result' => $createIndexResponse
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        $response = $kuzzle->createIndex($index, $options);
+
+        $this->assertEquals($createIndexResponse, $response);
+    }
+
+    public function testScroll()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+        $scrollId = uniqid();
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/api/1.0/_scroll/' . $scrollId,
+            'request' => [
+                'action' => 'scroll',
+                'controller' => 'read',
+                'metadata' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET'
+        ];
+
+        // mock response
+        $scrollResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ],
+                1 => [
+                    '_id' => 'test1',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
+            'total' => 2
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $scrollResponse
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        $result = $kuzzle->scroll($scrollId, $options);
+
+        $this->assertEquals($result, $httpResponse);
     }
 
     public function testGetAllStatistics()

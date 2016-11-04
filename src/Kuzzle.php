@@ -172,7 +172,8 @@ class Kuzzle
      * @param array $options
      * @return mixed
      */
-    public function createIndex($index, array $options = []) {
+    public function createIndex($index, array $options = [])
+    {
         $options['httpParams'] = [
             ':index' => $index
         ];
@@ -795,9 +796,7 @@ class Kuzzle
 
         return $this->query(
             $this->buildQueryArgs('read', 'scroll'),
-            [
-                'body' => ['scrollId' => $scrollId]
-            ],
+            [],
             $options
         );
     }

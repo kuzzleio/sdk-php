@@ -116,7 +116,8 @@ class AdvancedSearchResult
     /**
      * @return AdvancedSearchResult
      */
-    public function getPrevious() {
+    public function getPrevious()
+    {
         return $this->previous;
     }
 
@@ -125,7 +126,8 @@ class AdvancedSearchResult
      *
      * @return $this
      */
-    public function setPrevious(AdvancedSearchResult $previous) {
+    public function setPrevious(AdvancedSearchResult $previous)
+    {
         $this->previous = $previous;
 
         return $this;

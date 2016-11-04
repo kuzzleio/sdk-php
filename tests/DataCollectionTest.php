@@ -4,7 +4,7 @@ use Kuzzle\Kuzzle;
 
 class DataCollectionTest extends \PHPUnit_Framework_TestCase
 {
-    function testAdvancedSearch()
+    function testSearch()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -72,7 +72,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new DataCollection($kuzzle, $collection, $index);
 
-        $searchResult = $dataCollection->advancedSearch($filter, ['requestId' => $requestId]);
+        $searchResult = $dataCollection->search($filter, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Util\AdvancedSearchResult', $searchResult);
         $this->assertEquals(2, $searchResult->getTotal());
@@ -482,18 +482,20 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals(1, 'version', $document);
     }
 
-    function testFetchAllDocuments()
+    function testFetchAllDocumentsWithScroll()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
+        $scrollId = uniqid();
         $index = 'index';
         $collection = 'collection';
         $filter = [
             'from' => 0,
-            'size' => 10
+            'size' => 1,
+            'scroll' => '30s'
         ];
 
-        $httpRequest = [
+        $httpSearchRequest = [
             'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
@@ -506,15 +508,32 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'index' => $index
             ]
         ];
-        $advancedSearchResponse = [
+
+        $httpScrollRequest = [
+            'route' => '/api/1.0/_scroll/' . $scrollId,
+            'method' => 'GET',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'read',
+                'action' => 'scroll',
+                'requestId' => $requestId,
+            ]
+        ];
+        $searchResponse = [
             'hits' => [
                 0 => [
                     '_id' => 'test',
                     '_source' => [
                         'foo' => 'bar'
                     ]
-                ],
-                1 => [
+                ]
+            ],
+            '_scroll_id' => $scrollId,
+            'total' => 2
+        ];
+        $scrollResponse = [
+            'hits' => [
+                0 => [
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar'
@@ -523,9 +542,13 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             ],
             'total' => 2
         ];
-        $httpResponse = [
+        $httpSearchResponse = [
             'error' => null,
-            'result' => $advancedSearchResponse
+            'result' => $searchResponse
+        ];
+        $httpScrollResponse = [
+            'error' => null,
+            'result' => $scrollResponse
         ];
 
         $kuzzle = $this
@@ -535,22 +558,135 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $kuzzle
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('emitRestRequest')
-            ->with($httpRequest)
-            ->willReturn($httpResponse);
+            ->with($httpSearchRequest)
+            ->willReturn($httpSearchResponse);
+
+        $kuzzle
+            ->expects($this->at(1))
+            ->method('emitRestRequest')
+            ->with($httpScrollRequest)
+            ->willReturn($httpScrollResponse);
 
         /**
          * @var Kuzzle $kuzzle
          */
         $dataCollection = new DataCollection($kuzzle, $collection, $index);
 
-        $searchResult = $dataCollection->fetchAllDocuments(['from' => 0, 'size' => 10, 'requestId' => $requestId]);
+        $documents = $dataCollection->fetchAllDocuments(['from' => 0, 'size' => 1, 'scroll' => '30s', 'requestId' => $requestId]);
 
-        $this->assertInstanceOf('Kuzzle\Util\AdvancedSearchResult', $searchResult);
-        $this->assertEquals(2, $searchResult->getTotal());
+        $this->assertInternalType('array', $documents);
+        $this->assertEquals(2, count($documents));
 
-        $documents = $searchResult->getDocuments();
+        $this->assertInstanceOf('Kuzzle\Document', $documents[0]);
+        $this->assertAttributeEquals('test', 'id', $documents[0]);
+        $this->assertAttributeEquals('test1', 'id', $documents[1]);
+    }
+
+    function testFetchAllDocumentsWithoutScroll()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $scrollId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $filter = [
+            'from' => 0,
+            'size' => 1
+        ];
+        $secondFilter = [
+            'from' => 1,
+            'size' => 1
+        ];
+
+        $httpSearchRequest = [
+            'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'read',
+                'action' => 'search',
+                'requestId' => $requestId,
+                'body' => $filter,
+                'collection' => $collection,
+                'index' => $index
+            ]
+        ];
+
+        $httpSecondSearchRequest = [
+            'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'read',
+                'action' => 'search',
+                'requestId' => $requestId,
+                'body' => $secondFilter,
+                'collection' => $collection,
+                'index' => $index
+            ]
+        ];
+        $searchResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
+            'total' => 2
+        ];
+        $httpSecondSearchResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test1',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
+            'total' => 2
+        ];
+        $httpSearchResponse = [
+            'error' => null,
+            'result' => $searchResponse
+        ];
+        $httpSecondSearchResponse = [
+            'error' => null,
+            'result' => $httpSecondSearchResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->at(0))
+            ->method('emitRestRequest')
+            ->with($httpSearchRequest)
+            ->willReturn($httpSearchResponse);
+
+        $kuzzle
+            ->expects($this->at(1))
+            ->method('emitRestRequest')
+            ->with($httpSecondSearchRequest)
+            ->willReturn($httpSecondSearchResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+
+        $documents = $dataCollection->fetchAllDocuments(['from' => 0, 'size' => 1, 'requestId' => $requestId]);
+
+        $this->assertInternalType('array', $documents);
+        $this->assertEquals(2, count($documents));
+
         $this->assertInstanceOf('Kuzzle\Document', $documents[0]);
         $this->assertAttributeEquals('test', 'id', $documents[0]);
         $this->assertAttributeEquals('test1', 'id', $documents[1]);
