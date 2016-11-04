@@ -494,6 +494,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     {
         $url = self::FAKE_KUZZLE_HOST;
         $index = 'index';
+        $from = 0;
+        $size = 42;
         $collectionType = 'all';
 
         $kuzzle = $this
@@ -503,7 +505,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $options = [
-            'requestId' => uniqid()
+            'requestId' => uniqid(),
+            'from' => $from,
+            'size' => $size
         ];
 
         // mock http request
@@ -515,7 +519,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'read',
                 'metadata' => [],
                 'body' => [
-                    'type' => $collectionType
+                    'type' => $collectionType,
+                    'from' => $from,
+                    'size' => $size
                 ],
                 'requestId' => $options['requestId']
             ],
