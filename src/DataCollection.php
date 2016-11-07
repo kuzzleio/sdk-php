@@ -69,7 +69,11 @@ class DataCollection
             return new Document($this, $document['_id'], $document['_source']);
         }, $response['result']['hits']);
 
-        return new AdvancedSearchResult($response['result']['total'], $response['result']['hits']);
+        return new AdvancedSearchResult(
+            $response['result']['total'],
+            $response['result']['hits'],
+            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : []
+        );
     }
 
     /**

@@ -48,6 +48,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ],
+            'aggregations' => [
+                'aggs_name' => []
+            ],
             'total' => 2
         ];
         $httpResponse = [
@@ -81,6 +84,10 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Kuzzle\Document', $documents[0]);
         $this->assertAttributeEquals('test', 'id', $documents[0]);
         $this->assertAttributeEquals('test1', 'id', $documents[1]);
+
+        $this->assertEquals([
+            'aggs_name' => []
+        ], $searchResult->getAggregations());
     }
 
     function testCount()
