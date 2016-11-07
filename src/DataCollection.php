@@ -264,16 +264,19 @@ class DataCollection
 
         if (array_key_exists('scroll', $options)) {
             $filters['scroll'] = $options['scroll'];
+            unset($options['scroll']);
         }
 
         if (array_key_exists('from', $options)) {
             $filters['from'] = $options['from'];
+            unset($options['from']);
         } else {
             $filters['from'] = 0;
         }
 
         if (array_key_exists('size', $options)) {
             $filters['size'] = $options['size'];
+            unset($options['size']);
         } else {
             $filters['size'] = 1000;
         }
