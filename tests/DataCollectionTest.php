@@ -74,7 +74,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $searchResult = $dataCollection->search($filter, ['requestId' => $requestId]);
 
-        $this->assertInstanceOf('Kuzzle\Util\AdvancedSearchResult', $searchResult);
+        $this->assertInstanceOf('Kuzzle\Util\SearchResult', $searchResult);
         $this->assertEquals(2, $searchResult->getTotal());
 
         $documents = $searchResult->getDocuments();

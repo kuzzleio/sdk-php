@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use Kuzzle\DataCollection;
 use Kuzzle\Document;
 
-class AdvancedSearchResult
+class SearchResult
 {
     /**
      * @var DataCollection
@@ -29,20 +29,20 @@ class AdvancedSearchResult
     private $searchArgs = [];
 
     /**
-     * @var AdvancedSearchResult
+     * @var SearchResult
      */
     private $previous = null;
 
     /**
-     * AdvancedSearchResult constructor.
+     * SearchResult constructor.
      *
      * @param DataCollection $dataCollection
      * @param integer $total
      * @param Document[] $documents
      * @param array $searchArgs
-     * @param AdvancedSearchResult $previous
+     * @param SearchResult $previous
      */
-    public function __construct(DataCollection $dataCollection, $total, array $documents, array $searchArgs = [], AdvancedSearchResult $previous = null)
+    public function __construct(DataCollection $dataCollection, $total, array $documents, array $searchArgs = [], SearchResult $previous = null)
     {
         $this->dataCollection = $dataCollection;
         $this->total = $total;
@@ -70,7 +70,7 @@ class AdvancedSearchResult
     }
 
     /**
-     * @return AdvancedSearchResult
+     * @return SearchResult
      */
     public function getNext()
     {
@@ -80,11 +80,6 @@ class AdvancedSearchResult
             if (array_key_exists('scroll', $this->searchArgs['filters'])) {
                 $options['scroll'] = $this->searchArgs['filters']['scroll'];
             }
-
-            $response = $this->dataCollection->getKuzzle()->scroll(
-                $options['scrollId'],
-                $options
-            );
 
             $fetchedDocuments = count($this->documents);
             $previous = $this;
@@ -97,6 +92,11 @@ class AdvancedSearchResult
                 return null;
             }
 
+            $response = $this->dataCollection->getKuzzle()->scroll(
+                $options['scrollId'],
+                $options
+            );
+
             $response['result']['hits'] = array_map(function ($document) {
                 return new Document($this->dataCollection, $document['_id'], $document['_source']);
             }, $response['result']['hits']);
@@ -105,7 +105,7 @@ class AdvancedSearchResult
                 $options['scrollId'] = $response['result']['_scroll_id'];
             }
 
-            return new AdvancedSearchResult($this->dataCollection, $response['result']['total'], $response['result']['hits'], ['options' => $options, 'filters' => $this->searchArgs['filters']], $this);
+            return new SearchResult($this->dataCollection, $response['result']['total'], $response['result']['hits'], ['options' => $options, 'filters' => $this->searchArgs['filters']], $this);
         } else if (array_key_exists('from', $this->searchArgs['filters']) && array_key_exists('size', $this->searchArgs['filters'])) {
             $filters = $this->searchArgs['filters'];
             $filters['from'] += $filters['size'];
@@ -124,7 +124,7 @@ class AdvancedSearchResult
     }
 
     /**
-     * @return AdvancedSearchResult
+     * @return SearchResult
      */
     public function getPrevious()
     {
@@ -132,11 +132,11 @@ class AdvancedSearchResult
     }
 
     /**
-     * @param AdvancedSearchResult $previous
+     * @param SearchResult $previous
      *
      * @return $this
      */
-    public function setPrevious(AdvancedSearchResult $previous)
+    public function setPrevious(SearchResult $previous)
     {
         $this->previous = $previous;
 

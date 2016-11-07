@@ -2,7 +2,7 @@
 
 namespace Kuzzle;
 
-use Kuzzle\Util\AdvancedSearchResult;
+use Kuzzle\Util\SearchResult;
 
 /**
  * Class DataCollection
@@ -54,7 +54,7 @@ class DataCollection
      *
      * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
-     * @return AdvancedSearchResult
+     * @return SearchResult
      */
     public function advancedSearch(array $filters, array $options = [])
     {
@@ -68,7 +68,7 @@ class DataCollection
      *
      * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
-     * @return AdvancedSearchResult
+     * @return SearchResult
      */
     public function search(array $filters, array $options = [])
     {
@@ -91,7 +91,7 @@ class DataCollection
             $options['scrollId'] = $response['result']['_scroll_id'];
         }
 
-        return new AdvancedSearchResult($this, $response['result']['total'], $response['result']['hits'], ['filters' => $filters, 'options' => $options]);
+        return new SearchResult($this, $response['result']['total'], $response['result']['hits'], ['filters' => $filters, 'options' => $options]);
     }
 
     /**
