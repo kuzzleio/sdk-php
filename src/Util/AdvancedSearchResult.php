@@ -75,9 +75,15 @@ class AdvancedSearchResult
     public function getNext()
     {
         if (array_key_exists('scrollId', $this->searchArgs['options'])) {
+            $options = $this->searchArgs['options'];
+
+            if (array_key_exists('scroll', $this->searchArgs['filters'])) {
+                $options['scroll'] = $this->searchArgs['filters']['scroll'];
+            }
+
             $response = $this->dataCollection->getKuzzle()->scroll(
-                $this->searchArgs['options']['scrollId'],
-                $this->searchArgs['options']
+                $options['scrollId'],
+                $options
             );
 
             $fetchedDocuments = count($this->documents);
@@ -95,7 +101,11 @@ class AdvancedSearchResult
                 return new Document($this->dataCollection, $document['_id'], $document['_source']);
             }, $response['result']['hits']);
 
-            return new AdvancedSearchResult($this->dataCollection, $response['result']['total'], $response['result']['hits'], $this->searchArgs, $this);
+            if (array_key_exists('_scroll_id', $response['result'])) {
+                $options['scrollId'] = $response['result']['_scroll_id'];
+            }
+
+            return new AdvancedSearchResult($this->dataCollection, $response['result']['total'], $response['result']['hits'], ['options' => $options, 'filters' => $this->searchArgs['filters']], $this);
         } else if (array_key_exists('from', $this->searchArgs['filters']) && array_key_exists('size', $this->searchArgs['filters'])) {
             $filters = $this->searchArgs['filters'];
             $filters['from'] += $filters['size'];

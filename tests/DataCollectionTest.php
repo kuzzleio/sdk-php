@@ -511,11 +511,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $httpScrollRequest = [
             'route' => '/api/1.0/_scroll/' . $scrollId,
-            'method' => 'GET',
+            'method' => 'POST',
             'request' => [
                 'metadata' => [],
                 'controller' => 'read',
                 'action' => 'scroll',
+                'body' => ['scroll' => '30s'],
                 'requestId' => $requestId,
             ]
         ];

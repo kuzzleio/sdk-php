@@ -1491,7 +1491,7 @@
       "route": "/api/1.0/:index/:collection/_search"
     },
     "scroll": {
-      "method": "get",
+      "method": "post",
       "name": "scroll",
       "route": "/api/1.0/_scroll/:scrollId"
     },

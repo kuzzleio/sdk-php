@@ -46,6 +46,9 @@ print_r("\n");
 $document = $collection->fetchDocument($document->getId());
 print_r($document->serialize());
 
+// wait for indexing
+sleep(2);
+
 // search with scroll results
 print_r('search with scroll results:');
 print_r("\n");
@@ -63,13 +66,16 @@ $filter = [
     ]
 ];
 $searchResult = $collection->search($filter);
+$nbDocs = 0;
 
 while ($searchResult) {
     foreach ($searchResult->getDocuments() as $document) {
         print_r($document->serialize());
+        $nbDocs++;
     }
     $searchResult = $searchResult->getNext();
 }
+print_r('search with scroll results total:' . $nbDocs . "\n");
 
 // search without scroll results
 print_r('search without scroll results:');
@@ -87,10 +93,13 @@ $filter = [
     ]
 ];
 $searchResult = $collection->search($filter);
+$nbDocs = 0;
 
 while ($searchResult) {
     foreach ($searchResult->getDocuments() as $document) {
         print_r($document->serialize());
+        $nbDocs++;
     }
     $searchResult = $searchResult->getNext();
 }
+print_r('search without scroll results total:' . $nbDocs . "\n");

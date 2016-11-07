@@ -314,7 +314,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $options = [
-            'requestId' => uniqid()
+            'requestId' => uniqid(),
+            'scroll' => '1m'
         ];
 
         // mock http request
@@ -324,9 +325,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'action' => 'scroll',
                 'controller' => 'read',
                 'metadata' => [],
+                'body' => ['scroll' => '1m'],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'POST'
         ];
 
         // mock response

@@ -790,13 +790,22 @@ class Kuzzle
      * @param array $options (optional) arguments
      * @return array raw kuzzle response
      */
+
     public function scroll($scrollId, array $options = [])
     {
         $options['httpParams'] = [':scrollId' => $scrollId];
 
+        $data = [
+            'body' => []
+        ];
+
+        if (array_key_exists('scroll', $options)) {
+            $data['body']['scroll'] = $options['scroll'];
+        }
+
         return $this->query(
             $this->buildQueryArgs('read', 'scroll'),
-            [],
+            $data,
             $options
         );
     }
