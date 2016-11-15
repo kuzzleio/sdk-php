@@ -33,7 +33,8 @@ class RoleTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $roleId,
                 'body' => $roleContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $roleId,
@@ -101,7 +102,8 @@ class RoleTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $roleId,
                 'body' => $roleUpdateContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $roleId,
@@ -155,7 +157,8 @@ class RoleTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteRole',
                 'requestId' => $requestId,
                 '_id' => $roleId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $roleId,

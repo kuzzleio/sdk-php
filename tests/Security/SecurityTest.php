@@ -37,7 +37,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $profileId,
                 'body' => $profileContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
@@ -99,7 +100,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $profileId,
                 'body' => $profileContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
@@ -165,7 +167,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $roleId,
                 'body' => $roleContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $roleId,
@@ -228,7 +231,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $roleId,
                 'body' => $roleContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $roleId,
@@ -287,7 +291,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $userId,
@@ -343,7 +348,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $userId,
@@ -398,7 +404,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $profileId,
@@ -447,7 +454,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteUser',
                 'requestId' => $requestId,
                 '_id' => $userId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $userId,
@@ -496,7 +504,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteRole',
                 'requestId' => $requestId,
                 '_id' => $roleId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $roleId,
@@ -554,7 +563,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'getProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getResponse = [
             '_id' => $profileId,
@@ -615,7 +625,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'getRole',
                 'requestId' => $requestId,
                 '_id' => $roleId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getResponse = [
             '_id' => $roleId,
@@ -669,7 +680,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'getUser',
                 'requestId' => $requestId,
                 '_id' => $userId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getResponse = [
             '_id' => $userId,
@@ -729,7 +741,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'getUserRights',
                 'requestId' => $requestId,
                 '_id' => $userId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getRightsResponse = [
             'hits' => $userRightsContent
@@ -819,7 +832,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'searchProfiles',
                 'requestId' => $requestId,
                 'body' => $filter
-            ]
+            ],
+            'query_parameters' => []
         ];
         $advancedSearchResponse = [
             'hits' => [
@@ -909,7 +923,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'searchRoles',
                 'requestId' => $requestId,
                 'body' => $filter
-            ]
+            ],
+            'query_parameters' => []
         ];
         $advancedSearchResponse = [
             'hits' => [
@@ -1001,7 +1016,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'searchUsers',
                 'requestId' => $requestId,
                 'body' => $filter
-            ]
+            ],
+            'query_parameters' => []
         ];
         $advancedSearchResponse = [
             'hits' => [
@@ -1096,7 +1112,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $profileId,
                 'body' => $profileContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $profileId,
@@ -1162,7 +1179,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $roleId,
                 'body' => $roleUpdateContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $roleId,
@@ -1222,7 +1240,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $userId,

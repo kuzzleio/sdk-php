@@ -31,7 +31,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'body' => $filter,
                 'collection' => $collection,
                 'index' => $index
-            ]
+            ],
+            'query_parameters' => []
         ];
         $advancedSearchResponse = [
             'hits' => [
@@ -117,7 +118,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'body' => $filter,
                 'collection' => $collection,
                 'index' => $index
-            ]
+            ],
+            'query_parameters' => []
         ];
         $countResponse = [
             'count' => 2
@@ -166,7 +168,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index
-            ]
+            ],
+            'query_parameters' => []
         ];
         $createCollectionResponse = [
             'acknowledged' => true
@@ -222,7 +225,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId
-            ]
+            ],
+            'query_parameters' => []
         ];
         $createDocumentResponse = [
             '_id' => $documentId,
@@ -283,7 +287,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId
-            ]
+            ],
+            'query_parameters' => []
         ];
         $createDocumentResponse = [
             '_id' => $documentId,
@@ -342,7 +347,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId
-            ]
+            ],
+            'query_parameters' => []
         ];
 
         $deleteDocumentResponse = [
@@ -396,7 +402,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 'body' => (object)$filters
-            ]
+            ],
+            'query_parameters' => []
         ];
 
         $deleteDocumentResponse = [
@@ -452,7 +459,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId
-            ]
+            ],
+            'query_parameters' => []
         ];
         $fetchDocumentResponse = [
             '_id' => $documentId,
@@ -511,7 +519,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'body' => $filter,
                 'collection' => $collection,
                 'index' => $index
-            ]
+            ],
+            'query_parameters' => []
         ];
         $advancedSearchResponse = [
             'hits' => [
@@ -585,7 +594,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index
-            ]
+            ],
+            'query_parameters' => []
         ];
         $publishDocumentResponse = [
             'published' => true
@@ -641,7 +651,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId
-            ]
+            ],
+            'query_parameters' => []
         ];
         $publishDocumentResponse = [
             'published' => true
@@ -699,7 +710,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId
-            ]
+            ],
+            'query_parameters' => []
         ];
         $createDocumentResponse = [
             '_id' => $documentId,
@@ -755,7 +767,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $truncateCollectionResponse = [
             'ids' => [$documentId]
@@ -818,7 +831,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateDocumentResponse = [
             '_id' => $documentId,
@@ -840,7 +854,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getResponse = [
             '_id' => $documentId,

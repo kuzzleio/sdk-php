@@ -32,7 +32,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($routesNow, $routesDescription['read']['now']);
         }
         catch (Exception $e) {
-            $this->fail($e->message);
+            $this->fail($e->getMessage());
         }
     }
 
@@ -227,7 +227,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -274,7 +275,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -321,7 +323,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -415,7 +418,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -466,7 +470,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -525,7 +530,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -578,7 +584,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -632,7 +639,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -696,7 +704,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -754,7 +763,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -802,7 +812,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -850,7 +861,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response (timestamp is given in milliseconds)
@@ -900,7 +912,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -949,7 +962,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -1019,7 +1033,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -1072,7 +1087,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -1138,7 +1154,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'body' => $content,
                 'requestId' => $options['requestId']
             ],
-            'method' => 'PUT'
+            'method' => 'PUT',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -1185,7 +1202,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -1240,7 +1258,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'body' => ['foo' => 'bar']
             ],
             'route' => '/api/1.0/foo/bar',
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
@@ -1253,7 +1272,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'Authorization: ' . $httpRequest['request']['headers']['authorization'],
                 'Content-length: ' . strlen($body)
             ],
-            'body' => $body
+            'body' => $body,
+            'query_parameters' => []
         ];
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
@@ -1292,7 +1312,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'body' => ['foo' => 'bar']
             ],
             'route' => '/api/1.0/foo/bar',
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
@@ -1305,7 +1326,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'Authorization: ' . $httpRequest['request']['headers']['authorization'],
                 'Content-length: ' . strlen($body)
             ],
-            'body' => $body
+            'body' => $body,
+            'query_parameters' => []
         ];
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
@@ -1349,7 +1371,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'body' => ['foo' => 'bar']
             ],
             'route' => '/api/1.0/foo/bar',
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => []
         ];
 
         $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
@@ -1362,7 +1385,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'Authorization: ' . $httpRequest['request']['headers']['authorization'],
                 'Content-length: ' . strlen($body)
             ],
-            'body' => $body
+            'body' => $body,
+            'query_parameters' => []
         ];
 
         $curlRequestHandler
@@ -1377,8 +1401,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $this->fail("KuzzleTest::testEmitRestRequestWithKuzzleError => Should raise an exception");
         }
         catch (Exception $e) {
-            $this->assertInstanceOf('ErrorException', $e);
             $this->assertEquals('Kuzzle Error', $e->getMessage());
+            $this->assertInstanceOf('ErrorException', $e);
         }
     }
 
@@ -1547,7 +1571,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'headers' => [
                     'authorization' => 'Bearer ' . $token
                 ]
-            ]
+            ],
+            'query_parameters' => []
         ];
         $httpResponse = [];
 
@@ -1608,7 +1633,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'auth',
                 'requestId' => $requestId,
                 'metadata' => []
-            ]
+            ],
+            'query_parameters' => []
         ];
         $httpResponse = [];
 
@@ -1711,6 +1737,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $queryArgs = [
             'route' => '/api/1.0/my-foo',
             'method' => 'POST',
+            'query_parameters' => []
         ];
         $query = [
           'body' => []
@@ -1729,7 +1756,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
               'controller' => '',
               'action' => '',
               'requestId' => $requestId
-            ]
+            ],
+            'query_parameters' => []
         ];
         $httpResponse = [];
 
