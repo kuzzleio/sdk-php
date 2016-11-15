@@ -32,6 +32,11 @@ class SearchResult
     /**
      * @var array
      */
+    private $aggregations = [];
+
+    /**
+     * @var array
+     */
     private $searchArgs = [];
 
     /**
@@ -50,14 +55,16 @@ class SearchResult
      * @param DataCollection $dataCollection
      * @param integer $total
      * @param Document[] $documents
+     * @param array $aggregations
      * @param array $searchArgs
      * @param SearchResult $previous
      */
-    public function __construct(DataCollection $dataCollection, $total, array $documents, array $searchArgs = [], SearchResult $previous = null)
+    public function __construct(DataCollection $dataCollection, $total, array $documents, array $aggregations = [], array $searchArgs = [], SearchResult $previous = null)
     {
         $this->dataCollection = $dataCollection;
         $this->total = $total;
         $this->documents = $documents;
+        $this->aggregations = $aggregations;
         $this->searchArgs = $searchArgs;
         $this->previous = $previous;
 
@@ -78,6 +85,14 @@ class SearchResult
     public function getDocuments()
     {
         return $this->documents;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAggregations()
+    {
+        return $this->aggregations;
     }
 
     /**
@@ -106,21 +121,14 @@ class SearchResult
                     return null;
                 }
 
-                $response = $this->dataCollection->getKuzzle()->scroll(
+                $searchResult = $this->dataCollection->scroll(
                     $options['scrollId'],
-                    $options
+                    $options,
+                    $this->searchArgs['filters']
                 );
+                $searchResult->setPrevious($this);
 
-                // hydrate documents
-                $response['result']['hits'] = array_map(function ($document) {
-                    return new Document($this->dataCollection, $document['_id'], $document['_source']);
-                }, $response['result']['hits']);
-
-                if (array_key_exists('_scroll_id', $response['result'])) {
-                    $options['scrollId'] = $response['result']['_scroll_id'];
-                }
-
-                $this->next = new SearchResult($this->dataCollection, $response['result']['total'], $response['result']['hits'], ['options' => $options, 'filters' => $this->searchArgs['filters']], $this);
+                $this->next = $searchResult;
             } else if (array_key_exists('from', $this->searchArgs['filters']) && array_key_exists('size', $this->searchArgs['filters'])) {
                 // retrieve next results with  from/size if original search use it
                 $filters = $this->searchArgs['filters'];

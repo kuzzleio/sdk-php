@@ -91,7 +91,58 @@ class DataCollection
             $options['scrollId'] = $response['result']['_scroll_id'];
         }
 
-        return new SearchResult($this, $response['result']['total'], $response['result']['hits'], ['filters' => $filters, 'options' => $options]);
+        return new SearchResult(
+            $this,
+            $response['result']['total'],
+            $response['result']['hits'],
+            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
+            ['filters' => $filters, 'options' => $options]
+        );
+    }
+
+
+    /**
+     * Retrieves next result of a search with scroll query.
+     *
+     * @param string $scrollId
+     * @param array $options (optional) arguments
+     * @param array $filters (optional) original filters
+     * @return SearchResult
+     */
+    public function scroll($scrollId, array $options = [], array $filters = [])
+    {
+        $options['httpParams'] = [':scrollId' => $scrollId];
+
+        $data = [
+            'body' => []
+        ];
+
+        if (array_key_exists('scroll', $options)) {
+            $data['body']['scroll'] = $options['scroll'];
+        }
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('read', 'scroll'),
+            $data,
+            $options
+        );
+
+        $response['result']['hits'] = array_map(function ($document) {
+            return new Document($this, $document['_id'], $document['_source']);
+        }, $response['result']['hits']);
+
+
+        if (array_key_exists('_scroll_id', $response['result'])) {
+            $options['scrollId'] = $response['result']['_scroll_id'];
+        }
+
+        return new SearchResult(
+            $this,
+            $response['result']['total'],
+            $response['result']['hits'],
+            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
+            ['filters' => $filters, 'options' => $options]
+        );
     }
 
     /**
@@ -282,6 +333,10 @@ class DataCollection
         }
 
         $searchResult = $this->search($filters, $options);
+
+        if ($searchResult->getTotal() > 10000) {
+            trigger_error('Usage of Kuzzle\\DataCollection::fetchAllDocuments will fetch more than 10 000 document. To avoid performance issues, please use Kuzzle\\DataCollection::search and Kuzzle\\DataCollection::scroll requests', E_USER_WARNING);
+        }
 
         while ($searchResult) {
             foreach ($searchResult->getDocuments() as $document) {

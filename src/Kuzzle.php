@@ -11,7 +11,6 @@ use Kuzzle\Util\RequestInterface;
 use Ramsey\Uuid\Uuid;
 
 use Kuzzle\Util\CurlRequest;
-use Kuzzle\DataCollection;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
 
@@ -263,6 +262,9 @@ class Kuzzle
         return $this->jwtToken;
     }
 
+    /**
+     * @return array
+     */
     public function getMetadata()
     {
         return $this->metadata;
@@ -362,15 +364,23 @@ class Kuzzle
             ':type' => $collectionType
         ];
 
-        $response = $this->query(
-            $this->buildQueryArgs('read', 'listCollections', $index),
-            [
-                'body' => [
-                    'type' => $collectionType
-                ]
-            ],
-            $options
-        );
+        $query = [
+            'body' => [
+                'type' => $collectionType
+            ]
+        ];
+
+        if (array_key_exists('from', $options)) {
+            $options['httpParams'][':from'] = $options['from'];
+            $query['body']['from'] = $options['from'];
+        }
+
+        if (array_key_exists('size', $options)) {
+            $options['httpParams'][':size'] = $options['size'];
+            $query['body']['size'] = $options['size'];
+        }
+
+        $response = $this->query($this->buildQueryArgs('read', 'listCollections', $index), $query, $options);
 
         return $response['result']['collections'];
     }
@@ -781,33 +791,6 @@ class Kuzzle
         $this->jwtToken = $jwtToken;
 
         return $this;
-    }
-
-    /**
-     * Retrieves next result of a search with scroll query.
-     *
-     * @param string $scrollId
-     * @param array $options (optional) arguments
-     * @return array raw kuzzle response
-     */
-
-    public function scroll($scrollId, array $options = [])
-    {
-        $options['httpParams'] = [':scrollId' => $scrollId];
-
-        $data = [
-            'body' => []
-        ];
-
-        if (array_key_exists('scroll', $options)) {
-            $data['body']['scroll'] = $options['scroll'];
-        }
-
-        return $this->query(
-            $this->buildQueryArgs('read', 'scroll'),
-            $data,
-            $options
-        );
     }
 
     /**

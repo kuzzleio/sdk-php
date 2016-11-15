@@ -48,6 +48,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ],
+            'aggregations' => [
+                'aggs_name' => []
+            ],
             'total' => 2
         ];
         $httpResponse = [
@@ -81,6 +84,93 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Kuzzle\Document', $documents[0]);
         $this->assertAttributeEquals('test', 'id', $documents[0]);
         $this->assertAttributeEquals('test1', 'id', $documents[1]);
+
+        $this->assertEquals([
+            'aggs_name' => []
+        ], $searchResult->getAggregations());
+    }
+
+    public function testScroll()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $scrollId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid(),
+            'scroll' => '1m'
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/api/1.0/_scroll/' . $scrollId,
+            'request' => [
+                'action' => 'scroll',
+                'controller' => 'read',
+                'metadata' => [],
+                'body' => ['scroll' => '1m'],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'POST'
+        ];
+
+        // mock response
+        $scrollResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ],
+                1 => [
+                    '_id' => 'test1',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
+            'aggregations' => [
+                'aggs_name' => []
+            ],
+            'total' => 2
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $scrollResponse
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+
+        $searchResult = $dataCollection->scroll($scrollId, $options);
+
+        $this->assertInstanceOf('Kuzzle\Util\SearchResult', $searchResult);
+        $this->assertEquals(2, $searchResult->getTotal());
+
+        $documents = $searchResult->getDocuments();
+        $this->assertInstanceOf('Kuzzle\Document', $documents[0]);
+        $this->assertAttributeEquals('test', 'id', $documents[0]);
+        $this->assertAttributeEquals('test1', 'id', $documents[1]);
+
+        $this->assertEquals([
+            'aggs_name' => []
+        ], $searchResult->getAggregations());
     }
 
     function testCount()
@@ -589,7 +679,6 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
-        $scrollId = uniqid();
         $index = 'index';
         $collection = 'collection';
 

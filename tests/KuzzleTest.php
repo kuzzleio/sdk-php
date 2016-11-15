@@ -302,72 +302,6 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($createIndexResponse, $response);
     }
 
-    public function testScroll()
-    {
-        $url = self::FAKE_KUZZLE_HOST;
-        $scrollId = uniqid();
-
-        $kuzzle = $this
-            ->getMockBuilder('\Kuzzle\Kuzzle')
-            ->setMethods(['emitRestRequest'])
-            ->setConstructorArgs([$url])
-            ->getMock();
-
-        $options = [
-            'requestId' => uniqid(),
-            'scroll' => '1m'
-        ];
-
-        // mock http request
-        $httpRequest = [
-            'route' => '/api/1.0/_scroll/' . $scrollId,
-            'request' => [
-                'action' => 'scroll',
-                'controller' => 'read',
-                'metadata' => [],
-                'body' => ['scroll' => '1m'],
-                'requestId' => $options['requestId']
-            ],
-            'method' => 'POST'
-        ];
-
-        // mock response
-        $scrollResponse = [
-            'hits' => [
-                0 => [
-                    '_id' => 'test',
-                    '_source' => [
-                        'foo' => 'bar'
-                    ]
-                ],
-                1 => [
-                    '_id' => 'test1',
-                    '_source' => [
-                        'foo' => 'bar'
-                    ]
-                ]
-            ],
-            'total' => 2
-        ];
-        $httpResponse = [
-            'error' => null,
-            'result' => $scrollResponse
-        ];
-
-        $kuzzle
-            ->expects($this->once())
-            ->method('emitRestRequest')
-            ->with($httpRequest)
-            ->willReturn($httpResponse);
-
-        /**
-         * @var \Kuzzle\Kuzzle $kuzzle
-         */
-        $result = $kuzzle->scroll($scrollId, $options);
-
-        $this->assertEquals($result, $httpResponse);
-    }
-
     public function testGetAllStatistics()
     {
         $url = self::FAKE_KUZZLE_HOST;
@@ -611,6 +545,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     {
         $url = self::FAKE_KUZZLE_HOST;
         $index = 'index';
+        $from = 0;
+        $size = 42;
         $collectionType = 'all';
 
         $kuzzle = $this
@@ -620,7 +556,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $options = [
-            'requestId' => uniqid()
+            'requestId' => uniqid(),
+            'from' => $from,
+            'size' => $size
         ];
 
         // mock http request
@@ -632,7 +570,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'read',
                 'metadata' => [],
                 'body' => [
-                    'type' => $collectionType
+                    'type' => $collectionType,
+                    'from' => $from,
+                    'size' => $size
                 ],
                 'requestId' => $options['requestId']
             ],
@@ -1860,7 +1800,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
          * @var \Kuzzle\Kuzzle $kuzzle
          */
         try {
-            $result = $kuzzle->query($queryArgs, $query, $options);
+            $kuzzle->query($queryArgs, $query, $options);
         }
         catch (Exception $e) {
             $this->fail('KuzzleTest::testQuery => Should not raise an exception');
