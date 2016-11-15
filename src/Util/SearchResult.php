@@ -68,6 +68,10 @@ class SearchResult
         $this->searchArgs = $searchArgs;
         $this->previous = $previous;
 
+        if ($this->previous instanceof SearchResult) {
+            $this->previous->setNext($this);
+        }
+
         return $this;
     }
 
