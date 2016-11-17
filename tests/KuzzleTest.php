@@ -1572,7 +1572,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                     'authorization' => 'Bearer ' . $token
                 ]
             ],
-            'query_parameters' => []
+            'query_parameters' => [
+                'refresh' => 'foo'
+            ]
         ];
         $httpResponse = [];
 
@@ -1586,6 +1588,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ]
         ];
         $options = [
+            'refresh' => 'foo',
             'metadata' => [
                 'foo' => 'bar'
             ],
