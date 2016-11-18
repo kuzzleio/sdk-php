@@ -2,7 +2,7 @@
 
 namespace Kuzzle;
 
-use Kuzzle\Util\AdvancedSearchResult;
+use Kuzzle\Util\SearchResult;
 
 /**
  * Class DataCollection
@@ -49,11 +49,28 @@ class DataCollection
     /**
      * Executes an advanced search on the data collection.
      *
+     * @deprecated
+     * @see search
+     *
      * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
-     * @return AdvancedSearchResult
+     * @return SearchResult
      */
     public function advancedSearch(array $filters, array $options = [])
+    {
+        trigger_error('Usage of Kuzzle\\DataCollection::advancedSearch is deprecated. Use Kuzzle\\DataCollection::search instead', E_USER_WARNING);
+
+        return $this->search($filters, $options);
+    }
+
+    /**
+     * Executes an advanced search on the data collection.
+     *
+     * @param array $filters Filters in ElasticSearch Query DSL format
+     * @param array $options Optional parameters
+     * @return SearchResult
+     */
+    public function search(array $filters, array $options = [])
     {
         $data = [
             'body' => $filters
@@ -69,10 +86,62 @@ class DataCollection
             return new Document($this, $document['_id'], $document['_source']);
         }, $response['result']['hits']);
 
-        return new AdvancedSearchResult(
+
+        if (array_key_exists('_scroll_id', $response['result'])) {
+            $options['scrollId'] = $response['result']['_scroll_id'];
+        }
+
+        return new SearchResult(
+            $this,
             $response['result']['total'],
             $response['result']['hits'],
-            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : []
+            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
+            ['filters' => $filters, 'options' => $options]
+        );
+    }
+
+
+    /**
+     * Retrieves next result of a search with scroll query.
+     *
+     * @param string $scrollId
+     * @param array $options (optional) arguments
+     * @param array $filters (optional) original filters
+     * @return SearchResult
+     */
+    public function scroll($scrollId, array $options = [], array $filters = [])
+    {
+        $options['httpParams'] = [':scrollId' => $scrollId];
+
+        $data = [
+            'body' => []
+        ];
+
+        if (array_key_exists('scroll', $options)) {
+            $data['body']['scroll'] = $options['scroll'];
+        }
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('read', 'scroll'),
+            $data,
+            $options
+        );
+
+        $response['result']['hits'] = array_map(function ($document) {
+            return new Document($this, $document['_id'], $document['_source']);
+        }, $response['result']['hits']);
+
+
+        if (array_key_exists('_scroll_id', $response['result'])) {
+            $options['scrollId'] = $response['result']['_scroll_id'];
+        }
+
+        return new SearchResult(
+            $this,
+            $response['result']['total'],
+            $response['result']['hits'],
+            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
+            ['filters' => $filters, 'options' => $options]
         );
     }
 
@@ -237,21 +306,46 @@ class DataCollection
      * Retrieves all documents stored in this data collection.
      *
      * @param array $options Optional parameters
-     * @return AdvancedSearchResult containing the total number of retrieved documents and an array of Kuzzle/Document objects
+     * @return Document[] containing all documents objects
      */
     public function fetchAllDocuments(array $options = [])
     {
+        $documents = [];
         $filters = [];
+
+        if (array_key_exists('scroll', $options)) {
+            $filters['scroll'] = $options['scroll'];
+            unset($options['scroll']);
+        }
 
         if (array_key_exists('from', $options)) {
             $filters['from'] = $options['from'];
+            unset($options['from']);
+        } else {
+            $filters['from'] = 0;
         }
 
         if (array_key_exists('size', $options)) {
             $filters['size'] = $options['size'];
+            unset($options['size']);
+        } else {
+            $filters['size'] = 1000;
         }
 
-        return $this->advancedSearch($filters, $options);
+        $searchResult = $this->search($filters, $options);
+
+        if ($searchResult->getTotal() > 10000) {
+            trigger_error('Usage of Kuzzle\\DataCollection::fetchAllDocuments will fetch more than 10 000 document. To avoid performance issues, please use Kuzzle\\DataCollection::search and Kuzzle\\DataCollection::scroll requests', E_USER_WARNING);
+        }
+
+        while ($searchResult) {
+            foreach ($searchResult->getDocuments() as $document) {
+                $documents[] = $document;
+            }
+            $searchResult = $searchResult->getNext();
+        }
+
+        return $documents;
     }
 
     /**

@@ -165,6 +165,30 @@ class Kuzzle
     }
 
     /**
+     * Create an index
+     *
+     * @param $index
+     * @param array $options
+     * @return mixed
+     */
+    public function createIndex($index, array $options = [])
+    {
+        $options['httpParams'] = [
+            ':index' => $index
+        ];
+
+        $response = $this->query(
+            $this->buildQueryArgs('admin', 'createIndex'),
+            [
+                'body' => ['index' => $index]
+            ],
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
      * Instantiates a new KuzzleDataCollection object.
      *
      * @param string $collection The name of the data collection you want to manipulate

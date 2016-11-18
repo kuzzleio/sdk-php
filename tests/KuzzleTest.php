@@ -32,7 +32,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($routesNow, $routesDescription['read']['now']);
         }
         catch (Exception $e) {
-            $this->fail($e->message);
+            $this->fail($e->getMessage());
         }
     }
 
@@ -249,6 +249,57 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $response = $kuzzle->checkToken($fakeToken, $options);
 
         $this->assertEquals($checkTokenResponse, $response);
+    }
+
+    public function testCreateIndex()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+        $index = 'foo';
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/api/1.0/' . $index,
+            'request' => [
+                'action' => 'createIndex',
+                'controller' => 'admin',
+                'metadata' => [],
+                'body' => [
+                    'index' => $index
+                ],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'PUT'
+        ];
+
+        // mock response
+        $createIndexResponse = ['acknowledged' => true];
+        $httpResponse = [
+            'error' => null,
+            'result' => $createIndexResponse
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var \Kuzzle\Kuzzle $kuzzle
+         */
+        $response = $kuzzle->createIndex($index, $options);
+
+        $this->assertEquals($createIndexResponse, $response);
     }
 
     public function testGetAllStatistics()
@@ -1749,7 +1800,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
          * @var \Kuzzle\Kuzzle $kuzzle
          */
         try {
-            $result = $kuzzle->query($queryArgs, $query, $options);
+            $kuzzle->query($queryArgs, $query, $options);
         }
         catch (Exception $e) {
             $this->fail('KuzzleTest::testQuery => Should not raise an exception');
