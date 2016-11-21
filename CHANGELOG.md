@@ -2,6 +2,8 @@
 
 # Current
 
+# 2.0.0
+
 ## Breaking Changes
 
 * `KuzzleDataCollection` constructor signature has been changed from:  
