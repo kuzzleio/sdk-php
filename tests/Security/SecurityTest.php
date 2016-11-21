@@ -323,6 +323,62 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($userContent, 'content', $result);
     }
 
+    function testCreateRestrictedUser()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+
+        $userId = uniqid();
+        $userContent = [
+            'some' => 'content'
+        ];
+
+        $httpRequest = [
+            'route' => '/api/1.0/users/_createRestricted',
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'security',
+                'action' => 'createRestrictedUser',
+                'requestId' => $requestId,
+                '_id' => $userId,
+                'body' => $userContent
+            ]
+        ];
+        $saveResponse = [
+            '_id' => $userId,
+            '_source' => $userContent,
+            '_version' => 1
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $saveResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $security = new Security($kuzzle);
+
+        $result = $security->createRestrictedUser($userId, $userContent, ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Security\User', $result);
+        $this->assertAttributeEquals($userId, 'id', $result);
+        $this->assertAttributeEquals($userContent, 'content', $result);
+    }
+
     function testCreateOrReplaceUser()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
