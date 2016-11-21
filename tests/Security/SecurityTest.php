@@ -274,7 +274,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profilesIds' => ['admin']
+            'profileIds' => ['admin']
         ];
 
         $httpRequest = [
@@ -330,7 +330,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profilesIds' => ['admin']
+            'profileIds' => ['admin']
         ];
 
         $httpRequest = [
@@ -657,7 +657,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profilesIds' => ['admin']
+            'profileIds' => ['admin']
         ];
 
         $httpRequest = [
@@ -1206,7 +1206,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $userId = uniqid();
 
         $userContent = [
-            'profilesIds' => [uniqid()]
+            'profileIds' => [uniqid()]
         ];
         $userBaseContent = [
             'foo' => 'bar'
