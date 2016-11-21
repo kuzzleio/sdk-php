@@ -7,6 +7,38 @@ use Kuzzle\Security\Security;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {
+    function testEmptyGetProfiles()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $security = new Security($kuzzle);
+        $user = new User($security, '', []);
+
+        $this->assertEquals($user->getProfiles(), []);
+    }
+
+    function testAddProfile()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $security = new Security($kuzzle);
+        $user = new User($security, '', []);
+
+        $this->assertEquals($user, $user->addProfile('myProfile'));
+    }
+
     function testSave()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
