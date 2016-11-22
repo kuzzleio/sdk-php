@@ -7,6 +7,38 @@ use Kuzzle\Security\Security;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {
+    function testEmptyGetProfiles()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $security = new Security($kuzzle);
+        $user = new User($security, '', []);
+
+        $this->assertEquals($user->getProfiles(), []);
+    }
+
+    function testAddProfile()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $security = new Security($kuzzle);
+        $user = new User($security, '', []);
+
+        $this->assertEquals($user, $user->addProfile('myProfile'));
+    }
+
     function testSave()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
@@ -14,7 +46,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profilesIds' => ['admin']
+            'profileIds' => ['admin']
         ];
 
         $httpRequest = [
@@ -64,7 +96,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($userId, 'id', $result);
         $this->assertAttributeEquals($userContent, 'content', $result);
 
-        $profile = new Profile($security, $userContent['profilesIds'][0]);
+        $profile = new Profile($security, $userContent['profileIds'][0]);
         $user->setProfiles([$profile]);
         $result = $user->save(['requestId' => $requestId]);
 
@@ -81,7 +113,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $userId = uniqid();
 
         $userContent = [
-            'profilesIds' => [uniqid()]
+            'profileIds' => [uniqid()]
         ];
         $userBaseContent = [
             'foo' => 'bar'

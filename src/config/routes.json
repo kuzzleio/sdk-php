@@ -1530,6 +1530,11 @@
       "name": "createUser",
       "route": "/api/1.0/users/_create"
     },
+    "createRestrictedUser": {
+      "method": "post",
+      "name": "createRestrictedUser",
+      "route": "/api/1.0/users/_createRestricted"
+    },
     "deleteProfile": {
       "method": "delete",
       "name": "deleteProfile",
