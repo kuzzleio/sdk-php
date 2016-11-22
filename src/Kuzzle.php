@@ -505,7 +505,9 @@ class Kuzzle
      */
     public function query(array $queryArgs, array $query = [], array $options = [])
     {
-        $httpParams = [];
+        $httpParams = [
+            'query_parameters' => []
+        ];
         $request = [
             'metadata' => $this->metadata
         ];
@@ -545,6 +547,10 @@ class Kuzzle
                 foreach ($options['httpParams'] as $param => $value) {
                     $httpParams[$param] = $value;
                 }
+            }
+
+            if (array_key_exists('refresh', $options)) {
+                $httpParams['query_parameters']['refresh'] = $options['refresh'];
             }
         }
 
@@ -908,7 +914,8 @@ class Kuzzle
             'url' => $this->url . $httpRequest['route'],
             'method' => $httpRequest['method'],
             'headers' => $headers,
-            'body' => $body
+            'body' => $body,
+            'query_parameters' => $httpRequest['query_parameters']
         ]);
 
         if (!empty($result['error'])) {
@@ -966,6 +973,11 @@ class Kuzzle
     protected function convertRestRequest(array $request, array $httpParams = [])
     {
         $httpRequest = [];
+
+        if (array_key_exists('query_parameters', $httpParams)) {
+            $httpRequest['query_parameters'] = $httpParams['query_parameters'];
+            unset($httpParams['query_parameters']);
+        }
 
         if (!array_key_exists('route', $request)) {
             if (!array_key_exists($request['controller'], $this->routesDescription)) {

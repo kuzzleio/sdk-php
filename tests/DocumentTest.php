@@ -30,7 +30,8 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => $documentContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $documentId
@@ -131,7 +132,8 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => array_merge($documentContent, ['baz' => 'baz'])
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $documentId,
@@ -194,7 +196,8 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => array_merge($documentContent, ['baz' => 'baz'])
-            ]
+            ],
+            'query_parameters' => []
         ];
         $publishResponse = [
             'published' => true

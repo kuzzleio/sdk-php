@@ -56,7 +56,8 @@ class MemoryStorageTest extends \PHPUnit_Framework_TestCase
                         'withscores' => $opts['withscores']
                     ]
                 ],
-                'method' => 'GET'
+                'method' => 'GET',
+                'query_parameters' => []
             ];
 
             $httpResponse = [];

@@ -59,7 +59,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $userId,
@@ -129,7 +130,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $userId,
@@ -182,7 +184,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteUser',
                 'requestId' => $requestId,
                 '_id' => $userId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $userId,

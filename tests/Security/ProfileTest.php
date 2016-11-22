@@ -43,7 +43,8 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $profileId,
                 'body' => array_merge_recursive($profileContent, ['policies' => [$profileAdditionalPolicy]])
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
@@ -125,7 +126,8 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $profileId,
                 'body' => $profileContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $profileId,
@@ -178,7 +180,8 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $profileId,
