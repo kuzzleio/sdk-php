@@ -14,7 +14,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profilesIds' => ['admin']
+            'profileIds' => ['admin']
         ];
 
         $httpRequest = [
@@ -64,7 +64,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($userId, 'id', $result);
         $this->assertAttributeEquals($userContent, 'content', $result);
 
-        $profile = new Profile($security, $userContent['profilesIds'][0]);
+        $profile = new Profile($security, $userContent['profileIds'][0]);
         $user->setProfiles([$profile]);
         $result = $user->save(['requestId' => $requestId]);
 
@@ -81,7 +81,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $userId = uniqid();
 
         $userContent = [
-            'profilesIds' => [uniqid()]
+            'profileIds' => [uniqid()]
         ];
         $userBaseContent = [
             'foo' => 'bar'

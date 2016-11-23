@@ -42,7 +42,7 @@ class User extends Document
     {
         $profiles = [];
 
-        foreach ($this->content['profilesIds'] as $profileId) {
+        foreach ($this->content['profileIds'] as $profileId) {
             $profiles[] = $this->security->getProfile($profileId);
         }
 
@@ -57,13 +57,13 @@ class User extends Document
      */
     public function setProfiles($profiles)
     {
-        $profilesIds = [];
+        $profileIds = [];
 
         foreach ($profiles as $profile) {
-            $profilesIds[] = $this->extractProfileId($profile);
+            $profileIds[] = $this->extractProfileId($profile);
         }
 
-        $this->content['profilesIds'] = $profilesIds;
+        $this->content['profileIds'] = $profileIds;
 
         return $this;
     }
@@ -76,7 +76,7 @@ class User extends Document
      */
     public function addProfile($profile)
     {
-        $this->content['profilesIds'][] = $this->extractProfileId($profile);
+        $this->content['profileIds'][] = $this->extractProfileId($profile);
 
         return $this;
     }
@@ -98,17 +98,17 @@ class User extends Document
 
     protected function syncProfile()
     {
-        if (!array_key_exists('profilesIds', $this->content)) {
-            $this->content['profilesIds'] = [User::DEFAULT_PROFILE];
+        if (!array_key_exists('profileIds', $this->content)) {
+            $this->content['profileIds'] = [User::DEFAULT_PROFILE];
         }
 
-        $profilesIds = [];
+        $profileIds = [];
 
-        foreach ($this->content['profilesIds'] as $profile) {
-            $profilesIds[] = $this->extractProfileId($profile);
+        foreach ($this->content['profileIds'] as $profile) {
+            $profileIds[] = $this->extractProfileId($profile);
         }
 
-        $this->content['profilesIds'] = $profilesIds;
+        $this->content['profileIds'] = $profileIds;
     }
 
     /**
