@@ -36,10 +36,14 @@ class User extends Document
     /**
      * Returns this user associated profile.
      *
-     * @return Profile[]
+     * @return Profile[]|false
      */
     public function getProfiles()
     {
+        if (!array_key_exists('profileIds', $this->content)) {
+            return [];
+        }
+
         $profiles = [];
 
         foreach ($this->content['profileIds'] as $profileId) {
@@ -76,6 +80,10 @@ class User extends Document
      */
     public function addProfile($profile)
     {
+        if (!array_key_exists('profileIds', $this->content)) {
+            $this->content['profileIds'] = [];
+        }
+
         $this->content['profileIds'][] = $this->extractProfileId($profile);
 
         return $this;
@@ -99,7 +107,7 @@ class User extends Document
     protected function syncProfile()
     {
         if (!array_key_exists('profileIds', $this->content)) {
-            $this->content['profileIds'] = [User::DEFAULT_PROFILE];
+            return false;
         }
 
         $profileIds = [];

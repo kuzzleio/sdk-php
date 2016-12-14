@@ -28,7 +28,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/_create',
+            'route' => '/profiles/' . $profileId . '/_create',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -37,7 +37,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $profileId,
                 'body' => $profileContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
@@ -90,7 +91,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/' . $profileId . '/_createOrReplace',
+            'route' => '/profiles/' . $profileId . '/_createOrReplace',
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -99,7 +100,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $profileId,
                 'body' => $profileContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
@@ -156,7 +158,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/_create',
+            'route' => '/roles/' . $roleId . '/_create',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -165,7 +167,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $roleId,
                 'body' => $roleContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $roleId,
@@ -219,7 +222,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/' . $roleId . '/_createOrReplace',
+            'route' => '/roles/' . $roleId . '/_createOrReplace',
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -228,7 +231,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $roleId,
                 'body' => $roleContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $roleId,
@@ -278,7 +282,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/_create',
+            'route' => '/users/' . $userId . '/_create',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -287,7 +291,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $userId,
@@ -323,6 +328,63 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($userContent, 'content', $result);
     }
 
+    function testCreateRestrictedUser()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+
+        $userId = uniqid();
+        $userContent = [
+            'some' => 'content'
+        ];
+
+        $httpRequest = [
+            'route' => '/users/_createRestricted',
+            'method' => 'POST',
+            'request' => [
+                'metadata' => [],
+                'controller' => 'security',
+                'action' => 'createRestrictedUser',
+                'requestId' => $requestId,
+                '_id' => $userId,
+                'body' => $userContent
+            ],
+            'query_parameters' => []
+        ];
+        $saveResponse = [
+            '_id' => $userId,
+            '_source' => $userContent,
+            '_version' => 1
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $saveResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $security = new Security($kuzzle);
+
+        $result = $security->createRestrictedUser($userId, $userContent, ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Security\User', $result);
+        $this->assertAttributeEquals($userId, 'id', $result);
+        $this->assertAttributeEquals($userContent, 'content', $result);
+    }
+
     function testCreateOrReplaceUser()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
@@ -334,7 +396,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -343,7 +405,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $userId,
@@ -390,7 +453,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $profileId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/' . $profileId,
+            'route' => '/profiles/' . $profileId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
@@ -398,7 +461,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $profileId,
@@ -439,7 +503,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $userId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
@@ -447,7 +511,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteUser',
                 'requestId' => $requestId,
                 '_id' => $userId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $userId,
@@ -488,7 +553,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $roleId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/' . $roleId,
+            'route' => '/roles/' . $roleId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
@@ -496,7 +561,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteRole',
                 'requestId' => $requestId,
                 '_id' => $roleId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $roleId,
@@ -546,7 +612,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/' . $profileId,
+            'route' => '/profiles/' . $profileId,
             'method' => 'GET',
             'request' => [
                 'metadata' => [],
@@ -554,7 +620,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'getProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getResponse = [
             '_id' => $profileId,
@@ -607,7 +674,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/' . $roleId,
+            'route' => '/roles/' . $roleId,
             'method' => 'GET',
             'request' => [
                 'metadata' => [],
@@ -615,7 +682,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'getRole',
                 'requestId' => $requestId,
                 '_id' => $roleId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getResponse = [
             '_id' => $roleId,
@@ -661,7 +729,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'GET',
             'request' => [
                 'metadata' => [],
@@ -669,7 +737,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'getUser',
                 'requestId' => $requestId,
                 '_id' => $userId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getResponse = [
             '_id' => $userId,
@@ -721,7 +790,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId . '/_rights',
+            'route' => '/users/' . $userId . '/_rights',
             'method' => 'GET',
             'request' => [
                 'metadata' => [],
@@ -729,7 +798,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'getUserRights',
                 'requestId' => $requestId,
                 '_id' => $userId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $getRightsResponse = [
             'hits' => $userRightsContent
@@ -770,14 +840,14 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userRights = [
             [
-                "controller" => "read",
+                "controller" => "server",
                 "action" => "now",
                 "collection" => "*",
                 "index" => "*",
                 "value" => "allowed"
             ],
             [
-                "controller" => "read",
+                "controller" => "document",
                 "action" => "get",
                 "collection" => "*",
                 "index" => "*",
@@ -785,13 +855,13 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $result = $security->isActionAllowed($userRights, 'read', 'now');
+        $result = $security->isActionAllowed($userRights, 'server', 'now');
         $this->assertEquals(Security::ACTION_ALLOWED, $result);
 
-        $result = $security->isActionAllowed($userRights, 'read', 'get');
+        $result = $security->isActionAllowed($userRights, 'document', 'get');
         $this->assertEquals(Security::ACTION_CONDITIONAL, $result);
 
-        $result = $security->isActionAllowed($userRights, 'read', 'listIndexes');
+        $result = $security->isActionAllowed($userRights, 'index', 'list');
         $this->assertEquals(Security::ACTION_DENIED, $result);
     }
 
@@ -811,7 +881,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/_search',
+            'route' => '/profiles/_search',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -819,7 +889,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'searchProfiles',
                 'requestId' => $requestId,
                 'body' => $filter
-            ]
+            ],
+            'query_parameters' => []
         ];
         $advancedSearchResponse = [
             'hits' => [
@@ -901,7 +972,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/_search',
+            'route' => '/roles/_search',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -909,7 +980,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'searchRoles',
                 'requestId' => $requestId,
                 'body' => $filter
-            ]
+            ],
+            'query_parameters' => []
         ];
         $advancedSearchResponse = [
             'hits' => [
@@ -993,7 +1065,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/_search',
+            'route' => '/users/_search',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -1001,7 +1073,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'searchUsers',
                 'requestId' => $requestId,
                 'body' => $filter
-            ]
+            ],
+            'query_parameters' => []
         ];
         $advancedSearchResponse = [
             'hits' => [
@@ -1087,7 +1160,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/' . $profileId,
+            'route' => '/profiles/' . $profileId,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -1096,7 +1169,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $profileId,
                 'body' => $profileContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $profileId,
@@ -1153,7 +1227,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/' . $roleId,
+            'route' => '/roles/' . $roleId,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -1162,7 +1236,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $roleId,
                 'body' => $roleUpdateContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $roleId,
@@ -1213,7 +1288,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -1222,7 +1297,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $userId,

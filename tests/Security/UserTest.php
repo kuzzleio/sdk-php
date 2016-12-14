@@ -7,6 +7,38 @@ use Kuzzle\Security\Security;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {
+    function testEmptyGetProfiles()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $security = new Security($kuzzle);
+        $user = new User($security, '', []);
+
+        $this->assertEquals($user->getProfiles(), []);
+    }
+
+    function testAddProfile()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $security = new Security($kuzzle);
+        $user = new User($security, '', []);
+
+        $this->assertEquals($user, $user->addProfile('myProfile'));
+    }
+
     function testSave()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
@@ -18,7 +50,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -27,7 +59,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $userId,
@@ -88,7 +121,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -97,7 +130,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $userId,
@@ -142,7 +176,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $userId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
@@ -150,7 +184,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
                 'action' => 'deleteUser',
                 'requestId' => $requestId,
                 '_id' => $userId,
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $userId,

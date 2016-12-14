@@ -10,6 +10,7 @@ class CurlRequest implements RequestInterface
         $method = '';
         $headers = [];
         $body = '';
+        $queryParameters = array_key_exists('query_parameters', $parameters) ? $parameters['query_parameters'] : [];
 
         if (array_key_exists('body', $parameters)) {
             $body = $parameters['body'];
@@ -17,6 +18,10 @@ class CurlRequest implements RequestInterface
 
         if (array_key_exists('url', $parameters)) {
             $url = $parameters['url'];
+        }
+
+        if (count($queryParameters) > 0) {
+            $url.= '?' . http_build_query($queryParameters);
         }
 
         if (array_key_exists('method', $parameters)) {

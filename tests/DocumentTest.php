@@ -19,18 +19,19 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/' . $documentId,
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'document',
                 'action' => 'delete',
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => $documentContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $deleteResponse = [
             '_id' => $documentId
@@ -120,18 +121,19 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/' . $documentId,
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'document',
                 'action' => 'createOrReplace',
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => array_merge($documentContent, ['baz' => 'baz'])
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $documentId,
@@ -183,18 +185,19 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection,
+            'route' => '/' . $index . '/' . $collection,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'realtime',
                 'action' => 'publish',
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => array_merge($documentContent, ['baz' => 'baz'])
-            ]
+            ],
+            'query_parameters' => []
         ];
         $publishResponse = [
             'published' => true
