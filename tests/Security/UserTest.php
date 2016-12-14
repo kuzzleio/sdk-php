@@ -50,7 +50,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -121,7 +121,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -176,7 +176,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $userId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/users/' . $userId,
+            'route' => '/users/' . $userId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],

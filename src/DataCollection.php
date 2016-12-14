@@ -77,7 +77,7 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('read', 'search'),
+            $this->buildQueryArgs('document', 'search'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -116,7 +116,7 @@ class DataCollection
         $data = [];
 
         $response = $this->kuzzle->query(
-            $this->kuzzle->buildQueryArgs('read', 'scroll'),
+            $this->kuzzle->buildQueryArgs('document', 'scroll'),
             $data,
             $options
         );
@@ -154,7 +154,7 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('read', 'count'),
+            $this->buildQueryArgs('document', 'count'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -172,7 +172,7 @@ class DataCollection
     public function create(array $options = [])
     {
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', 'createCollection'),
+            $this->buildQueryArgs('collection', 'create'),
             $this->kuzzle->addHeaders([], $this->headers),
             $options
         );
@@ -209,7 +209,7 @@ class DataCollection
         }
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', $action),
+            $this->buildQueryArgs('document', $action),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -251,7 +251,7 @@ class DataCollection
         }
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', $action),
+            $this->buildQueryArgs('document', $action),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -285,7 +285,7 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('read', 'get'),
+            $this->buildQueryArgs('document', 'get'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -361,7 +361,7 @@ class DataCollection
         }
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', 'publish'),
+            $this->buildQueryArgs('realtime', 'publish'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -385,7 +385,7 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', 'createOrReplace'),
+            $this->buildQueryArgs('document', 'createOrReplace'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -426,7 +426,7 @@ class DataCollection
     public function truncate(array $options = [])
     {
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('admin', 'truncateCollection'),
+            $this->buildQueryArgs('collection', 'truncate'),
             $this->kuzzle->addHeaders([], $this->headers),
             $options
         );
@@ -450,8 +450,8 @@ class DataCollection
             'body' => $content
         ];
 
-        $queryArgs = $this->buildQueryArgs('write', 'update');
-        $queryArgs['route'] = '/api/1.0/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
+        $queryArgs = $this->buildQueryArgs('document', 'update');
+        $queryArgs['route'] = '/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
         $queryArgs['method'] = 'put';
 
         $response = $this->kuzzle->query(
