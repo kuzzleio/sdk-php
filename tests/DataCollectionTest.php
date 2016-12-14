@@ -116,10 +116,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'scroll',
                 'controller' => 'read',
                 'metadata' => [],
-                'body' => ['scroll' => '1m'],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST'
+            'method' => 'POST',
+            'query_parameters' => [
+                'scroll' => '1m'
+            ]
         ];
 
         // mock response
@@ -587,11 +589,6 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $scrollId = uniqid();
         $index = 'index';
         $collection = 'collection';
-        $filter = [
-            'from' => 0,
-            'size' => 1,
-            'scroll' => '30s'
-        ];
 
         $httpSearchRequest = [
             'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
@@ -601,11 +598,15 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'read',
                 'action' => 'search',
                 'requestId' => $requestId,
-                'body' => $filter,
+                'body' => (object)[],
                 'collection' => $collection,
                 'index' => $index
             ],
-            'query_parameters' => []
+            'query_parameters' => [
+                'from' => 0,
+                'size' => 1,
+                'scroll' => '30s'
+            ]
         ];
 
         $httpScrollRequest = [
@@ -615,8 +616,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'controller' => 'read',
                 'action' => 'scroll',
-                'body' => ['scroll' => '30s'],
                 'requestId' => $requestId,
+            ],
+            'query_parameters' => [
+                'scroll' => '30s',
+                'from' => 0,
+                'size' => 1,
             ]
         ];
         $searchResponse = [
@@ -691,15 +696,6 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $index = 'index';
         $collection = 'collection';
 
-        $filter = [
-            'from' => 0,
-            'size' => 1
-        ];
-        $secondFilter = [
-            'from' => 1,
-            'size' => 1
-        ];
-
         $httpSearchRequest = [
             'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
@@ -708,9 +704,13 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'read',
                 'action' => 'search',
                 'requestId' => $requestId,
-                'body' => $filter,
+                'body' => (object)[],
                 'collection' => $collection,
                 'index' => $index
+            ],
+            'query_parameters' => [
+                'from' => 0,
+                'size' => 1
             ]
         ];
 
@@ -722,9 +722,13 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'read',
                 'action' => 'search',
                 'requestId' => $requestId,
-                'body' => $secondFilter,
+                'body' => (object)[],
                 'collection' => $collection,
                 'index' => $index
+            ],
+            'query_parameters' => [
+                'from' => 1,
+                'size' => 1
             ]
         ];
         $searchResponse = [

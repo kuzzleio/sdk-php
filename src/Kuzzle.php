@@ -370,16 +370,6 @@ class Kuzzle
             ]
         ];
 
-        if (array_key_exists('from', $options)) {
-            $options['httpParams'][':from'] = $options['from'];
-            $query['body']['from'] = $options['from'];
-        }
-
-        if (array_key_exists('size', $options)) {
-            $options['httpParams'][':size'] = $options['size'];
-            $query['body']['size'] = $options['size'];
-        }
-
         $response = $this->query($this->buildQueryArgs('read', 'listCollections', $index), $query, $options);
 
         return $response['result']['collections'];
@@ -551,6 +541,15 @@ class Kuzzle
 
             if (array_key_exists('refresh', $options)) {
                 $httpParams['query_parameters']['refresh'] = $options['refresh'];
+            }
+            if (array_key_exists('from', $options)) {
+                $httpParams['query_parameters']['from'] = $options['from'];
+            }
+            if (array_key_exists('size', $options)) {
+                $httpParams['query_parameters']['size'] = $options['size'];
+            }
+            if (array_key_exists('scroll', $options)) {
+                $httpParams['query_parameters']['scroll'] = $options['scroll'];
             }
         }
 

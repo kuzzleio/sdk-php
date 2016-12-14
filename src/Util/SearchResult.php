@@ -133,13 +133,13 @@ class SearchResult
                 $searchResult->setPrevious($this);
 
                 $this->next = $searchResult;
-            } else if (array_key_exists('from', $this->searchArgs['filters']) && array_key_exists('size', $this->searchArgs['filters'])) {
+            } else if (array_key_exists('from', $this->searchArgs['options']) && array_key_exists('size', $this->searchArgs['options'])) {
                 // retrieve next results with  from/size if original search use it
                 $filters = $this->searchArgs['filters'];
-                $filters['from'] += $filters['size'];
+                $this->searchArgs['options']['from'] += $this->searchArgs['options']['size'];
 
                 // check if we need to do next request to fetch all matching documents
-                if ($filters['from'] >= $this->getTotal()) {
+                if ($this->searchArgs['options']['from'] >= $this->getTotal()) {
                     return null;
                 }
 
@@ -154,7 +154,7 @@ class SearchResult
             return $this->next;
         }
 
-        throw new InvalidArgumentException('Unable to retrieve next results from search: missing scrollId or from/size params');
+        throw new InvalidArgumentException('Unable to retrieve next results from search: missing scrollId or from/size options');
     }
 
     /**

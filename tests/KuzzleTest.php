@@ -279,7 +279,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'PUT'
+            'method' => 'PUT',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -576,13 +577,14 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'body' => [
                     'type' => $collectionType,
-                    'from' => $from,
-                    'size' => $size
                 ],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
-            'query_parameters' => []
+            'query_parameters' => [
+                'from' => $from,
+                'size' => $size
+            ]
         ];
 
         // mock response

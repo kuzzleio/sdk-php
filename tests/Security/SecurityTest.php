@@ -348,7 +348,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
-            ]
+            ],
+            'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $userId,

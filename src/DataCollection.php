@@ -113,13 +113,7 @@ class DataCollection
     {
         $options['httpParams'] = [':scrollId' => $scrollId];
 
-        $data = [
-            'body' => []
-        ];
-
-        if (array_key_exists('scroll', $options)) {
-            $data['body']['scroll'] = $options['scroll'];
-        }
+        $data = [];
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('read', 'scroll'),
@@ -313,23 +307,12 @@ class DataCollection
         $documents = [];
         $filters = [];
 
-        if (array_key_exists('scroll', $options)) {
-            $filters['scroll'] = $options['scroll'];
-            unset($options['scroll']);
+        if (!array_key_exists('from', $options)) {
+            $options['from'] = 0;
         }
 
-        if (array_key_exists('from', $options)) {
-            $filters['from'] = $options['from'];
-            unset($options['from']);
-        } else {
-            $filters['from'] = 0;
-        }
-
-        if (array_key_exists('size', $options)) {
-            $filters['size'] = $options['size'];
-            unset($options['size']);
-        } else {
-            $filters['size'] = 1000;
+        if (!array_key_exists('size', $options)) {
+            $options['size'] = 1000;
         }
 
         $searchResult = $this->search($filters, $options);
