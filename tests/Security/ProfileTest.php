@@ -34,7 +34,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/' . $profileId . '/_createOrReplace',
+            'route' => '/profiles/' . $profileId . '/_createOrReplace',
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -117,7 +117,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/' . $profileId,
+            'route' => '/profiles/' . $profileId,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -172,7 +172,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         $profileId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/profiles/' . $profileId,
+            'route' => '/profiles/' . $profileId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],

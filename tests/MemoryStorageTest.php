@@ -43,7 +43,7 @@ class MemoryStorageTest extends \PHPUnit_Framework_TestCase
             ];
 
             $httpRequest = [
-                'route' => '/api/1.0/ms/_zrevrange/' . $id . '/' . $start . '/' . $stop,
+                'route' => '/ms/_zrevrange/' . $id . '/' . $start . '/' . $stop,
                 'request' => [
                     'action' => 'zrevrange',
                     'controller' => 'memoryStorage',

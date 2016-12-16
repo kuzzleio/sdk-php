@@ -21,11 +21,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
+            'route' => '/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'read',
+                'controller' => 'document',
                 'action' => 'search',
                 'requestId' => $requestId,
                 'body' => $filter,
@@ -111,10 +111,10 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_scroll/' . $scrollId,
+            'route' => '/_scroll/' . $scrollId,
             'request' => [
                 'action' => 'scroll',
-                'controller' => 'read',
+                'controller' => 'document',
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
@@ -193,11 +193,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/_count',
+            'route' => '/' . $index . '/' . $collection . '/_count',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'read',
+                'controller' => 'document',
                 'action' => 'count',
                 'requestId' => $requestId,
                 'body' => $filter,
@@ -244,12 +244,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $collection = 'collection';
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection ,
+            'route' => '/' . $index . '/' . $collection ,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
-                'action' => 'createCollection',
+                'controller' => 'collection',
+                'action' => 'create',
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index
@@ -299,11 +299,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/_create',
-            'method' => 'POST',
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_create',
+            'method' => 'PUT',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'document',
                 'action' => 'create',
                 'body' => $documentContent,
                 'requestId' => $requestId,
@@ -361,11 +361,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/' . $documentId,
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'document',
                 'action' => 'createOrReplace',
                 'body' => $documentContent,
                 'requestId' => $requestId,
@@ -422,11 +422,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $documentId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/' . $documentId,
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'document',
                 'action' => 'delete',
                 'requestId' => $requestId,
                 'collection' => $collection,
@@ -477,11 +477,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $filters = [];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/_query',
+            'route' => '/' . $index . '/' . $collection . '/_query',
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'document',
                 'action' => 'deleteByQuery',
                 'requestId' => $requestId,
                 'collection' => $collection,
@@ -534,11 +534,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/' . $documentId,
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'GET',
             'request' => [
                 'metadata' => [],
-                'controller' => 'read',
+                'controller' => 'document',
                 'action' => 'get',
                 'requestId' => $requestId,
                 'collection' => $collection,
@@ -591,11 +591,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $collection = 'collection';
 
         $httpSearchRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
+            'route' => '/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'read',
+                'controller' => 'document',
                 'action' => 'search',
                 'requestId' => $requestId,
                 'body' => (object)[],
@@ -610,11 +610,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpScrollRequest = [
-            'route' => '/api/1.0/_scroll/' . $scrollId,
+            'route' => '/_scroll/' . $scrollId,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'read',
+                'controller' => 'document',
                 'action' => 'scroll',
                 'requestId' => $requestId,
             ],
@@ -697,11 +697,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $collection = 'collection';
 
         $httpSearchRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
+            'route' => '/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'read',
+                'controller' => 'document',
                 'action' => 'search',
                 'requestId' => $requestId,
                 'body' => (object)[],
@@ -715,11 +715,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpSecondSearchRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/_search',
+            'route' => '/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'read',
+                'controller' => 'document',
                 'action' => 'search',
                 'requestId' => $requestId,
                 'body' => (object)[],
@@ -807,11 +807,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection,
+            'route' => '/' . $index . '/' . $collection,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'realtime',
                 'action' => 'publish',
                 'body' => $document,
                 'requestId' => $requestId,
@@ -863,11 +863,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection,
+            'route' => '/' . $index . '/' . $collection,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'realtime',
                 'action' => 'publish',
                 'body' => $document,
                 'requestId' => $requestId,
@@ -922,11 +922,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/' . $documentId,
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'document',
                 'action' => 'createOrReplace',
                 'body' => $documentContent,
                 'requestId' => $requestId,
@@ -981,12 +981,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $documentId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/_truncate',
+            'route' => '/' . $index . '/' . $collection . '/_truncate',
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
-                'controller' => 'admin',
-                'action' => 'truncateCollection',
+                'controller' => 'collection',
+                'action' => 'truncate',
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
@@ -1043,11 +1043,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
 
         $httpUpdateRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/' . $documentId . '/_update',
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_update',
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
-                'controller' => 'write',
+                'controller' => 'document',
                 'action' => 'update',
                 'body' => $documentContent,
                 'requestId' => $requestId,
@@ -1067,11 +1067,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpGetRequest = [
-            'route' => '/api/1.0/' . $index . '/' . $collection . '/' . $documentId,
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'GET',
             'request' => [
                 'metadata' => [],
-                'controller' => 'read',
+                'controller' => 'document',
                 'action' => 'get',
                 'requestId' => $requestId,
                 'collection' => $collection,

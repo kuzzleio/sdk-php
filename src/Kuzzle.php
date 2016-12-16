@@ -178,7 +178,7 @@ class Kuzzle
         ];
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'createIndex'),
+            $this->buildQueryArgs('index', 'create'),
             [
                 'body' => ['index' => $index]
             ],
@@ -228,7 +228,7 @@ class Kuzzle
     public function getAllStatistics(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'getAllStats'),
+            $this->buildQueryArgs('server', 'getAllStats'),
             [],
             $options
         );
@@ -296,7 +296,7 @@ class Kuzzle
     public function getServerInfo(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('read', 'serverInfo'),
+            $this->buildQueryArgs('server', 'info'),
             [],
             $options
         );
@@ -327,7 +327,7 @@ class Kuzzle
         }
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', $action),
+            $this->buildQueryArgs('server', $action),
             $data,
             $options
         );
@@ -370,7 +370,7 @@ class Kuzzle
             ]
         ];
 
-        $response = $this->query($this->buildQueryArgs('read', 'listCollections', $index), $query, $options);
+        $response = $this->query($this->buildQueryArgs('collection', 'list', $index), $query, $options);
 
         return $response['result']['collections'];
     }
@@ -384,7 +384,7 @@ class Kuzzle
     public function listIndexes(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('read', 'listIndexes'),
+            $this->buildQueryArgs('index', 'list'),
             [],
             $options
         );
@@ -475,7 +475,7 @@ class Kuzzle
     public function now(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('read', 'now'),
+            $this->buildQueryArgs('server', 'now'),
             [],
             $options
         );
@@ -624,7 +624,7 @@ class Kuzzle
         }
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'refreshIndex', $index),
+            $this->buildQueryArgs('index', 'refresh', $index),
             [],
             $options
         );
@@ -694,7 +694,7 @@ class Kuzzle
         }
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'setAutoRefresh', $index),
+            $this->buildQueryArgs('index', 'setAutoRefresh', $index),
             [
                 'body' => [
                     'autoRefresh' => $autoRefresh
@@ -724,7 +724,7 @@ class Kuzzle
         }
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'getAutoRefresh', $index),
+            $this->buildQueryArgs('index', 'getAutoRefresh', $index),
             [],
             $options
         );
@@ -950,9 +950,9 @@ class Kuzzle
         $routesDescription = json_decode(file_get_contents($routeDescriptionFilePath), true);
 
         if (!is_array($routesDescription)
-            || !array_key_exists('read', $routesDescription)
-            || !is_array($routesDescription['read'])
-            || !array_key_exists('now', $routesDescription['read'])
+            || !array_key_exists('server', $routesDescription)
+            || !is_array($routesDescription['server'])
+            || !array_key_exists('now', $routesDescription['server'])
         ) {
             throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
         }
@@ -1003,7 +1003,7 @@ class Kuzzle
         }
 
         if (array_key_exists('_id', $request)) {
-            $httpParams[':id'] = $request['_id'];
+            $httpParams[':_id'] = $request['_id'];
         }
 
         foreach ($httpParams as $pattern => $value) {

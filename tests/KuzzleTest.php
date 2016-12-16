@@ -26,10 +26,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $routesNow = [
                 'method' => 'get',
                 'name' => 'now',
-                'route' =>  '/api/1.0/_now'
+                'route' =>  '/_now'
             ];
 
-            $this->assertEquals($routesNow, $routesDescription['read']['now']);
+            $this->assertEquals($routesNow, $routesDescription['server']['now']);
         }
         catch (Exception $e) {
             $this->fail($e->getMessage());
@@ -217,7 +217,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_checkToken',
+            'route' => '/_checkToken',
             'request' => [
                 'action' => 'checkToken',
                 'controller' => 'auth',
@@ -269,10 +269,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/' . $index,
+            'route' => '/' . $index,
             'request' => [
-                'action' => 'createIndex',
-                'controller' => 'admin',
+                'action' => 'create',
+                'controller' => 'index',
                 'metadata' => [],
                 'body' => [
                     'index' => $index
@@ -320,10 +320,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_getAllStats',
+            'route' => '/_getAllStats',
             'request' => [
                 'action' => 'getAllStats',
-                'controller' => 'admin',
+                'controller' => 'server',
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
@@ -368,7 +368,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/users/_me/_rights',
+            'route' => '/users/_me/_rights',
             'request' => [
                 'action' => 'getMyRights',
                 'controller' => 'auth',
@@ -419,10 +419,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_serverInfo',
+            'route' => '/_serverInfo',
             'request' => [
-                'action' => 'serverInfo',
-                'controller' => 'read',
+                'action' => 'info',
+                'controller' => 'server',
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
@@ -463,10 +463,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_getLastStats',
+            'route' => '/_getLastStats',
             'request' => [
                 'action' => 'getLastStats',
-                'controller' => 'admin',
+                'controller' => 'server',
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
@@ -512,10 +512,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_getStats',
+            'route' => '/_getStats',
             'request' => [
                 'action' => 'getStats',
-                'controller' => 'admin',
+                'controller' => 'server',
                 'metadata' => [],
                 'body' => [
                     'startTime' => $statsTime
@@ -569,11 +569,11 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/_listCollections/' . $collectionType,
+            'route' => '/' . $index . '/_list/' . $collectionType,
             'request' => [
                 'index' => $index,
-                'action' => 'listCollections',
-                'controller' => 'read',
+                'action' => 'list',
+                'controller' => 'collection',
                 'metadata' => [],
                 'body' => [
                     'type' => $collectionType,
@@ -626,11 +626,11 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/_listCollections/' . $collectionType,
+            'route' => '/' . $index . '/_list/' . $collectionType,
             'request' => [
                 'index' => $index,
-                'action' => 'listCollections',
-                'controller' => 'read',
+                'action' => 'list',
+                'controller' => 'collection',
                 'metadata' => [],
                 'body' => [
                     'type' => $collectionType
@@ -681,11 +681,11 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/_listCollections/' . $collectionType,
+            'route' => '/' . $index . '/_list/' . $collectionType,
             'request' => [
                 'index' => $index,
-                'action' => 'listCollections',
-                'controller' => 'read',
+                'action' => 'list',
+                'controller' => 'collection',
                 'metadata' => [],
                 'body' => [
                     'type' => $collectionType
@@ -750,10 +750,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_listIndexes',
+            'route' => '/_list',
             'request' => [
-                'action' => 'listIndexes',
-                'controller' => 'read',
+                'action' => 'list',
+                'controller' => 'index',
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
@@ -804,7 +804,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_login/' . $strategy,
+            'route' => '/_login/' . $strategy,
             'request' => [
                 'action' => 'login',
                 'controller' => 'auth',
@@ -858,7 +858,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_logout',
+            'route' => '/_logout',
             'request' => [
                 'action' => 'logout',
                 'controller' => 'auth',
@@ -907,10 +907,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_now',
+            'route' => '/_now',
             'request' => [
                 'action' => 'now',
-                'controller' => 'read',
+                'controller' => 'server',
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
@@ -957,11 +957,11 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/_refresh',
+            'route' => '/' . $index . '/_refresh',
             'request' => [
                 'index' => $index,
-                'action' => 'refreshIndex',
-                'controller' => 'admin',
+                'action' => 'refresh',
+                'controller' => 'index',
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
@@ -1007,11 +1007,11 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/_refresh',
+            'route' => '/' . $index . '/_refresh',
             'request' => [
                 'index' => $index,
-                'action' => 'refreshIndex',
-                'controller' => 'admin',
+                'action' => 'refresh',
+                'controller' => 'index',
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
@@ -1075,11 +1075,11 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/_autoRefresh',
+            'route' => '/' . $index . '/_autoRefresh',
             'request' => [
                 'index' => $index,
                 'action' => 'setAutoRefresh',
-                'controller' => 'admin',
+                'controller' => 'index',
                 'metadata' => [],
                 'body' => [
                     'autoRefresh' => $autoRefresh
@@ -1129,11 +1129,11 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/' . $index . '/_autoRefresh',
+            'route' => '/' . $index . '/_autoRefresh',
             'request' => [
                 'index' => $index,
                 'action' => 'setAutoRefresh',
-                'controller' => 'admin',
+                'controller' => 'index',
                 'metadata' => [],
                 'body' => [
                     'autoRefresh' => $autoRefresh
@@ -1199,7 +1199,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/_updateSelf',
+            'route' => '/_updateSelf',
             'request' => [
                 'action' => 'updateSelf',
                 'controller' => 'auth',
@@ -1248,7 +1248,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/api/1.0/users/_me',
+            'route' => '/users/_me',
             'request' => [
                 'action' => 'getCurrentUser',
                 'controller' => 'auth',
@@ -1310,7 +1310,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'headers' => ['authorization' => 'Bearer ' . uniqid()],
                 'body' => ['foo' => 'bar']
             ],
-            'route' => '/api/1.0/foo/bar',
+            'route' => '/foo/bar',
             'method' => 'POST',
             'query_parameters' => []
         ];
@@ -1364,7 +1364,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'headers' => ['authorization' => 'Bearer ' . uniqid()],
                 'body' => ['foo' => 'bar']
             ],
-            'route' => '/api/1.0/foo/bar',
+            'route' => '/foo/bar',
             'method' => 'POST',
             'query_parameters' => []
         ];
@@ -1423,7 +1423,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'headers' => ['authorization' => 'Bearer ' . uniqid()],
                 'body' => ['foo' => 'bar']
             ],
-            'route' => '/api/1.0/foo/bar',
+            'route' => '/foo/bar',
             'method' => 'POST',
             'query_parameters' => []
         ];
@@ -1462,7 +1462,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testConvertRestRequest()
     {
         $request = [
-            'route' => '/api/1.0/:index/:collection/:id/:custom/_foobar',
+            'route' => '/:index/:collection/:_id/:custom/_foobar',
             'method' => 'post',
             'controller' => 'foo',
             'action' => 'bar',
@@ -1476,7 +1476,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         ];
 
         $expectedHttpRequest = [
-            'route' => '/api/1.0/my-index/my-collection/my-id/custom-param/_foobar',
+            'route' => '/my-index/my-collection/my-id/custom-param/_foobar',
             'method' => 'POST',
             'request' => [
                 'controller' => $request['controller'],
@@ -1531,7 +1531,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testConvertRestRequestWithRouteAndBadController()
     {
         $request = [
-            'route' => '/api/1.0/foo/bar',
+            'route' => '/foo/bar',
             'controller' => 'foo'
         ];
         $httpParams = [];
@@ -1556,7 +1556,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
     public function testConvertRestRequestWithBadAction()
     {
         $request = [
-            'controller' => 'read',
+            'controller' => 'document',
             'action' => 'foo'
         ];
         $httpParams = [];
@@ -1574,15 +1574,15 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Unable to retrieve http route: action "read:foo" information not found', $e->getMessage());
+            $this->assertEquals('Unable to retrieve http route: action "document:foo" information not found', $e->getMessage());
         }
     }
 
     public function testConvertRestRequestWithRouteAndBadAction()
     {
         $request = [
-            'route' => '/api/1.0/foo/bar',
-            'controller' => 'read',
+            'route' => '/foo/bar',
+            'controller' => 'document',
             'action' => 'foo'
         ];
         $httpParams = [];
@@ -1600,7 +1600,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Unable to retrieve http method: action "read:foo" information not found', $e->getMessage());
+            $this->assertEquals('Unable to retrieve http method: action "document:foo" information not found', $e->getMessage());
         }
     }
 
@@ -1611,7 +1611,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $token = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/my-foo',
+            'route' => '/my-foo',
             'method' => 'POST',
             'request' => [
                 'metadata' => [
@@ -1632,7 +1632,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $httpResponse = [];
 
         $queryArgs = [
-            'route' => '/api/1.0/:foo',
+            'route' => '/:foo',
             'method' => 'post'
         ];
         $query = [
@@ -1682,7 +1682,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $token = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/_checkToken',
+            'route' => '/_checkToken',
             'method' => 'POST',
             'request' => [
                 'action' => 'checkToken',
@@ -1791,7 +1791,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $requestId = uniqid();
 
         $queryArgs = [
-            'route' => '/api/1.0/my-foo',
+            'route' => '/my-foo',
             'method' => 'POST',
             'query_parameters' => []
         ];
@@ -1804,7 +1804,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/my-foo',
+            'route' => '/my-foo',
             'method' => 'POST',
             'request' => [
               'body' => (object)[],

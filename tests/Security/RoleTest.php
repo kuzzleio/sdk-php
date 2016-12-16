@@ -24,7 +24,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/' . $roleId . '/_createOrReplace',
+            'route' => '/roles/' . $roleId . '/_createOrReplace',
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -93,7 +93,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/' . $roleId,
+            'route' => '/roles/' . $roleId,
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -149,7 +149,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
         $roleId = uniqid();
 
         $httpRequest = [
-            'route' => '/api/1.0/roles/' . $roleId,
+            'route' => '/roles/' . $roleId,
             'method' => 'DELETE',
             'request' => [
                 'metadata' => [],
