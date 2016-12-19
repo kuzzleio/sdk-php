@@ -383,7 +383,7 @@ class Security
      * @param array $content Role content
      * @return Role
      */
-    public function roleFactory($id, array $content)
+    public function role($id, array $content)
     {
         return new Role($this, $id, $content);
     }
