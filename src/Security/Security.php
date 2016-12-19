@@ -395,7 +395,7 @@ class Security
      * @param array $content User content
      * @return User
      */
-    public function userFactory($id, array $content)
+    public function user($id, array $content)
     {
         return new User($this, $id, $content);
     }
