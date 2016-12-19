@@ -1,7 +1,7 @@
 <?php
 
 use Kuzzle\Document;
-use Kuzzle\DataCollection;
+use Kuzzle\Collection;
 use Kuzzle\Kuzzle;
 
 class DocumentTest extends \PHPUnit_Framework_TestCase
@@ -56,7 +56,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
         $document = new Document($dataCollection, $documentId, $documentContent);
 
         $result = $document->delete(['requestId' => $requestId]);
@@ -72,7 +72,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $collection = 'collection';
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
         $document = new Document($dataCollection);
 
         try {
@@ -94,7 +94,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $collection = 'collection';
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
         $document = new Document($dataCollection);
 
         try {
@@ -160,7 +160,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
         $document = new Document($dataCollection, $documentId, $documentContent);
 
         $document->setContent(['baz' => 'baz']);
@@ -222,7 +222,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
         $document = new Document($dataCollection, $documentId, $documentContent);
 
         $document->setContent(['baz' => 'baz']);
@@ -245,7 +245,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         ];
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
         $document = $dataCollection->documentFactory($documentId, array_merge($documentContent, ['_version' => 1]));
 
         $result = $document->serialize();

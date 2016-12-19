@@ -3,7 +3,7 @@
 namespace Kuzzle\Util;
 
 use InvalidArgumentException;
-use Kuzzle\DataCollection;
+use Kuzzle\Collection;
 use Kuzzle\Document;
 
 /**
@@ -15,7 +15,7 @@ use Kuzzle\Document;
 class SearchResult
 {
     /**
-     * @var DataCollection
+     * @var Collection
      */
     private $dataCollection = null;
 
@@ -52,14 +52,14 @@ class SearchResult
     /**
      * SearchResult constructor.
      *
-     * @param DataCollection $dataCollection
+     * @param Collection $dataCollection
      * @param integer $total
      * @param Document[] $documents
      * @param array $aggregations
      * @param array $searchArgs
      * @param SearchResult $previous
      */
-    public function __construct(DataCollection $dataCollection, $total, array $documents, array $aggregations = [], array $searchArgs = [], SearchResult $previous = null)
+    public function __construct(Collection $dataCollection, $total, array $documents, array $aggregations = [], array $searchArgs = [], SearchResult $previous = null)
     {
         $this->dataCollection = $dataCollection;
         $this->total = $total;

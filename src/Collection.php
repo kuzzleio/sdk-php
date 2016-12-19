@@ -5,10 +5,10 @@ namespace Kuzzle;
 use Kuzzle\Util\SearchResult;
 
 /**
- * Class DataCollection
+ * Class Collection
  * @package kuzzleio/kuzzle-sdk
  */
-class DataCollection
+class Collection
 {
     /**
      * @var Kuzzle linked kuzzle instance
@@ -31,7 +31,7 @@ class DataCollection
     protected $headers = [];
 
     /**
-     * DataCollection constructor.
+     * Collection constructor.
      *
      * @param Kuzzle $kuzzle Kuzzle object
      * @param string $collection The name of the data collection you want to manipulate
@@ -299,7 +299,7 @@ class DataCollection
         $searchResult = $this->search($filters, $options);
 
         if ($searchResult->getTotal() > 10000) {
-            trigger_error('Usage of Kuzzle\\DataCollection::fetchAllDocuments will fetch more than 10 000 document. To avoid performance issues, please use Kuzzle\\DataCollection::search and Kuzzle\\DataCollection::scroll requests', E_USER_WARNING);
+            trigger_error('Usage of Kuzzle\\Collection::fetchAllDocuments will fetch more than 10 000 document. To avoid performance issues, please use Kuzzle\\Collection::search and Kuzzle\\Collection::scroll requests', E_USER_WARNING);
         }
 
         while ($searchResult) {
@@ -382,7 +382,7 @@ class DataCollection
      *
      * @param array $headers New content
      * @param bool $replace true: replace the current content with the provided data, false: merge it
-     * @return DataCollection
+     * @return Collection
      */
     public function setHeaders(array $headers, $replace = false)
     {

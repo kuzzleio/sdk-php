@@ -11,7 +11,7 @@ use ErrorException;
 class DataMapping
 {
     /**
-     * @var DataCollection related collection
+     * @var Collection related collection
      */
     protected $collection;
 
@@ -28,10 +28,10 @@ class DataMapping
     /**
      * DataMapping constructor.
      *
-     * @param DataCollection $kuzzleDataCollection An instantiated Kuzzle\DataCollection object
+     * @param Collection $kuzzleDataCollection An instantiated Kuzzle\Collection object
      * @param array $mapping Optional mapping
      */
-    public function __construct(DataCollection $kuzzleDataCollection, array $mapping = [])
+    public function __construct(Collection $kuzzleDataCollection, array $mapping = [])
     {
         $this->collection = $kuzzleDataCollection;
         $this->mapping = $mapping;
@@ -136,7 +136,7 @@ class DataMapping
     }
 
     /**
-     * @return DataCollection
+     * @return Collection
      */
     public function getCollection()
     {

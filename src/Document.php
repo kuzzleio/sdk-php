@@ -11,7 +11,7 @@ use InvalidArgumentException;
 class Document
 {
     /**
-     * @var DataCollection The data collection associated to this document
+     * @var Collection The data collection associated to this document
      */
     protected $collection;
 
@@ -38,12 +38,12 @@ class Document
     /**
      * Document constructor.
      *
-     * @param DataCollection $kuzzleDataCollection An instantiated KuzzleDataCollection object
+     * @param Collection $kuzzleDataCollection An instantiated KuzzleDataCollection object
      * @param string $documentId ID of an existing document.
      * @param array $content Initializes this document with the provided content
      * @return Document
      */
-    public function __construct(DataCollection $kuzzleDataCollection, $documentId = '', array $content = [])
+    public function __construct(Collection $kuzzleDataCollection, $documentId = '', array $content = [])
     {
         $this->collection = $kuzzleDataCollection;
 

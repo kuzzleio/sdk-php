@@ -49,7 +49,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $dataCollection = $kuzzle->dataCollectionFactory($collection, $index);
 
             // Assert type
-            $this->assertInstanceOf('\Kuzzle\DataCollection', $dataCollection);
+            $this->assertInstanceOf('\Kuzzle\Collection', $dataCollection);
 
             // Assert Properties
             $this->assertAttributeEquals($kuzzle, 'kuzzle', $dataCollection);
@@ -139,7 +139,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             $dataCollection = $kuzzle->dataCollectionFactory($collection);
 
             // Assert type
-            $this->assertInstanceOf('\Kuzzle\DataCollection', $dataCollection);
+            $this->assertInstanceOf('\Kuzzle\Collection', $dataCollection);
 
             // Assert Properties
             $this->assertAttributeEquals($index, 'index', $dataCollection);
