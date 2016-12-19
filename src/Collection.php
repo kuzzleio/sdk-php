@@ -207,7 +207,7 @@ class Collection
      * @param array $mapping Optional mapping
      * @return Mapping
      */
-    public function dataMappingFactory(array $mapping = [])
+    public function collectionMapping(array $mapping = [])
     {
         return new Mapping($this, $mapping);
     }
@@ -320,7 +320,7 @@ class Collection
      */
     public function getMapping(array $options = [])
     {
-        return $this->dataMappingFactory()->refresh($options);
+        return $this->collectionMapping()->refresh($options);
     }
 
     /**
