@@ -371,7 +371,7 @@ class Security
      * @param array $content Profile content
      * @return Profile
      */
-    public function profileFactory($id, array $content)
+    public function profile($id, array $content)
     {
         return new Profile($this, $id, $content);
     }
