@@ -197,7 +197,7 @@ class Kuzzle
      *
      * @throws InvalidArgumentException
      */
-    public function dataCollectionFactory($collection, $index = '')
+    public function collection($collection, $index = '')
     {
         if (empty($index)) {
             if (empty($this->defaultIndex)) {

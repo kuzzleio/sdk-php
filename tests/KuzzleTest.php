@@ -46,7 +46,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         try {
 
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $dataCollection = $kuzzle->dataCollectionFactory($collection, $index);
+            $dataCollection = $kuzzle->collection($collection, $index);
 
             // Assert type
             $this->assertInstanceOf('\Kuzzle\Collection', $dataCollection);
@@ -136,7 +136,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url, ['defaultIndex' => $index]);
-            $dataCollection = $kuzzle->dataCollectionFactory($collection);
+            $dataCollection = $kuzzle->collection($collection);
 
             // Assert type
             $this->assertInstanceOf('\Kuzzle\Collection', $dataCollection);
@@ -158,9 +158,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->dataCollectionFactory($collection);
+            $kuzzle->collection($collection);
 
-            $this->fail('KuzzleTest::testDataCollectionFactory => Should raise an exception (dataCollectionFactory could not be called without index nor default index)');
+            $this->fail('KuzzleTest::testDataCollectionFactory => Should raise an exception (collection could not be called without index nor default index)');
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);

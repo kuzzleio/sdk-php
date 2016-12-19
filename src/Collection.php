@@ -205,11 +205,11 @@ class Collection
      * Creates a new KuzzleDataMapping object, using its constructor.
      *
      * @param array $mapping Optional mapping
-     * @return DataMapping
+     * @return Mapping
      */
     public function dataMappingFactory(array $mapping = [])
     {
-        return new DataMapping($this, $mapping);
+        return new Mapping($this, $mapping);
     }
 
     /**
@@ -316,7 +316,7 @@ class Collection
      * Retrieves the current mapping of this collection.
      *
      * @param array $options Optional parameters
-     * @return DataMapping
+     * @return Mapping
      */
     public function getMapping(array $options = [])
     {

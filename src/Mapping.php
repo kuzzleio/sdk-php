@@ -5,10 +5,10 @@ namespace Kuzzle;
 use ErrorException;
 
 /**
- * Class DataMapping
+ * Class Mapping
  * @package kuzzleio/kuzzle-sdk
  */
-class DataMapping
+class Mapping
 {
     /**
      * @var Collection related collection
@@ -26,7 +26,7 @@ class DataMapping
     protected $headers = [];
 
     /**
-     * DataMapping constructor.
+     * Mapping constructor.
      *
      * @param Collection $kuzzleDataCollection An instantiated Kuzzle\Collection object
      * @param array $mapping Optional mapping
@@ -43,7 +43,7 @@ class DataMapping
      * Applies the new mapping to the data collection.
      *
      * @param array $options Optional parameters
-     * @return DataMapping
+     * @return Mapping
      */
     public function apply(array $options = [])
     {
@@ -66,7 +66,7 @@ class DataMapping
      * Instantiates a new KuzzleDataMapping object with an up-to-date content.
      *
      * @param array $options Optional parameters
-     * @return DataMapping
+     * @return Mapping
      *
      * @throws ErrorException
      */
@@ -98,7 +98,7 @@ class DataMapping
      *
      * @param string $field Name of the field from which the mapping is to be added or updated
      * @param array $mapping Mapping for this field, following the Elasticsearch Mapping format
-     * @return DataMapping
+     * @return Mapping
      */
     public function set($field, array $mapping)
     {
@@ -112,7 +112,7 @@ class DataMapping
      *
      * @param array $headers New content
      * @param bool $replace true: replace the current content with the provided data, false: merge it
-     * @return DataMapping
+     * @return Mapping
      */
     public function setHeaders(array $headers, $replace = false)
     {
