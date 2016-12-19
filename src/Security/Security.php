@@ -255,7 +255,7 @@ class Security
      * @param array $options Optional arguments
      * @return Role
      */
-    public function getRole($id, array $options = [])
+    public function fetchRole($id, array $options = [])
     {
         $data = [
             '_id' => $id

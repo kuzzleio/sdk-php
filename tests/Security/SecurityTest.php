@@ -711,7 +711,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->getRole($roleId, ['requestId' => $requestId]);
+        $result = $security->fetchRole($roleId, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Role', $result);
         $this->assertAttributeEquals($roleId, 'id', $result);
