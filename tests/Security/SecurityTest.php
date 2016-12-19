@@ -649,7 +649,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->getProfile($profileId, ['requestId' => $requestId]);
+        $result = $security->fetchProfile($profileId, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
         $this->assertAttributeEquals($profileId, 'id', $result);

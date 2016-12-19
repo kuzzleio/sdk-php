@@ -233,7 +233,7 @@ class Security
      * @param array $options Optional arguments
      * @return Profile
      */
-    public function getProfile($id, array $options = [])
+    public function fetchProfile($id, array $options = [])
     {
         $data = [
             '_id' => $id
