@@ -277,7 +277,7 @@ class Security
      * @param array $options Optional arguments
      * @return User
      */
-    public function getUser($id, array $options = [])
+    public function fetchUser($id, array $options = [])
     {
         $data = [
             '_id' => $id
