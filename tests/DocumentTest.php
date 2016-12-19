@@ -246,7 +246,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
         $dataCollection = new Collection($kuzzle, $collection, $index);
-        $document = $dataCollection->documentFactory($documentId, array_merge($documentContent, ['_version' => 1]));
+        $document = $dataCollection->document($documentId, array_merge($documentContent, ['_version' => 1]));
 
         $result = $document->serialize();
 

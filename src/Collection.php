@@ -247,7 +247,7 @@ class Collection
      * @param array $content Optional document content
      * @return Document the newly created Kuzzle\Document object
      */
-    public function documentFactory($id = '', array $content = [])
+    public function document($id = '', array $content = [])
     {
         return new Document($this, $id, $content);
     }
