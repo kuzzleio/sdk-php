@@ -11,7 +11,6 @@ use Kuzzle\Util\RequestInterface;
 use Ramsey\Uuid\Uuid;
 
 use Kuzzle\Util\CurlRequest;
-use Kuzzle\DataCollection;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
 
@@ -166,6 +165,30 @@ class Kuzzle
     }
 
     /**
+     * Create an index
+     *
+     * @param $index
+     * @param array $options
+     * @return mixed
+     */
+    public function createIndex($index, array $options = [])
+    {
+        $options['httpParams'] = [
+            ':index' => $index
+        ];
+
+        $response = $this->query(
+            $this->buildQueryArgs('index', 'create'),
+            [
+                'body' => ['index' => $index]
+            ],
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
      * Instantiates a new KuzzleDataCollection object.
      *
      * @param string $collection The name of the data collection you want to manipulate
@@ -205,7 +228,7 @@ class Kuzzle
     public function getAllStatistics(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'getAllStats'),
+            $this->buildQueryArgs('server', 'getAllStats'),
             [],
             $options
         );
@@ -239,6 +262,9 @@ class Kuzzle
         return $this->jwtToken;
     }
 
+    /**
+     * @return array
+     */
     public function getMetadata()
     {
         return $this->metadata;
@@ -270,7 +296,7 @@ class Kuzzle
     public function getServerInfo(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('read', 'serverInfo'),
+            $this->buildQueryArgs('server', 'info'),
             [],
             $options
         );
@@ -301,7 +327,7 @@ class Kuzzle
         }
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', $action),
+            $this->buildQueryArgs('server', $action),
             $data,
             $options
         );
@@ -338,15 +364,13 @@ class Kuzzle
             ':type' => $collectionType
         ];
 
-        $response = $this->query(
-            $this->buildQueryArgs('read', 'listCollections', $index),
-            [
-                'body' => [
-                    'type' => $collectionType
-                ]
-            ],
-            $options
-        );
+        $query = [
+            'body' => [
+                'type' => $collectionType
+            ]
+        ];
+
+        $response = $this->query($this->buildQueryArgs('collection', 'list', $index), $query, $options);
 
         return $response['result']['collections'];
     }
@@ -360,7 +384,7 @@ class Kuzzle
     public function listIndexes(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('read', 'listIndexes'),
+            $this->buildQueryArgs('index', 'list'),
             [],
             $options
         );
@@ -451,7 +475,7 @@ class Kuzzle
     public function now(array $options = [])
     {
         $response = $this->query(
-            $this->buildQueryArgs('read', 'now'),
+            $this->buildQueryArgs('server', 'now'),
             [],
             $options
         );
@@ -471,7 +495,9 @@ class Kuzzle
      */
     public function query(array $queryArgs, array $query = [], array $options = [])
     {
-        $httpParams = [];
+        $httpParams = [
+            'query_parameters' => []
+        ];
         $request = [
             'metadata' => $this->metadata
         ];
@@ -511,6 +537,19 @@ class Kuzzle
                 foreach ($options['httpParams'] as $param => $value) {
                     $httpParams[$param] = $value;
                 }
+            }
+
+            if (array_key_exists('refresh', $options)) {
+                $httpParams['query_parameters']['refresh'] = $options['refresh'];
+            }
+            if (array_key_exists('from', $options)) {
+                $httpParams['query_parameters']['from'] = $options['from'];
+            }
+            if (array_key_exists('size', $options)) {
+                $httpParams['query_parameters']['size'] = $options['size'];
+            }
+            if (array_key_exists('scroll', $options)) {
+                $httpParams['query_parameters']['scroll'] = $options['scroll'];
             }
         }
 
@@ -585,7 +624,7 @@ class Kuzzle
         }
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'refreshIndex', $index),
+            $this->buildQueryArgs('index', 'refresh', $index),
             [],
             $options
         );
@@ -655,7 +694,7 @@ class Kuzzle
         }
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'setAutoRefresh', $index),
+            $this->buildQueryArgs('index', 'setAutoRefresh', $index),
             [
                 'body' => [
                     'autoRefresh' => $autoRefresh
@@ -685,7 +724,7 @@ class Kuzzle
         }
 
         $response = $this->query(
-            $this->buildQueryArgs('admin', 'getAutoRefresh', $index),
+            $this->buildQueryArgs('index', 'getAutoRefresh', $index),
             [],
             $options
         );
@@ -874,7 +913,8 @@ class Kuzzle
             'url' => $this->url . $httpRequest['route'],
             'method' => $httpRequest['method'],
             'headers' => $headers,
-            'body' => $body
+            'body' => $body,
+            'query_parameters' => $httpRequest['query_parameters']
         ]);
 
         if (!empty($result['error'])) {
@@ -910,9 +950,9 @@ class Kuzzle
         $routesDescription = json_decode(file_get_contents($routeDescriptionFilePath), true);
 
         if (!is_array($routesDescription)
-            || !array_key_exists('read', $routesDescription)
-            || !is_array($routesDescription['read'])
-            || !array_key_exists('now', $routesDescription['read'])
+            || !array_key_exists('server', $routesDescription)
+            || !is_array($routesDescription['server'])
+            || !array_key_exists('now', $routesDescription['server'])
         ) {
             throw new Exception('Unable to parse http routes configuration file (' . $routeDescriptionFile . '): should return an array');
         }
@@ -932,6 +972,11 @@ class Kuzzle
     protected function convertRestRequest(array $request, array $httpParams = [])
     {
         $httpRequest = [];
+
+        if (array_key_exists('query_parameters', $httpParams)) {
+            $httpRequest['query_parameters'] = $httpParams['query_parameters'];
+            unset($httpParams['query_parameters']);
+        }
 
         if (!array_key_exists('route', $request)) {
             if (!array_key_exists($request['controller'], $this->routesDescription)) {
@@ -958,7 +1003,7 @@ class Kuzzle
         }
 
         if (array_key_exists('_id', $request)) {
-            $httpParams[':id'] = $request['_id'];
+            $httpParams[':_id'] = $request['_id'];
         }
 
         foreach ($httpParams as $pattern => $value) {

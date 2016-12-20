@@ -78,7 +78,7 @@ class Document
         }
 
         $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('write', 'delete'),
+            $this->collection->buildQueryArgs('document', 'delete'),
             $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
             $options
         );
@@ -105,7 +105,7 @@ class Document
         ];
 
         $response = $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('read', 'get'),
+            $this->collection->buildQueryArgs('document', 'get'),
             $this->collection->getKuzzle()->addHeaders($data, $this->headers),
             $options
         );
@@ -128,7 +128,7 @@ class Document
     public function save(array $options = [])
     {
         $response = $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('write', 'createOrReplace'),
+            $this->collection->buildQueryArgs('document', 'createOrReplace'),
             $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
             $options
         );
@@ -152,7 +152,7 @@ class Document
     public function publish(array $options = [])
     {
         $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('write', 'publish'),
+            $this->collection->buildQueryArgs('realtime', 'publish'),
             $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
             $options
         );

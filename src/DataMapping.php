@@ -54,7 +54,7 @@ class DataMapping
         ];
 
         $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('admin', 'updateMapping'),
+            $this->collection->buildQueryArgs('collection', 'updateMapping'),
             $this->collection->getKuzzle()->addHeaders($data, $this->headers),
             $options
         );
@@ -73,7 +73,7 @@ class DataMapping
     public function refresh(array $options = [])
     {
         $response = $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('admin', 'getMapping'),
+            $this->collection->buildQueryArgs('collection', 'getMapping'),
             $this->collection->getKuzzle()->addHeaders([], $this->headers),
             $options
         );

@@ -2,7 +2,7 @@
 
 namespace Kuzzle;
 
-use Kuzzle\Util\AdvancedSearchResult;
+use Kuzzle\Util\SearchResult;
 
 /**
  * Class DataCollection
@@ -51,16 +51,16 @@ class DataCollection
      *
      * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
-     * @return AdvancedSearchResult
+     * @return SearchResult
      */
-    public function advancedSearch(array $filters, array $options = [])
+    public function search(array $filters, array $options = [])
     {
         $data = [
             'body' => $filters
         ];
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('read', 'search'),
+            $this->buildQueryArgs('document', 'search'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -69,7 +69,56 @@ class DataCollection
             return new Document($this, $document['_id'], $document['_source']);
         }, $response['result']['hits']);
 
-        return new AdvancedSearchResult($response['result']['total'], $response['result']['hits']);
+
+        if (array_key_exists('_scroll_id', $response['result'])) {
+            $options['scrollId'] = $response['result']['_scroll_id'];
+        }
+
+        return new SearchResult(
+            $this,
+            $response['result']['total'],
+            $response['result']['hits'],
+            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
+            ['filters' => $filters, 'options' => $options]
+        );
+    }
+
+    /**
+     * Retrieves next result of a search with scroll query.
+     *
+     * @param string $scrollId
+     * @param array $options (optional) arguments
+     * @param array $filters (optional) original filters
+     * @return SearchResult
+     */
+    public function scroll($scrollId, array $options = [], array $filters = [])
+    {
+        $options['httpParams'] = [':scrollId' => $scrollId];
+
+        $data = [];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'scroll'),
+            $data,
+            $options
+        );
+
+        $response['result']['hits'] = array_map(function ($document) {
+            return new Document($this, $document['_id'], $document['_source']);
+        }, $response['result']['hits']);
+
+
+        if (array_key_exists('_scroll_id', $response['result'])) {
+            $options['scrollId'] = $response['result']['_scroll_id'];
+        }
+
+        return new SearchResult(
+            $this,
+            $response['result']['total'],
+            $response['result']['hits'],
+            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
+            ['filters' => $filters, 'options' => $options]
+        );
     }
 
     /**
@@ -87,14 +136,13 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('read', 'count'),
+            $this->buildQueryArgs('document', 'count'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
         return $response['result']['count'];
     }
-
 
     /**
      * Create a new empty data collection, with no associated mapping.
@@ -105,7 +153,7 @@ class DataCollection
     public function create(array $options = [])
     {
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', 'createCollection'),
+            $this->buildQueryArgs('collection', 'create'),
             $this->kuzzle->addHeaders([], $this->headers),
             $options
         );
@@ -142,7 +190,7 @@ class DataCollection
         }
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', $action),
+            $this->buildQueryArgs('document', $action),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -184,7 +232,7 @@ class DataCollection
         }
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', $action),
+            $this->buildQueryArgs('document', $action),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -218,7 +266,7 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('read', 'get'),
+            $this->buildQueryArgs('document', 'get'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -233,21 +281,35 @@ class DataCollection
      * Retrieves all documents stored in this data collection.
      *
      * @param array $options Optional parameters
-     * @return AdvancedSearchResult containing the total number of retrieved documents and an array of Kuzzle/Document objects
+     * @return Document[] containing all documents objects
      */
     public function fetchAllDocuments(array $options = [])
     {
+        $documents = [];
         $filters = [];
 
-        if (array_key_exists('from', $options)) {
-            $filters['from'] = $options['from'];
+        if (!array_key_exists('from', $options)) {
+            $options['from'] = 0;
         }
 
-        if (array_key_exists('size', $options)) {
-            $filters['size'] = $options['size'];
+        if (!array_key_exists('size', $options)) {
+            $options['size'] = 1000;
         }
 
-        return $this->advancedSearch($filters, $options);
+        $searchResult = $this->search($filters, $options);
+
+        if ($searchResult->getTotal() > 10000) {
+            trigger_error('Usage of Kuzzle\\DataCollection::fetchAllDocuments will fetch more than 10 000 document. To avoid performance issues, please use Kuzzle\\DataCollection::search and Kuzzle\\DataCollection::scroll requests', E_USER_WARNING);
+        }
+
+        while ($searchResult) {
+            foreach ($searchResult->getDocuments() as $document) {
+                $documents[] = $document;
+            }
+            $searchResult = $searchResult->getNext();
+        }
+
+        return $documents;
     }
 
     /**
@@ -280,7 +342,7 @@ class DataCollection
         }
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', 'publish'),
+            $this->buildQueryArgs('realtime', 'publish'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -304,7 +366,7 @@ class DataCollection
         ];
 
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('write', 'createOrReplace'),
+            $this->buildQueryArgs('document', 'createOrReplace'),
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
@@ -345,7 +407,7 @@ class DataCollection
     public function truncate(array $options = [])
     {
         $response = $this->kuzzle->query(
-            $this->buildQueryArgs('admin', 'truncateCollection'),
+            $this->buildQueryArgs('collection', 'truncate'),
             $this->kuzzle->addHeaders([], $this->headers),
             $options
         );
@@ -369,8 +431,8 @@ class DataCollection
             'body' => $content
         ];
 
-        $queryArgs = $this->buildQueryArgs('write', 'update');
-        $queryArgs['route'] = '/api/1.0/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
+        $queryArgs = $this->buildQueryArgs('document', 'update');
+        $queryArgs['route'] = '/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
         $queryArgs['method'] = 'put';
 
         $response = $this->kuzzle->query(
