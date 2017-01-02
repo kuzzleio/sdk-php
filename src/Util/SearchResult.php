@@ -17,7 +17,7 @@ class SearchResult
     /**
      * @var Collection
      */
-    private $dataCollection = null;
+    private $collection = null;
 
     /**
      * @var integer
@@ -125,7 +125,7 @@ class SearchResult
                     return null;
                 }
 
-                $searchResult = $this->dataCollection->scroll(
+                $searchResult = $this->collection->scroll(
                     $options['scrollId'],
                     $options,
                     $this->searchArgs['filters']
@@ -143,7 +143,7 @@ class SearchResult
                     return null;
                 }
 
-                $searchResult = $this->dataCollection->search($filters, $this->searchArgs['options']);
+                $searchResult = $this->collection->search($filters, $this->searchArgs['options']);
                 $searchResult->setPrevious($this);
 
                 $this->next = $searchResult;
