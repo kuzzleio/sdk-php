@@ -28,12 +28,12 @@ class CollectionMapping
     /**
      * CollectionMapping constructor.
      *
-     * @param Collection $kuzzleDataCollection An instantiated Kuzzle\Collection object
+     * @param Collection $collection An instantiated Kuzzle\Collection object
      * @param array $mapping Optional mapping
      */
-    public function __construct(Collection $kuzzleDataCollection, array $mapping = [])
+    public function __construct(Collection $collection, array $mapping = [])
     {
-        $this->collection = $kuzzleDataCollection;
+        $this->collection = $collection;
         $this->mapping = $mapping;
 
         return $this;
@@ -63,7 +63,7 @@ class CollectionMapping
     }
 
     /**
-     * Instantiates a new KuzzleDataMapping object with an up-to-date content.
+     * Instantiates a new CollectionMapping object with an up-to-date content.
      *
      * @param array $options Optional parameters
      * @return CollectionMapping

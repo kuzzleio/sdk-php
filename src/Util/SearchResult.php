@@ -52,16 +52,16 @@ class SearchResult
     /**
      * SearchResult constructor.
      *
-     * @param Collection $dataCollection
+     * @param Collection $collection
      * @param integer $total
      * @param Document[] $documents
      * @param array $aggregations
      * @param array $searchArgs
      * @param SearchResult $previous
      */
-    public function __construct(Collection $dataCollection, $total, array $documents, array $aggregations = [], array $searchArgs = [], SearchResult $previous = null)
+    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $searchArgs = [], SearchResult $previous = null)
     {
-        $this->dataCollection = $dataCollection;
+        $this->collection = $collection;
         $this->total = $total;
         $this->documents = $documents;
         $this->aggregations = $aggregations;
