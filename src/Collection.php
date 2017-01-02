@@ -202,14 +202,14 @@ class Collection
     }
 
     /**
-     * Creates a new KuzzleDataMapping object, using its constructor.
+     * Creates a new CollectionMapping object, using its constructor.
      *
      * @param array $mapping Optional mapping
-     * @return Mapping
+     * @return CollectionMapping
      */
     public function collectionMapping(array $mapping = [])
     {
-        return new Mapping($this, $mapping);
+        return new CollectionMapping($this, $mapping);
     }
 
     /**
@@ -316,7 +316,7 @@ class Collection
      * Retrieves the current mapping of this collection.
      *
      * @param array $options Optional parameters
-     * @return Mapping
+     * @return CollectionMapping
      */
     public function getMapping(array $options = [])
     {
