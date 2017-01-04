@@ -649,7 +649,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->getProfile($profileId, ['requestId' => $requestId]);
+        $result = $security->fetchProfile($profileId, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
         $this->assertAttributeEquals($profileId, 'id', $result);
@@ -711,7 +711,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->getRole($roleId, ['requestId' => $requestId]);
+        $result = $security->fetchRole($roleId, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Role', $result);
         $this->assertAttributeEquals($roleId, 'id', $result);
@@ -766,7 +766,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->getUser($userId, ['requestId' => $requestId]);
+        $result = $security->fetchUser($userId, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\User', $result);
         $this->assertAttributeEquals($userId, 'id', $result);

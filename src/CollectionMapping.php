@@ -5,13 +5,13 @@ namespace Kuzzle;
 use ErrorException;
 
 /**
- * Class DataMapping
+ * Class CollectionMapping
  * @package kuzzleio/kuzzle-sdk
  */
-class DataMapping
+class CollectionMapping
 {
     /**
-     * @var DataCollection related collection
+     * @var Collection related collection
      */
     protected $collection;
 
@@ -26,14 +26,14 @@ class DataMapping
     protected $headers = [];
 
     /**
-     * DataMapping constructor.
+     * CollectionMapping constructor.
      *
-     * @param DataCollection $kuzzleDataCollection An instantiated Kuzzle\DataCollection object
+     * @param Collection $collection An instantiated Kuzzle\Collection object
      * @param array $mapping Optional mapping
      */
-    public function __construct(DataCollection $kuzzleDataCollection, array $mapping = [])
+    public function __construct(Collection $collection, array $mapping = [])
     {
-        $this->collection = $kuzzleDataCollection;
+        $this->collection = $collection;
         $this->mapping = $mapping;
 
         return $this;
@@ -43,7 +43,7 @@ class DataMapping
      * Applies the new mapping to the data collection.
      *
      * @param array $options Optional parameters
-     * @return DataMapping
+     * @return CollectionMapping
      */
     public function apply(array $options = [])
     {
@@ -63,10 +63,10 @@ class DataMapping
     }
 
     /**
-     * Instantiates a new KuzzleDataMapping object with an up-to-date content.
+     * Instantiates a new CollectionMapping object with an up-to-date content.
      *
      * @param array $options Optional parameters
-     * @return DataMapping
+     * @return CollectionMapping
      *
      * @throws ErrorException
      */
@@ -97,8 +97,8 @@ class DataMapping
      * Adds or updates a field mapping.
      *
      * @param string $field Name of the field from which the mapping is to be added or updated
-     * @param array $mapping Mapping for this field, following the Elasticsearch Mapping format
-     * @return DataMapping
+     * @param array $mapping CollectionMapping for this field, following the Elasticsearch CollectionMapping format
+     * @return CollectionMapping
      */
     public function set($field, array $mapping)
     {
@@ -112,7 +112,7 @@ class DataMapping
      *
      * @param array $headers New content
      * @param bool $replace true: replace the current content with the provided data, false: merge it
-     * @return DataMapping
+     * @return CollectionMapping
      */
     public function setHeaders(array $headers, $replace = false)
     {
@@ -136,7 +136,7 @@ class DataMapping
     }
 
     /**
-     * @return DataCollection
+     * @return Collection
      */
     public function getCollection()
     {
