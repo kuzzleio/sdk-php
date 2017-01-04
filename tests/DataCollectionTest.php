@@ -300,7 +300,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_create',
-            'method' => 'PUT',
+            'method' => 'POST',
             'request' => [
                 'metadata' => [],
                 'controller' => 'document',
@@ -807,7 +807,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/' . $index . '/' . $collection,
+            'route' => '/' . $index . '/' . $collection . '/_publish',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -863,7 +863,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/' . $index . '/' . $collection,
+            'route' => '/' . $index . '/' . $collection . '/_publish',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
