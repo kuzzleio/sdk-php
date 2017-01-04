@@ -14,6 +14,7 @@ You can access the Kuzzle repository on [Github](https://github.com/kuzzleio/kuz
   * [Composer](#composer)
     * [Basic usage](#basic-usage)
     * [Bundle Symfony](#bundle)
+* [Running tests](#tests)
 * [License](#license)
 
 ## SDK Documentation
@@ -66,6 +67,14 @@ You can find a Symfony bridge bundle for this module [here](https://github.com/k
 
 ```
 composer require kuzzleio/kuzzle-symfony-bridge
+```
+
+
+## <a name="tests"></a> Running Tests
+
+```
+php ./vendor/bin/phpcs -p -n --standard=PSR2 src
+php ./vendor/bin/phpunit
 ```
 
 ## License
