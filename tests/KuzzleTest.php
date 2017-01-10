@@ -269,7 +269,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/' . $index,
+            'route' => '/' . $index . '/_create',
             'request' => [
                 'action' => 'create',
                 'controller' => 'index',
@@ -279,7 +279,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'PUT',
+            'method' => 'POST',
             'query_parameters' => []
         ];
 

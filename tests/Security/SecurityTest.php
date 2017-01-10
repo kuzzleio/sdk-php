@@ -91,7 +91,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/profiles/' . $profileId . '/_createOrReplace',
+            'route' => '/profiles/' . $profileId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -222,7 +222,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/roles/' . $roleId . '/_createOrReplace',
+            'route' => '/roles/' . $roleId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -339,7 +339,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/users/_createRestricted',
+            'route' => '/users/' . $userId . '/_createRestricted',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -1160,8 +1160,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/profiles/' . $profileId,
-            'method' => 'POST',
+            'route' => '/profiles/' . $profileId . '/_update',
+            'method' => 'PUT',
             'request' => [
                 'metadata' => [],
                 'controller' => 'security',
@@ -1227,8 +1227,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/roles/' . $roleId,
-            'method' => 'POST',
+            'route' => '/roles/' . $roleId . '/_update',
+            'method' => 'PUT',
             'request' => [
                 'metadata' => [],
                 'controller' => 'security',
@@ -1288,8 +1288,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/users/' . $userId,
-            'method' => 'POST',
+            'route' => '/users/' . $userId . '/_update',
+            'method' => 'PUT',
             'request' => [
                 'metadata' => [],
                 'controller' => 'security',

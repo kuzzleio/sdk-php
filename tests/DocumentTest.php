@@ -185,7 +185,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/' . $index . '/' . $collection,
+            'route' => '/' . $index . '/' . $collection . '/_publish',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
