@@ -24,7 +24,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/roles/' . $roleId . '/_createOrReplace',
+            'route' => '/roles/' . $roleId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -93,8 +93,8 @@ class RoleTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/roles/' . $roleId,
-            'method' => 'POST',
+            'route' => '/roles/' . $roleId . '/_update',
+            'method' => 'PUT',
             'request' => [
                 'metadata' => [],
                 'controller' => 'security',
