@@ -29,9 +29,9 @@ class Kuzzle
     protected $url;
 
     /**
-     * @var string port of kuzzle http server (default: 7511)
+     * @var string port of kuzzle http server (default: 7512)
      */
-    protected $port = 7511;
+    protected $port = 7512;
 
     /**
      * @var string Kuzzle’s default index to use
@@ -54,7 +54,7 @@ class Kuzzle
     protected $jwtToken;
 
     /**
-     * @var DataCollection[][]
+     * @var Collection[][]
      */
     protected $collections = [];
 
@@ -193,11 +193,11 @@ class Kuzzle
      *
      * @param string $collection The name of the data collection you want to manipulate
      * @param string $index The name of the index containing the data collection
-     * @return DataCollection
+     * @return Collection
      *
      * @throws InvalidArgumentException
      */
-    public function dataCollectionFactory($collection, $index = '')
+    public function collection($collection, $index = '')
     {
         if (empty($index)) {
             if (empty($this->defaultIndex)) {
@@ -212,7 +212,7 @@ class Kuzzle
         }
 
         if (!array_key_exists($collection, $this->collections[$index])) {
-            $this->collections[$index][$collection] = new DataCollection($this, $collection, $index);
+            $this->collections[$index][$collection] = new Collection($this, $collection, $index);
         }
 
         return $this->collections[$index][$collection];
