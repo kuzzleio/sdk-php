@@ -602,9 +602,7 @@ class Kuzzle
         }
 
          // @todo move this into RequestHandler
-        $res = $this->emitRestRequest($this->convertRestRequest($request, $httpParams));
-
-        return $res;
+        return $this->emitRestRequest($this->convertRestRequest($request, $httpParams));
     }
 
     /**
