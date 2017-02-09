@@ -79,7 +79,8 @@ class Collection
             $response['result']['total'],
             $response['result']['hits'],
             array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
-            ['filters' => $filters, 'options' => $options]
+            ['filters' => $filters, 'options' => $options],
+            array_key_exists('previous', $options) ? $options['previous'] : null
         );
     }
 
@@ -90,12 +91,21 @@ class Collection
      * @param array $options (optional) arguments
      * @param array $filters (optional) original filters
      * @return SearchResult
+     * @throws \Exception
      */
     public function scroll($scrollId, array $options = [], array $filters = [])
     {
         $options['httpParams'] = [':scrollId' => $scrollId];
 
         $data = [];
+
+        if (!$scrollId) {
+            throw new \Exception('Collection.scroll: scrollId is required');
+        }
+
+        if (!$options['scroll']) {
+            throw new \Exception('Collection.scroll: scroll is required');
+        }
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('document', 'scroll'),
@@ -117,7 +127,8 @@ class Collection
             $response['result']['total'],
             $response['result']['hits'],
             array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
-            ['filters' => $filters, 'options' => $options]
+            ['filters' => $filters, 'options' => $options],
+            array_key_exists('previous', $options) ? $options['previous'] : null
         );
     }
 
@@ -295,6 +306,7 @@ class Collection
         if (!array_key_exists('size', $options)) {
             $options['size'] = 1000;
         }
+
 
         $searchResult = $this->search($filters, $options);
 

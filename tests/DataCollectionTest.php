@@ -619,9 +619,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
             ],
             'query_parameters' => [
-                'scroll' => '30s',
-                'from' => 0,
-                'size' => 1,
+                'scroll' => '30s'
             ]
         ];
         $searchResponse = [
