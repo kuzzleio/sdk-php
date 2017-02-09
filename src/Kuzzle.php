@@ -29,9 +29,9 @@ class Kuzzle
     protected $url;
 
     /**
-     * @var string port of kuzzle http server (default: 7511)
+     * @var string port of kuzzle http server (default: 7512)
      */
-    protected $port = 7511;
+    protected $port = 7512;
 
     /**
      * @var string Kuzzle’s default index to use
