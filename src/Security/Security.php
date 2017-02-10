@@ -233,7 +233,7 @@ class Security
      * @param array $options Optional arguments
      * @return Profile
      */
-    public function getProfile($id, array $options = [])
+    public function fetchProfile($id, array $options = [])
     {
         $data = [
             '_id' => $id
@@ -255,7 +255,7 @@ class Security
      * @param array $options Optional arguments
      * @return Role
      */
-    public function getRole($id, array $options = [])
+    public function fetchRole($id, array $options = [])
     {
         $data = [
             '_id' => $id
@@ -277,7 +277,7 @@ class Security
      * @param array $options Optional arguments
      * @return User
      */
-    public function getUser($id, array $options = [])
+    public function fetchUser($id, array $options = [])
     {
         $data = [
             '_id' => $id
@@ -371,7 +371,7 @@ class Security
      * @param array $content Profile content
      * @return Profile
      */
-    public function profileFactory($id, array $content)
+    public function profile($id, array $content)
     {
         return new Profile($this, $id, $content);
     }
@@ -383,7 +383,7 @@ class Security
      * @param array $content Role content
      * @return Role
      */
-    public function roleFactory($id, array $content)
+    public function role($id, array $content)
     {
         return new Role($this, $id, $content);
     }
@@ -395,7 +395,7 @@ class Security
      * @param array $content User content
      * @return User
      */
-    public function userFactory($id, array $content)
+    public function user($id, array $content)
     {
         return new User($this, $id, $content);
     }

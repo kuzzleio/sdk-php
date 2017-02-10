@@ -5,7 +5,7 @@ use Kuzzle\Util\CurlRequest;
 class KuzzleTest extends \PHPUnit_Framework_TestCase
 {
     const FAKE_KUZZLE_HOST = '127.0.0.1';
-    const FAKE_KUZZLE_URL = 'http://127.0.0.1:7511';
+    const FAKE_KUZZLE_URL = 'http://127.0.0.1:7512';
 
     public function testSimpleConstructor()
     {
@@ -46,10 +46,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         try {
 
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $dataCollection = $kuzzle->dataCollectionFactory($collection, $index);
+            $dataCollection = $kuzzle->collection($collection, $index);
 
             // Assert type
-            $this->assertInstanceOf('\Kuzzle\DataCollection', $dataCollection);
+            $this->assertInstanceOf('\Kuzzle\Collection', $dataCollection);
 
             // Assert Properties
             $this->assertAttributeEquals($kuzzle, 'kuzzle', $dataCollection);
@@ -136,10 +136,10 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url, ['defaultIndex' => $index]);
-            $dataCollection = $kuzzle->dataCollectionFactory($collection);
+            $dataCollection = $kuzzle->collection($collection);
 
             // Assert type
-            $this->assertInstanceOf('\Kuzzle\DataCollection', $dataCollection);
+            $this->assertInstanceOf('\Kuzzle\Collection', $dataCollection);
 
             // Assert Properties
             $this->assertAttributeEquals($index, 'index', $dataCollection);
@@ -158,9 +158,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->dataCollectionFactory($collection);
+            $kuzzle->collection($collection);
 
-            $this->fail('KuzzleTest::testDataCollectionFactory => Should raise an exception (dataCollectionFactory could not be called without index nor default index)');
+            $this->fail('KuzzleTest::testDataCollectionFactory => Should raise an exception (collection could not be called without index nor default index)');
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
@@ -269,7 +269,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/' . $index,
+            'route' => '/' . $index . '/_create',
             'request' => [
                 'action' => 'create',
                 'controller' => 'index',
@@ -279,7 +279,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 ],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'PUT',
+            'method' => 'POST',
             'query_parameters' => []
         ];
 

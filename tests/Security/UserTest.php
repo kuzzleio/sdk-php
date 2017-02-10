@@ -121,8 +121,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/users/' . $userId,
-            'method' => 'POST',
+            'route' => '/users/' . $userId . '/_update',
+            'method' => 'PUT',
             'request' => [
                 'metadata' => [],
                 'controller' => 'security',

@@ -1,5 +1,5 @@
 <?php
-use Kuzzle\DataCollection;
+use Kuzzle\Collection;
 use Kuzzle\Kuzzle;
 
 class DataCollectionTest extends \PHPUnit_Framework_TestCase
@@ -74,7 +74,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $searchResult = $dataCollection->search($filter, ['requestId' => $requestId]);
 
@@ -159,7 +159,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Kuzzle\Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $searchResult = $dataCollection->scroll($scrollId, $options);
 
@@ -229,7 +229,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $count = $dataCollection->count($filter, ['requestId' => $requestId]);
 
@@ -279,7 +279,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $result = $dataCollection->create(['requestId' => $requestId]);
 
@@ -300,7 +300,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_create',
-            'method' => 'PUT',
+            'method' => 'POST',
             'request' => [
                 'metadata' => [],
                 'controller' => 'document',
@@ -338,7 +338,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $document = $dataCollection->createDocument($documentContent, $documentId, ['requestId' => $requestId]);
 
@@ -400,7 +400,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $documentObject = new \Kuzzle\Document($dataCollection, $documentId, $documentContent);
 
@@ -459,7 +459,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $result = $dataCollection->deleteDocument($documentId, ['requestId' => $requestId]);
 
@@ -514,7 +514,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $result = $dataCollection->deleteDocument($filters, ['requestId' => $requestId]);
 
@@ -572,7 +572,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $document = $dataCollection->fetchDocument($documentId, ['requestId' => $requestId]);
 
@@ -677,7 +677,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $documents = $dataCollection->fetchAllDocuments(['from' => 0, 'size' => 1, 'scroll' => '30s', 'requestId' => $requestId]);
 
@@ -783,7 +783,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $documents = $dataCollection->fetchAllDocuments(['from' => 0, 'size' => 1, 'requestId' => $requestId]);
 
@@ -807,7 +807,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/' . $index . '/' . $collection,
+            'route' => '/' . $index . '/' . $collection . '/_publish',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -843,7 +843,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $result = $dataCollection->publishMessage($document, ['requestId' => $requestId]);
 
@@ -863,7 +863,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/' . $index . '/' . $collection,
+            'route' => '/' . $index . '/' . $collection . '/_publish',
             'method' => 'POST',
             'request' => [
                 'metadata' => [],
@@ -900,7 +900,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $documentObject = new \Kuzzle\Document($dataCollection, $documentId, $document);
 
@@ -961,7 +961,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $document = $dataCollection->replaceDocument($documentId, $documentContent, ['requestId' => $requestId]);
 
@@ -1016,7 +1016,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $result = $dataCollection->truncate(['requestId' => $requestId]);
 
@@ -1105,7 +1105,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         /**
          * @var Kuzzle $kuzzle
          */
-        $dataCollection = new DataCollection($kuzzle, $collection, $index);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
 
         $document = $dataCollection->updateDocument($documentId, $documentContent, ['requestId' => $requestId]);
 

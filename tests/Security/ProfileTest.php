@@ -34,7 +34,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 
 
         $httpRequest = [
-            'route' => '/profiles/' . $profileId . '/_createOrReplace',
+            'route' => '/profiles/' . $profileId,
             'method' => 'PUT',
             'request' => [
                 'metadata' => [],
@@ -117,8 +117,8 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/profiles/' . $profileId,
-            'method' => 'POST',
+            'route' => '/profiles/' . $profileId . '/_update',
+            'method' => 'PUT',
             'request' => [
                 'metadata' => [],
                 'controller' => 'security',
