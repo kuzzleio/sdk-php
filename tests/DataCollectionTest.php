@@ -404,12 +404,41 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $documentObject = new \Kuzzle\Document($dataCollection, $documentId, $documentContent);
 
-        $document = $dataCollection->createDocument($documentObject, '', ['updateIfExist' => true, 'requestId' => $requestId]);
+        $document = $dataCollection->createDocument($documentObject, '', ['ifExist' => 'replace', 'requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $document);
         $this->assertAttributeEquals($documentId, 'id', $document);
         $this->assertAttributeEquals($documentContent, 'content', $document);
         $this->assertAttributeEquals(1, 'version', $document);
+    }
+
+    function testCreateDocumentInvalidOption()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+        $documentContent = [
+            'foo' => 'bar'
+        ];
+
+        $kuzzle = $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        try {
+          $document = $dataCollection->createDocument($documentContent, $documentId, ['ifExist' => 'foobar', 'requestId' => $requestId]);
+          $this->fail('DataCollectionTest::testCreateDocumentInvalidOption => should have thrown');
+        }
+        catch(Exception $e) {
+          $this->assertInstanceOf('InvalidArgumentException', $e);
+          $this->assertEquals('Invalid "ifExist" option value: foobar', $e->getMessage());
+        }
     }
 
     function testDeleteDocument()
