@@ -180,7 +180,7 @@ class Collection
         if (array_key_exists('ifExist', $options)) {
             if ($options['ifExist'] == 'replace') {
                 $action = 'createOrReplace';
-            } elseif ($options['ifExist'] !== 'error') {
+            } elseif ($options['ifExist'] != 'error') {
                 throw new InvalidArgumentException('Invalid "ifExist" option value: ' . $options['ifExist']);
             }
         }
