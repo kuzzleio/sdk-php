@@ -1,7 +1,7 @@
 Official Kuzzle PHP SDK
 ======
 
-This SDK version is compatible with Kuzzle 1.0.0-RC6 and higher
+This SDK version is compatible with Kuzzle 1.0.0-RC9 and higher
 
 ## About Kuzzle
 

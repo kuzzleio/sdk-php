@@ -44,19 +44,9 @@
       "route": "/:index/:collection/_mapping",
       "method": "put"
     },
-    "updateUserMapping": {
-      "name": "updateUserMapping",
-      "route": "/users/_mapping",
-      "method": "put"
-    },
     "getMapping": {
       "name": "getMapping",
       "route": "/:index/:collection/_mapping",
-      "method": "get"
-    },
-    "getUserMapping": {
-      "name": "getUserMapping",
-      "route": "/users/_mapping",
       "method": "get"
     },
     "getSpecifications": {
@@ -121,6 +111,11 @@
       "route": "/:index/:collection/:_id",
       "method": "get"
     },
+    "mGet": {
+      "name": "mGet",
+      "route": "/:index/:collection/_mGet",
+      "method": "post"
+    },
     "count": {
       "name": "count",
       "route": "/:index/:collection/_count",
@@ -131,9 +126,19 @@
       "route": "/:index/:collection/:_id/_create",
       "method": "post"
     },
+    "mCreate": {
+      "name": "mCreate",
+      "route": "/:index/:collection/_mCreate",
+      "method": "post"
+    },
     "createOrReplace": {
       "name": "createOrReplace",
       "route": "/:index/:collection/:_id",
+      "method": "put"
+    },
+    "mCreateOrReplace": {
+      "name": "mCreateOrReplace",
+      "route": "/:index/:collection/_mCreateOrReplace",
       "method": "put"
     },
     "update": {
@@ -141,14 +146,29 @@
       "route": "/:index/:collection/:_id/_update",
       "method": "put"
     },
+    "mUpdate": {
+      "name": "mUpdate",
+      "route": "/:index/:collection/_mUpdate",
+      "method": "put"
+    },
     "replace": {
       "name": "replace",
       "route": "/:index/:collection/:_id/_replace",
       "method": "put"
     },
+    "mReplace": {
+      "name": "mReplace",
+      "route": "/:index/:collection/_mReplace",
+      "method": "put"
+    },
     "delete": {
       "name": "delete",
       "route": "/:index/:collection/:_id",
+      "method": "delete"
+    },
+    "mDelete": {
+      "name": "mDelete",
+      "route": "/:index/:collection/_mDelete",
       "method": "delete"
     },
     "deleteByQuery": {
@@ -1641,6 +1661,36 @@
     }
   },
   "security": {
+    "getRoleMapping": {
+      "name": "getRoleMapping",
+      "route": "/roles/_mapping",
+      "method": "get"
+    },
+    "updateRoleMapping": {
+      "name": "updateRoleMapping",
+      "route": "/roles/_mapping",
+      "method": "put"
+    },
+    "getProfileMapping": {
+      "name": "getProfileMapping",
+      "route": "/profiles/_mapping",
+      "method": "get"
+    },
+    "updateProfileMapping": {
+      "name": "updateProfileMapping",
+      "route": "/profiles/_mapping",
+      "method": "put"
+    },
+    "getUserMapping": {
+      "name": "getUserMapping",
+      "route": "/users/_mapping",
+      "method": "get"
+    },
+    "updateUserMapping": {
+      "name": "updateUserMapping",
+      "route": "/users/_mapping",
+      "method": "put"
+    },
     "getRole": {
       "name": "getRole",
       "route": "/roles/:_id",
@@ -1648,7 +1698,7 @@
     },
     "mGetRoles": {
       "name": "mGetRoles",
-      "route": "/roles/_mget",
+      "route": "/roles/_mGet",
       "method": "post"
     },
     "searchRoles": {
@@ -1678,7 +1728,7 @@
     },
     "mGetProfiles": {
       "name": "mGetProfiles",
-      "route": "/profiles/_mget",
+      "route": "/profiles/_mGet",
       "method": "post"
     },
     "createOrReplaceProfile": {
@@ -1759,6 +1809,21 @@
     "createFirstAdmin": {
       "name": "createFirstAdmin",
       "route": "/_createFirstAdmin",
+      "method": "post"
+    },
+    "mDeleteProfiles": {
+      "name": "mDeleteProfiles",
+      "route": "/profiles/_mDelete",
+      "method": "post"
+    },
+    "mDeleteRoles": {
+      "name": "mDeleteRoles",
+      "route": "/roles/_mDelete",
+      "method": "post"
+    },
+    "mDeleteUsers": {
+      "name": "mDeleteUsers",
+      "route": "/users/_mDelete",
       "method": "post"
     }
   },
