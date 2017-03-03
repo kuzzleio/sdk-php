@@ -3,6 +3,7 @@
 namespace Kuzzle;
 
 use Kuzzle\Util\SearchResult;
+use InvalidArgumentException;
 
 /**
  * Class Collection
@@ -169,14 +170,19 @@ class Collection
      * @param array $options Optional parameters
      *
      * @return Document
+     * @throws InvalidArgumentException
      */
     public function createDocument($document, $id = '', array $options = [])
     {
         $action = 'create';
         $data = [];
 
-        if (array_key_exists('updateIfExist', $options)) {
-            $action = $options['updateIfExist'] ? 'createOrReplace' : 'create';
+        if (array_key_exists('ifExist', $options)) {
+            if ($options['ifExist'] == 'replace') {
+                $action = 'createOrReplace';
+            } elseif ($options['ifExist'] != 'error') {
+                throw new InvalidArgumentException('Invalid "ifExist" option value: ' . $options['ifExist']);
+            }
         }
 
         if ($document instanceof Document) {
