@@ -95,6 +95,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $scrollId = uniqid();
+        $scroll = '1m';
         $index = 'index';
         $collection = 'collection';
 
@@ -105,8 +106,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $options = [
-            'requestId' => uniqid(),
-            'scroll' => '1m'
+            'requestId' => uniqid()
         ];
 
         // mock http request
@@ -161,7 +161,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $searchResult = $dataCollection->scroll($scrollId, $options);
+        $searchResult = $dataCollection->scroll($scrollId, $scroll, $options);
 
         $this->assertInstanceOf('Kuzzle\Util\SearchResult', $searchResult);
         $this->assertEquals(2, $searchResult->getTotal());

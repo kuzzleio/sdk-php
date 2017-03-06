@@ -2,6 +2,10 @@
 
 namespace Kuzzle\Security;
 
+/**
+ * Class Policy
+ * @package Kuzzle\Security
+ */
 class Policy
 {
     /**
@@ -96,7 +100,7 @@ class Policy
      */
     public function getRole()
     {
-        return $this->profile->getSecurity()->getRole($this->roleId);
+        return $this->profile->getSecurity()->fetchRole($this->roleId);
     }
 
     /**

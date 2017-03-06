@@ -9,8 +9,6 @@ use Kuzzle\Document;
 /**
  * Class SearchResult
  * @package Kuzzle\Util
- *
- * @todo: Implement Iterator interface
  */
 class SearchResult
 {
@@ -38,6 +36,11 @@ class SearchResult
      * @var array
      */
     private $searchArgs = [];
+
+    /**
+     * @var int
+     */
+    private $fetchedDocuments = 0;
 
     /**
      * SearchResult constructor.
@@ -78,6 +81,14 @@ class SearchResult
     }
 
     /**
+     * @return Collection
+     */
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+
+    /**
      * @return array
      */
     public function getAggregations()
@@ -86,13 +97,29 @@ class SearchResult
     }
 
     /**
+     * @return array
+     */
+    public function getSearchArgs()
+    {
+        return $this->searchArgs;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFetchedDocuments()
+    {
+        return $this->fetchedDocuments;
+    }
+
+    /**
      * @return SearchResult
      */
-    public function getNext()
+    public function fetchNext()
     {
         $searchResult = null;
 
-        if (array_key_exists('scrollId', $this->searchArgs['options'])) {
+        if (array_key_exists('scrollId', $this->searchArgs['options']) && array_key_exists('scroll', $this->searchArgs['options'])) {
             // retrieve next results with scroll if original search use it
             if ($this->fetchedDocuments >= $this->getTotal()) {
                 return null;
@@ -100,10 +127,6 @@ class SearchResult
 
             $options = $this->searchArgs['options'];
             $options['previous'] = $this;
-
-            if (array_key_exists('scroll', $this->searchArgs['filters'])) {
-                $options['scroll'] = $this->searchArgs['filters']['scroll'];
-            }
 
             if (array_key_exists('from', $options)) {
                 unset($options['from']);
@@ -115,6 +138,7 @@ class SearchResult
 
             $searchResult = $this->collection->scroll(
                 $options['scrollId'],
+                $options['scroll'],
                 $options,
                 $this->searchArgs['filters']
             );

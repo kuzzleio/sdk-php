@@ -2,6 +2,10 @@
 
 namespace Kuzzle\Security;
 
+/**
+ * Class Document
+ * @package Kuzzle\Security
+ */
 abstract class Document
 {
     protected $deleteActionName = '';
@@ -78,7 +82,7 @@ abstract class Document
      *
      * @param array $content New profile content
      * @param array $options Optional parameters
-     * @return Profile
+     * @return Document
      */
     public function update(array $content, array $options = [])
     {
@@ -102,7 +106,7 @@ abstract class Document
      * Creates or replaces the profile in Kuzzle’s database layer.
      *
      * @param array $options Optional parameters
-     * @return Profile
+     * @return Document
      */
     public function save(array $options = [])
     {

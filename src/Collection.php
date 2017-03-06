@@ -89,12 +89,13 @@ class Collection
      * Retrieves next result of a search with scroll query.
      *
      * @param string $scrollId
+     * @param string $scroll
      * @param array $options (optional) arguments
      * @param array $filters (optional) original filters
      * @return SearchResult
      * @throws \Exception
      */
-    public function scroll($scrollId, array $options = [], array $filters = [])
+    public function scroll($scrollId, $scroll, array $options = [], array $filters = [])
     {
         $options['httpParams'] = [':scrollId' => $scrollId];
 
@@ -104,9 +105,11 @@ class Collection
             throw new \Exception('Collection.scroll: scrollId is required');
         }
 
-        if (!$options['scroll']) {
+        if (!$scroll) {
             throw new \Exception('Collection.scroll: scroll is required');
         }
+
+        $options['scroll'] = $scroll;
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('document', 'scroll'),
@@ -324,7 +327,7 @@ class Collection
             foreach ($searchResult->getDocuments() as $document) {
                 $documents[] = $document;
             }
-            $searchResult = $searchResult->getNext();
+            $searchResult = $searchResult->fetchNext();
         }
 
         return $documents;

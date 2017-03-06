@@ -254,11 +254,23 @@ class MemoryStorage
     
     protected $kuzzle;
 
+    /**
+     * MemoryStorage constructor.
+     *
+     * @param Kuzzle $kuzzle
+     */
     public function __construct(Kuzzle $kuzzle)
     {
         $this->kuzzle = $kuzzle;
     }
 
+    /**
+     * Magic __call function, acts as proxy
+     *
+     * @param $command
+     * @param $arguments
+     * @return array
+     */
     public function __call($command, $arguments)
     {
         if (!array_key_exists($command, $this->COMMANDS)) {
