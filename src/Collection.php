@@ -80,7 +80,8 @@ class Collection
             $response['result']['total'],
             $response['result']['hits'],
             array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
-            ['filters' => $filters, 'options' => $options],
+            $options,
+            $filters,
             array_key_exists('previous', $options) ? $options['previous'] : null
         );
     }
@@ -131,7 +132,8 @@ class Collection
             $response['result']['total'],
             $response['result']['hits'],
             array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
-            ['filters' => $filters, 'options' => $options],
+            $options,
+            $filters,
             array_key_exists('previous', $options) ? $options['previous'] : null
         );
     }

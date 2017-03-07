@@ -35,7 +35,12 @@ class SearchResult
     /**
      * @var array
      */
-    private $searchArgs = [];
+    private $options = [];
+
+    /**
+     * @var array
+     */
+    private $filters = [];
 
     /**
      * @var int
@@ -49,16 +54,19 @@ class SearchResult
      * @param integer $total
      * @param Document[] $documents
      * @param array $aggregations
-     * @param array $searchArgs
+     * @param array $options
+     * @param array $fiters
      * @param SearchResult $previous
+     * @internal param array $searchArgs
      */
-    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $searchArgs = [], SearchResult $previous = null)
+    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $options, array $fiters, SearchResult $previous = null)
     {
         $this->collection = $collection;
         $this->total = $total;
         $this->documents = $documents;
         $this->aggregations = $aggregations;
-        $this->searchArgs = $searchArgs;
+        $this->options = $options;
+        $this->filters = $fiters;
         $this->fetchedDocuments = count($documents) + ($previous instanceof SearchResult ? $previous->fetchedDocuments : 0);
 
         return $this;
@@ -99,9 +107,17 @@ class SearchResult
     /**
      * @return array
      */
-    public function getSearchArgs()
+    public function getOptions()
     {
-        return $this->searchArgs;
+        return $this->options;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilters()
+    {
+        return $this->filters;
     }
 
     /**
@@ -119,13 +135,13 @@ class SearchResult
     {
         $searchResult = null;
 
-        if (array_key_exists('scrollId', $this->searchArgs['options']) && array_key_exists('scroll', $this->searchArgs['options'])) {
+        if (array_key_exists('scrollId', $this->options) && array_key_exists('scroll', $this->options)) {
             // retrieve next results with scroll if original search use it
             if ($this->fetchedDocuments >= $this->getTotal()) {
                 return null;
             }
 
-            $options = $this->searchArgs['options'];
+            $options = $this->options;
             $options['previous'] = $this;
 
             if (array_key_exists('from', $options)) {
@@ -140,12 +156,12 @@ class SearchResult
                 $options['scrollId'],
                 $options['scroll'],
                 $options,
-                $this->searchArgs['filters']
+                $this->filters
             );
-        } else if (array_key_exists('from', $this->searchArgs['options']) && array_key_exists('size', $this->searchArgs['options'])) {
+        } else if (array_key_exists('from', $this->options) && array_key_exists('size', $this->options)) {
             // retrieve next results with  from/size if original search use it
-            $filters = $this->searchArgs['filters'];
-            $options = $this->searchArgs['options'];
+            $filters = $this->filters;
+            $options = $this->options;
             $options['previous'] = $this;
 
             $options['from'] += $options['size'];
