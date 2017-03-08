@@ -96,7 +96,7 @@ class Collection
      * @return SearchResult
      * @throws \Exception
      */
-    public function scroll($scrollId, $scroll, array $options = [], array $filters = [])
+    public function scroll($scrollId, array $options = [], array $filters = [])
     {
         $options['httpParams'] = [':scrollId' => $scrollId];
 
@@ -105,12 +105,6 @@ class Collection
         if (!$scrollId) {
             throw new \Exception('Collection.scroll: scrollId is required');
         }
-
-        if (!$scroll) {
-            throw new \Exception('Collection.scroll: scroll is required');
-        }
-
-        $options['scroll'] = $scroll;
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('document', 'scroll'),

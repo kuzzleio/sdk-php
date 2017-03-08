@@ -135,7 +135,7 @@ class SearchResult
     {
         $searchResult = null;
 
-        if (array_key_exists('scrollId', $this->options) && array_key_exists('scroll', $this->options)) {
+        if (array_key_exists('scrollId', $this->options)) {
             // retrieve next results with scroll if original search use it
             if ($this->fetchedDocuments >= $this->getTotal()) {
                 return null;
@@ -154,7 +154,6 @@ class SearchResult
 
             $searchResult = $this->collection->scroll(
                 $options['scrollId'],
-                $options['scroll'],
                 $options,
                 $this->filters
             );
