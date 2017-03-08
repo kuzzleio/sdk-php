@@ -59,7 +59,7 @@ class SearchResult
      * @param SearchResult $previous
      * @internal param array $searchArgs
      */
-    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $options, array $fiters, SearchResult $previous = null)
+    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $options = [], array $fiters = [], SearchResult $previous = null)
     {
         $this->collection = $collection;
         $this->total = $total;
