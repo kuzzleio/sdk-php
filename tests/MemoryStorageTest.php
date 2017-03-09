@@ -29,7 +29,6 @@ class MemoryStorageTest extends \PHPUnit_Framework_TestCase
         $id = uniqid();
         $start = 10;
         $stop = 15;
-        $opts = ['withscores' => true];
 
         try {
             $kuzzle = $this
@@ -43,18 +42,16 @@ class MemoryStorageTest extends \PHPUnit_Framework_TestCase
             ];
 
             $httpRequest = [
-                'route' => '/ms/_zrevrange/' . $id . '/' . $start . '/' . $stop,
+                'route' => '/ms/_zrevrange/' . $id,
                 'request' => [
                     'action' => 'zrevrange',
                     'controller' => 'memoryStorage',
                     'metadata' => [],
                     'requestId' => $options['requestId'],
                     '_id' => $id,
-                    'body' => [
-                        'start' => $start,
-                        'stop' => $stop,
-                        'withscores' => $opts['withscores']
-                    ]
+                    'start' => $start,
+                    'stop' => $stop,
+                    'withscores' => $opts['withscores']
                 ],
                 'method' => 'GET',
                 'query_parameters' => []
@@ -73,7 +70,7 @@ class MemoryStorageTest extends \PHPUnit_Framework_TestCase
              */
             $memoryStorage = $kuzzle->memoryStorage();
 
-            $memoryStorage->zrevrange($id, $start, $stop, $opts, $options);
+            $memoryStorage->zrevrange($id, $start, $stop, $options);
         }
         catch (Exception $e) {
             $this->fail('MemoryStorageTest::testCommand => Should not raise an exception');

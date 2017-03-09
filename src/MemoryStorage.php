@@ -8,77 +8,77 @@ use InvalidArgumentException;
  * Class MemoryStorage
  * @package kuzzleio/kuzzle-sdk
  *
- * @method append
- * @method bitcount
- * @method bitop
- * @method bitpos
- * @method dbsize
- * @method decr
- * @method decrby
- * @method del
- * @method exists
- * @method expire
- * @method expireat
- * @method flushdb
- * @method geoadd
- * @method geodist
- * @method geohash
- * @method geopos
- * @method georadius
- * @method georadiusbymember
- * @method get
- * @method getbit
- * @method getrange
- * @method getset
- * @method hdel
- * @method hexists
- * @method hget
- * @method hgetall
- * @method hincrby
- * @method hincrbyfloat
- * @method hkeys
- * @method hlen
- * @method hmget
- * @method hmset
- * @method hscan
- * @method hset
- * @method hsetnx
- * @method hstrlen
- * @method hvals
- * @method incr
- * @method incrby
- * @method incrbyfloat
- * @method keys
- * @method lindex
- * @method linsert
- * @method llen
- * @method lpop
- * @method lpush
- * @method lpushx
- * @method lrange
- * @method lrem
- * @method lset
- * @method ltrim
- * @method mget
- * @method mset
- * @method msetnx
- * @method object
- * @method persist
- * @method pexpire
- * @method pexpireat
- * @method pfadd
- * @method pfcount
- * @method pfmerge
- * @method ping
- * @method psetex
- * @method pttl
- * @method randomkey
- * @method rename
- * @method renamenx
- * @method rpop
- * @method rpoplpush
- * @method rpush
- * @method rpushx
+ * @method int append(string $key, string $value, array $options = NULL)
+ * @method int bitcount(string $key, $options = NULL)
+ * @method int bitop(string $key, string $operation, array $keys, array $options = NULL)
+ * @method int bitpos(string $key, int $bit, array $options = NULL)
+ * @method int dbsize(array $options = NULL)
+ * @method int decr(string $key, array $options = NULL)
+ * @method int decrby(string $key, int $value, array $options = NULL)
+ * @method int del(array $keys, array $options = NULL)
+ * @method int exists(array $keys, array $options = NULL)
+ * @method int expire(string $key, int $seconds, array $options = NULL)
+ * @method int expireat(string $key, int $timestamp, array $options = NULL)
+ * @method string flushdb(array $options = NULL)
+ * @method int geoadd(string $key, array $points, array $options = NULL)
+ * @method float geodist(string $key, string $member1, string $member2, array $options = NULL)
+ * @method array geohash(string $key, array $members, array $options = NULL)
+ * @method array geopos(string $key, array $members, array $options = NULL)
+ * @method array georadius(string $key, float $longitude, float $latitude, float $distance, string $unit, array $options = NULL)
+ * @method array georadiusbymember(string $key, string $member, float $distance, string $unit, array $options = NULL)
+ * @method string get(string $key, array $options = NULL)
+ * @method int getbit(string $key, int $offset, array $options = NULL)
+ * @method string getrange(string $key, int $start, int $end, array $options = NULL)
+ * @method string getset(string $key, string $value, array $options = NULL)
+ * @method int hdel(string $key, array $fields, array $options = NULL)
+ * @method int hexists(string $key, string $field, array $options = NULL)
+ * @method string hget(string $key, string $field, array $options = NULL)
+ * @method array hgetall(string $key, array $options = NULL)
+ * @method int hincrby(string $key, string $field, int $value, array $options = NULL)
+ * @method float hincrbyfloat(string $key, string $field, float $value, array $options = NULL)
+ * @method array hkeys(string $key, array $options = NULL)
+ * @method int hlen(string $key, array $options = NULL)
+ * @method array hmget(string $key, array $fields, array $options = NULL)
+ * @method string hmset(string $key, array $entries, array $options = NULL)
+ * @method array hscan(string $key, int $cursor, array $options = NULL)
+ * @method int hset(string $key, string $field, string $value, array $options = NULL)
+ * @method int hsetnx(string $key, string $field, string $value, array $options = NULL)
+ * @method int hstrlen(string $key, string $field, array $options = NULL)
+ * @method array hvals(string $key, array $options = NULL)
+ * @method int incr(string $key, array $options = NULL)
+ * @method int incrby(string $key, int $value, array $options = NULL)
+ * @method float incrbyfloat(string $key, float $value, array $options = NULL)
+ * @method array keys(string $pattern, array $options = NULL)
+ * @method string lindex(string $key, int $index, array $options = NULL)
+ * @method int linsert(string $key, string $position, string $pivot, string $value, array $options = NULL)
+ * @method int llen(string $key, array $options = NULL)
+ * @method string lpop(string $key, array $options = NULL)
+ * @method int lpush(string $key, array $values, array $options = NULL)
+ * @method int lpushx(string $key, string $value, array $options = NULL)
+ * @method array lrange(string $key, int $start, int $stop, array $options = NULL)
+ * @method int lrem(string $key, int $count, string $value, array $options = NULL)
+ * @method string lset(string $key, int $index, string $value, array $options = NULL)
+ * @method string ltrim(string $key, int $start, int $stop, array $options = NULL)
+ * @method array mget(array $keys, array $options = NULL)
+ * @method string mset(array $entries, array $options = NULL)
+ * @method int msetnx(array $entries, array $options = NULL)
+ * @method string object(string $key, string $subcommand, array $options = NULL)
+ * @method int persist(string $key, array $options = NULL)
+ * @method int pexpire(string $key, int $milliseconds, array $options = NULL)
+ * @method int pexpireat(string $key, int $timestamp, array $options = NULL)
+ * @method int pfadd(string $key, array $elements, array $options = NULL)
+ * @method int pfcount(array $keys, array $options = NULL)
+ * @method string pfmerge(string $key, array $sources, array $options = NULL)
+ * @method string ping(array $options = NULL)
+ * @method string psetex(string $key, string $value, int $milliseconds, array $options = NULL)
+ * @method int pttl(string $key, array $options = NULL)
+ * @method string randomkey(array $options = NULL)
+ * @method string rename(string $key, string $newkey, array $options = NULL)
+ * @method string renamenx(string $key, string $newkey, array $options = NULL)
+ * @method string rpop(string $key, array $options = NULL)
+ * @method string rpoplpush(string $source, string $destination, array $options = NULL)
+ * @method int rpush(string $key, array $values, array $options = NULL)
+ * @method int rpushx(string $key, string $value, array $options = NULL)
  * @method sadd
  * @method scan
  * @method scard
@@ -118,7 +118,11 @@ use InvalidArgumentException;
  * @method zremrangebylex
  * @method zremrangebyscore
  * @method zrevrangebylex
- * @method zrevrange
+ * @method array zrevrange(string $key, int $start, int $stop, array $options = NULL)
+ * @param string $key
+ * @param int $start
+ * @param int $stop
+ * @param array [$options]
  * @method zrevrangebyscore
  * @method zrevrank
  * @method zscan
@@ -304,7 +308,7 @@ class MemoryStorage
         }
 
         if (isset($this->COMMANDS[$command]['required'])) {
-            foreach($this->COMMANDS[$command]['required'] as $key) {
+            foreach ($this->COMMANDS[$command]['required'] as $key) {
                 $value = array_shift($arguments);
 
                 if ($value == null) {
@@ -368,11 +372,11 @@ class MemoryStorage
      * @param $key
      * @param $value
      */
-    private function assignParameter(&$data, $getter, $key, $value) {
+    private function assignParameter($data, $getter, $key, $value)
+    {
         if ($getter || $key == '_id') {
             $data[$key] = $value;
-        }
-        else {
+        } else {
             $data['body'][$key] = $value;
         }
     }
@@ -386,25 +390,20 @@ class MemoryStorage
      * @param $data
      * @param $options
      */
-    private function assignGeoRadiusOptions (&$data, &$options) {
+    private function assignGeoRadiusOptions($data, $options)
+    {
         $parsed = [];
 
-        $filtered = array_filter($options, function ($opt) {
-            return array_search($opt, ['withcoord', 'withdist', 'count', 'sort']);
-        });
-
-        foreach($options as $opt) {
-            if (array_search($opt, ['withcoord', 'withdist', 'count', 'sort'])) {
-                if ($opt == 'withcoord' || $opt == 'withdist') {
-                    array_push($parsed, $opt);
-                } else if ($opt == 'count' || $opt == 'sort') {
-                    if ($opt == 'count') {
-                        array_push($parsed, 'count');
-                    }
-
-                    array_push($parsed, $options[$opt]);
+        foreach ($options as $opt) {
+            if ($opt == 'withcoord' || $opt == 'withdist') {
+                array_push($parsed, $opt);
+                unset($options[$opt]);
+            } else if ($opt == 'count' || $opt == 'sort') {
+                if ($opt == 'count') {
+                    array_push($parsed, 'count');
                 }
 
+                array_push($parsed, $options[$opt]);
                 unset($options[$opt]);
             }
         }
@@ -422,8 +421,9 @@ class MemoryStorage
      * @param data
      * @param options
      */
-    private function assignZrangeOptions (&$data, &$options) {
-        &$data['options'] = ['withscores'];
+    private function assignZrangeOptions($data, $options)
+    {
+        $data['options'] = ['withscores'];
 
         if (isset($options['limit'])) {
             $data['limit'] = $options['limit'];
@@ -437,13 +437,14 @@ class MemoryStorage
      * @param results
      * @return array
      */
-    private function mapGeoposResults($results) {
+    private function mapGeoposResults($results)
+    {
         $ret = [];
 
-        foreach($results as $coords) {
+        foreach ($results as $coords) {
             $point = [];
 
-            foreach($coords as $latlon) {
+            foreach ($coords as $latlon) {
                 array_push($point, floatval($latlon));
             }
 
@@ -465,36 +466,129 @@ class MemoryStorage
      * @param results
      * @return array
      */
-    private function mapGeoRadiusResults($results) {
+    private function mapGeoRadiusResults($results)
+    {
+        $ret = [];
+
         // Simple array of point names (no options provided)
         if (!is_array($results[0])) {
-            return array_map(function (point) {
-                    return ['name' => point];
-            }, $results);
+            foreach ($results as $point) {
+                array_push($ret, ['name' => $point]);
+            }
+
+            return $ret;
         }
 
-        return results.map(function (point) {
-                // The point id is always the first item
-                var
-                p = {
-                    name: point[0]
-      },
-      i;
+        foreach ($results as $point) {
+            // The point id is always the first item
+            $p = ['name' => $point[0]];
+            $pointLength = count($point);
 
-    for (i = 1; i < point.length; i++) {
-        // withcoord result are in an array...
-        if (Array.isArray(point[i])) {
-            p.coordinates = point[i].map(function (coord) {
-                    return parseFloat(coord);
-                });
+            for ($i = 1; $i < $pointLength; $i++) {
+                // withcoord results are stored in an array...
+                if (is_array($point[$i])) {
+                    $p['coordinates'] = [];
+
+                    foreach ($point[$i] as $coord) {
+                        array_push($p['coordinates'], floatval($coord));
+                    }
+                } else {
+                    // ... while withdist ones are not
+                    $p['distance'] = floatval($point[$i]);
+                }
+
+                array_push($ret, $p);
+            }
         }
-        else {
-            // ... and withdist are not
-            p.distance = parseFloat(point[i]);
-        }
+
+        return $ret;
     }
 
-    return p;
-  });
+    /**
+     * Map a string result to an array of strings.
+     * Used to uniformize polymorphic results from redis
+     *
+     * @param results
+     * @return array
+     */
+    private function mapStringToArray($results)
+    {
+        return is_array($results) ? $results : array($results);
+    }
+
+    /**
+     * Map an array of strings to an array of integers
+     *
+     * @param results
+     * @return array
+     */
+    private function mapArrayStringToArrayInt($results)
+    {
+        $ret = [];
+
+        foreach ($results as $value) {
+            array_push($ret, intval($value));
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Map results like ['key', 'value', 'key', 'value', ...]
+     * to a JSON object ['key' => 'value', 'key' => 'value', ...]
+     *
+     * @param results
+     * @return array
+     */
+    private function mapKeyValueResults($results)
+    {
+        $buffer = null;
+        $mapped = [];
+
+        foreach ($results as $value) {
+            if ($buffer === null) {
+                $buffer = $value;
+            } else {
+                $mapped[$buffer] = $value;
+                $buffer = null;
+            }
+        }
+
+        return $mapped;
+    }
+
+    /**
+     * Map zrange results with WITHSCORES:
+     * [
+     *  "member1",
+     *  "score of member1",
+     *  "member2",
+     *  "score of member2"
+     * ]
+     *
+     * into the following format:
+     * [
+     *  {"member": "member1", "score": <score of member1>},
+     *  {"member": "member2", "score": <score of member2>},
+     * ]
+     *
+     *
+     * @param results
+     * @return array
+     */
+    private function mapZrangeResults($results)
+    {
+        $buffer = null;
+        $mapped = [];
+
+        foreach ($results as $value) {
+            if ($buffer === null) {
+                $buffer = $value;
+            } else {
+                array_push($mapped, ['member' => $buffer, 'score' => floatval($value)]);
+            }
+        }
+
+        return $mapped;
     }
 }
