@@ -118,7 +118,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'metadata' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'POST',
+            'method' => 'GET',
             'query_parameters' => [
                 'scroll' => '1m'
             ]
@@ -611,7 +611,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $httpScrollRequest = [
             'route' => '/_scroll/' . $scrollId,
-            'method' => 'POST',
+            'method' => 'GET',
             'request' => [
                 'metadata' => [],
                 'controller' => 'document',
