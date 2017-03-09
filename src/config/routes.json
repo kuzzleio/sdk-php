@@ -104,7 +104,7 @@
     "scroll": {
       "name": "scroll",
       "route": "/_scroll/:scrollId",
-      "method": "post"
+      "method": "get"
     },
     "get": {
       "name": "get",
