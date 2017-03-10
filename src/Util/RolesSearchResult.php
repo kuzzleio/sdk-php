@@ -4,6 +4,10 @@ namespace Kuzzle\Util;
 
 use Kuzzle\Security\Role;
 
+/**
+ * Class RolesSearchResult
+ * @package Kuzzle\Util
+ */
 class RolesSearchResult
 {
     /**

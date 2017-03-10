@@ -2,8 +2,16 @@
 
 namespace Kuzzle\Util;
 
+/**
+ * Class CurlRequest
+ * @package Kuzzle\Util
+ */
 class CurlRequest implements RequestInterface
 {
+    /**
+     * @param array $parameters
+     * @return array
+     */
     public function execute(array $parameters = [])
     {
         $url = '';

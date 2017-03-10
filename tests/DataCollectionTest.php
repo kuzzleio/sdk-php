@@ -9,6 +9,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $index = 'index';
+        $options = ['requestId' => $requestId];
         $collection = 'collection';
         $filter = [
             'query' => [
@@ -76,10 +77,13 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $searchResult = $dataCollection->search($filter, ['requestId' => $requestId]);
+        $searchResult = $dataCollection->search($filter, $options);
 
         $this->assertInstanceOf('Kuzzle\Util\SearchResult', $searchResult);
         $this->assertEquals(2, $searchResult->getTotal());
+        $this->assertEquals($options, $searchResult->getOptions());
+        $this->assertEquals($filter, $searchResult->getFilters());
+        $this->assertEquals(2, $searchResult->getFetchedDocuments());
 
         $documents = $searchResult->getDocuments();
         $this->assertInstanceOf('Kuzzle\Document', $documents[0]);

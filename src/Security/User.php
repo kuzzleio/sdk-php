@@ -47,7 +47,7 @@ class User extends Document
         $profiles = [];
 
         foreach ($this->content['profileIds'] as $profileId) {
-            $profiles[] = $this->security->getProfile($profileId);
+            $profiles[] = $this->security->fetchProfile($profileId);
         }
 
         return $profiles;
@@ -104,6 +104,9 @@ class User extends Document
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     protected function syncProfile()
     {
         if (!array_key_exists('profileIds', $this->content)) {
@@ -117,6 +120,8 @@ class User extends Document
         }
 
         $this->content['profileIds'] = $profileIds;
+
+        return true;
     }
 
     /**

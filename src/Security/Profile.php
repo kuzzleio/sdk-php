@@ -114,6 +114,9 @@ class Profile extends Document
         return $data;
     }
 
+    /**
+     *
+     */
     protected function syncPolicies()
     {
         if (!array_key_exists('policies', $this->content)) {

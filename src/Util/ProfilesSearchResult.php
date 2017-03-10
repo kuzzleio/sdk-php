@@ -4,6 +4,10 @@ namespace Kuzzle\Util;
 
 use Kuzzle\Security\Profile;
 
+/**
+ * Class ProfilesSearchResult
+ * @package Kuzzle\Util
+ */
 class ProfilesSearchResult
 {
     /**

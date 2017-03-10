@@ -80,7 +80,8 @@ class Collection
             $response['result']['total'],
             $response['result']['hits'],
             array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
-            ['filters' => $filters, 'options' => $options],
+            $options,
+            $filters,
             array_key_exists('previous', $options) ? $options['previous'] : null
         );
     }
@@ -89,6 +90,7 @@ class Collection
      * Retrieves next result of a search with scroll query.
      *
      * @param string $scrollId
+     * @param string $scroll
      * @param array $options (optional) arguments
      * @param array $filters (optional) original filters
      * @return SearchResult
@@ -102,10 +104,6 @@ class Collection
 
         if (!$scrollId) {
             throw new \Exception('Collection.scroll: scrollId is required');
-        }
-
-        if (!$options['scroll']) {
-            throw new \Exception('Collection.scroll: scroll is required');
         }
 
         $response = $this->kuzzle->query(
@@ -128,7 +126,8 @@ class Collection
             $response['result']['total'],
             $response['result']['hits'],
             array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
-            ['filters' => $filters, 'options' => $options],
+            $options,
+            $filters,
             array_key_exists('previous', $options) ? $options['previous'] : null
         );
     }
@@ -324,7 +323,7 @@ class Collection
             foreach ($searchResult->getDocuments() as $document) {
                 $documents[] = $document;
             }
-            $searchResult = $searchResult->getNext();
+            $searchResult = $searchResult->fetchNext();
         }
 
         return $documents;
