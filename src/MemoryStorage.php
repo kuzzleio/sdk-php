@@ -79,55 +79,52 @@ use InvalidArgumentException;
  * @method string rpoplpush(string $source, string $destination, array $options = NULL)
  * @method int rpush(string $key, array $values, array $options = NULL)
  * @method int rpushx(string $key, string $value, array $options = NULL)
- * @method sadd
- * @method scan
- * @method scard
- * @method sdiff
- * @method sdiffstore
- * @method set
- * @method setex
- * @method setnx
- * @method sinter
- * @method sinterstore
- * @method sismember
- * @method smembers
- * @method smove
- * @method sort
- * @method spop
- * @method srandmember
- * @method srem
- * @method sscan
- * @method strlen
- * @method sunion
- * @method sunionstore
- * @method time
- * @method touch
- * @method ttl
- * @method type
- * @method zadd
- * @method zcard
- * @method zcount
- * @method zincrby
- * @method zinterstore
- * @method zlexcount
- * @method zrange
- * @method zrangebylex
- * @method zrangebyscore
- * @method zrank
- * @method zrem
- * @method zremrangebylex
- * @method zremrangebyscore
- * @method zrevrangebylex
+ * @method int sadd(string $key, array $members, array $options = NULL)
+ * @method array scan(int $cursor, array $options = NULL)
+ * @method int scard(string $key, array $options = NULL)
+ * @method array sdiff(string $key, array $keys, array $options = NULL)
+ * @method int sdiffstore(string $key, array $keys, string $destination, array $options = NULL)
+ * @method string set(string $key, string $value, array $options = NULL)
+ * @method string setex(string $key, string $value, int $ttl, array $options = NULL)
+ * @method int setnx(string $key, string $value, array $options = NULL)
+ * @method array sinter(array $keys, array $options = NULL)
+ * @method int sinterstore(string $destination, array $keys, array $options = NULL)
+ * @method int sismember(string $key, string $member, array $options = NULL)
+ * @method array smembers(string $key, array $options = NULL)
+ * @method int smove(string $key, string $destination, string $member, array $options = NULL)
+ * @method array sort(string $key, array $options = NULL)
+ * @method array spop(string $key, array $options = NULL)
+ * @method array srandmember(string $key, array $options = NULL)
+ * @method int srem(string $key, array $members, array $options = NULL)
+ * @method array sscan(string $key, int $cursor, array $options = NULL)
+ * @method int strlen(string $key, array $options = NULL)
+ * @method array sunion(array $keys, array $options = NULL)
+ * @method int sunionstore(string $destination, array $keys, array $options = NULL)
+ * @method array time(array $options = NULL)
+ * @method int touch(array $keys, array $options = NULL)
+ * @method int ttl(string $key, array $options = NULL)
+ * @method string type(string $key, array $options = NULL)
+ * @method int zadd(string $key, array $elements, array $options = NULL)
+ * @method int zcard(string $key, array $options = NULL)
+ * @method int zcount(string $key, int $min, int $max, array $options = NULL)
+ * @method float zincrby(string $key, string $member, float $increment, array $options = NULL)
+ * @method int zinterstore(string $destination, array $keys, array $options = NULL)
+ * @method int zlexcount(string $key, int $min, int $max, array $options = NULL)
+ * @method array zrange(string $key, int $start, int $stop, array $options = NULL)
+ * @method array zrangebylex(string $key, int $min, int $max, array $options = NULL)
+ * @method array zrangebyscore(string $key, int $min, int $max, array $options = NULL)
+ * @method int zrank(string $key, string $member, array $options = NULL)
+ * @method int zrem(string $key, array $members, array $options = NULL)
+ * @method int zremrangebylex(string $key, int $min, int $max, array $options = NULL)
+ * @method int zremrangebyrank(string $key, int $min, int $max, array $options = NULL)
+ * @method int zremrangebyscore(string $key, int $min, int $max, array $options = NULL)
  * @method array zrevrange(string $key, int $start, int $stop, array $options = NULL)
- * @param string $key
- * @param int $start
- * @param int $stop
- * @param array [$options]
- * @method zrevrangebyscore
- * @method zrevrank
- * @method zscan
- * @method zscore
- * @method zunionstore
+ * @method array zrevrangebylex(string $key, int $min, int $max, array $options = NULL)
+ * @method array zrevrangebyscore(string $key, int $min, int $max, array $options = NULL)
+ * @method int zrevrank(string $key, string $member, array $options = NULL)
+ * @method array zscan(string $key, int $cursor, array $options = NULL)
+ * @method int zscore(string $key, string $member, array $options = NULL)
+ * @method int zunionstore(string $destination, array $keys, array $options = NULL)
  */
 class MemoryStorage
 {
@@ -300,11 +297,11 @@ class MemoryStorage
         
         $data = [];
         $query = ['controller' => 'memoryStorage', 'action' => $command];
-        $getter = false;
+        $getter = true;
         
-        if (isset($this->COMMANDS[$command]['getter']) && $this->COMMANDS[$command]['getter'] == true) {
-            $getter = true;
+        if (!isset($this->COMMANDS[$command]['getter']) && $this->COMMANDS[$command]['getter'] === false) {
             $data['body'] = [];
+            $getter = false;
         }
 
         if (isset($this->COMMANDS[$command]['required'])) {
@@ -325,15 +322,15 @@ class MemoryStorage
             throw new InvalidArgumentException('MemoryStorage.' . $command . ': Too many parameters provided');
         }
 
+        if ($argsLeft === 1 && !is_array($arguments[0])) {
+            throw new InvalidArgumentException('MemoryStorage.' . $command . ': Invalid optional parameter (expected an associative array)');
+        }
+
         $options = [];
 
         if (isset($this->COMMANDS[$command]['opts'])) {
             if ($argsLeft == 1) {
                 $options = array_shift($arguments);
-
-                if (!is_array($options)) {
-                    throw new InvalidArgumentException('MemoryStorage.' . $command . ': Invalid optional parameter (expected an associative array)');
-                }
 
                 if (is_array($this->COMMANDS[$command]['opts'])) {
                     foreach ($this->COMMANDS[$command]['opts'] as $opt) {
@@ -349,8 +346,9 @@ class MemoryStorage
                Options function mapper does not necessarily should be called
                whether options have been passed by the client or not
              */
-            if (is_callable($this->COMMANDS[$command]['opts'])) {
+            if (is_callable([$this, $this->COMMANDS[$command]['opts']])) {
                 call_user_func([$this, $this->COMMANDS[$command]['opts']], $data, $options);
+                var_dump($data);
             }
         }
 
@@ -372,7 +370,7 @@ class MemoryStorage
      * @param $key
      * @param $value
      */
-    private function assignParameter($data, $getter, $key, $value)
+    private function assignParameter(&$data, $getter, $key, $value)
     {
         if ($getter || $key == '_id') {
             $data[$key] = $value;
@@ -390,7 +388,7 @@ class MemoryStorage
      * @param $data
      * @param $options
      */
-    private function assignGeoRadiusOptions($data, $options)
+    private function assignGeoRadiusOptions(&$data, $options)
     {
         $parsed = [];
 
@@ -424,11 +422,12 @@ class MemoryStorage
     private function assignZrangeOptions($data, $options)
     {
         $data['options'] = ['withscores'];
-
+echo 'ZRANGE OPTIONS';
         if (isset($options['limit'])) {
             $data['limit'] = $options['limit'];
             unset($options['limit']);
         }
+        var_dump($data);
     }
 
     /**
