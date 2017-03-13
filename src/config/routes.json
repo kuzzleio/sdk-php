@@ -357,7 +357,7 @@
     },
     "lindex": {
       "name": "lindex",
-      "route": "/ms/_lindex/:_id/:idx",
+      "route": "/ms/_lindex/:_id/:index",
       "method": "get"
     },
     "linsert": {
@@ -944,7 +944,7 @@
     },
     "lindex": {
       "name": "lindex",
-      "route": "/ms/_lindex/:_id/:idx",
+      "route": "/ms/_lindex/:_id/:index",
       "method": "get"
     },
     "linsert": {

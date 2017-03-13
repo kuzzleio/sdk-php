@@ -144,9 +144,9 @@ class MemoryStorage
         'geoadd' => ['required' => ['_id', 'points']],
         'geodist' => [
             'getter' => true,
-            'required' => ['_id', 'member1', 'member2'],
+            'required' => ['_id', ':member1', ':member2'],
             'opts' => ['unit'],
-            'mapResults' => 'floatval'
+            'mapResults' => 'mapStringToFloat'
         ],
         'geohash' => ['getter' => true, 'required' => ['_id', 'members']],
         'geopos' => ['getter' => true, 'required' => ['_id', 'members'], 'mapResults' => 'mapGeoposResults'],
@@ -165,13 +165,13 @@ class MemoryStorage
         'get' => ['getter' => true, 'required' => ['_id']],
         'getbit' => ['getter' => true, 'required' => ['_id', 'offset']],
         'getrange' => ['getter' => true, 'required' => ['_id', 'start', 'end']],
-        'getset' => ['required' => ['_id', 'fields']],
+        'getset' => ['required' => ['_id', 'value']],
         'hdel' => ['required' => ['_id', 'fields']],
-        'hexists' => ['getter' => true, 'required' => ['_id', 'field']],
-        'hget' => ['getter' => true, 'required' => ['_id', 'field']],
-        'hgetall' => ['getter' => true, 'required' => ['_id'], 'mapResults' => 'mapKeyValueResults'],
+        'hexists' => ['getter' => true, 'required' => ['_id', ':field']],
+        'hget' => ['getter' => true, 'required' => ['_id', ':field']],
+        'hgetall' => ['getter' => true, 'required' => ['_id']],
         'hincrby' => ['required' => ['_id', 'field', 'value']],
-        'hincrbyfloat' => ['required' => ['_id', 'field', 'value'], 'mapResults' => 'floatval'],
+        'hincrbyfloat' => ['required' => ['_id', 'field', 'value'], 'mapResults' => 'mapStringToFloat'],
         'hkeys' => ['getter' => true, 'required' => ['_id']],
         'hlen' => ['getter' => true, 'required' => ['_id']],
         'hmget' => ['getter' => true, 'required' => ['_id', 'fields']],
@@ -179,13 +179,13 @@ class MemoryStorage
         'hscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count']],
         'hset' => ['required' => ['_id', 'field', 'value']],
         'hsetnx' => ['required' => ['_id', 'field', 'value']],
-        'hstrlen' => ['getter' => true, 'required' => ['_id', 'field']],
+        'hstrlen' => ['getter' => true, 'required' => ['_id', ':field']],
         'hvals' => ['getter' => true, 'required' => ['_id']],
         'incr' => ['required' => ['_id']],
         'incrby' => ['required' => ['_id', 'value']],
         'incrbyfloat' => ['required' => ['_id', 'value']],
-        'keys' => ['getter' => true, 'required' => ['pattern']],
-        'lindex' => ['getter' => true, 'required' => ['_id', 'index']],
+        'keys' => ['getter' => true, 'required' => [':pattern']],
+        'lindex' => ['getter' => true, 'required' => ['_id', ':index']],
         'linsert' => ['required' => ['_id', 'position', 'pivot', 'value']],
         'llen' => ['getter' => true, 'required' => ['_id']],
         'lpop' => ['required' => ['_id']],
@@ -298,9 +298,9 @@ class MemoryStorage
         $data = [];
         $query = ['controller' => 'memoryStorage', 'action' => $command];
         $getter = true;
-        
-        if (!isset($this->COMMANDS[$command]['getter']) && $this->COMMANDS[$command]['getter'] === false) {
-            $data['body'] = [];
+        $options = ['httpParams' => [], 'query_parameters' => []];
+
+        if (!isset($this->COMMANDS[$command]['getter']) || $this->COMMANDS[$command]['getter'] === false) {
             $getter = false;
         }
 
@@ -308,11 +308,11 @@ class MemoryStorage
             foreach ($this->COMMANDS[$command]['required'] as $key) {
                 $value = array_shift($arguments);
 
-                if ($value == null) {
+                if ($value === null) {
                     throw new InvalidArgumentException('MemoryStorage.' . $command . ': Missing parameter "' . $key . '"');
                 }
 
-                $this->assignParameter($data, $getter, $key, $value);
+                $this->assignParameter($data, $options, $getter, $key, $value);
             }
         }
 
@@ -326,55 +326,71 @@ class MemoryStorage
             throw new InvalidArgumentException('MemoryStorage.' . $command . ': Invalid optional parameter (expected an associative array)');
         }
 
-        $options = [];
+        if ($argsLeft == 1) {
+            $options = array_merge($options, array_shift($arguments));
 
-        if (isset($this->COMMANDS[$command]['opts'])) {
-            if ($argsLeft == 1) {
-                $options = array_shift($arguments);
-
+            if (isset($this->COMMANDS[$command]['opts'])) {
                 if (is_array($this->COMMANDS[$command]['opts'])) {
                     foreach ($this->COMMANDS[$command]['opts'] as $opt) {
                         if (isset($options[$opt])) {
-                            $this->assignParameter($data, $getter, $opt, $options[$opt]);
+                            $this->assignParameter($data, $options, $getter, $opt, $options[$opt]);
                             unset($options[$opt]);
                         }
                     }
                 }
             }
-
-            /*
-               Options function mapper does not necessarily should be called
-               whether options have been passed by the client or not
-             */
-            if (is_callable([$this, $this->COMMANDS[$command]['opts']])) {
-                call_user_func([$this, $this->COMMANDS[$command]['opts']], $data, $options);
-                var_dump($data);
-            }
         }
 
-        if (!isset($options['httpParams'])) {
-            $options['httpParams'] = [];
+        /*
+           Options function mapper does not necessarily should be called
+           whether options have been passed by the client or not
+         */
+        if (isset($this->COMMANDS[$command]['opts']) && is_callable([$this, $this->COMMANDS[$command]['opts']])) {
+            $this->{$this->COMMANDS[$command]['opts']}($options);
         }
 
-        return $this->kuzzle->query($query, $data, $options);
+        $result = $this->kuzzle->query($query, $data, $options);
+
+        if (isset($result['error'])) {
+            return $result;
+        }
+
+        if (!isset($this->COMMANDS[$command]['mapResults'])) {
+            return $result['result'];
+        }
+
+        return call_user_func([$this, $this->COMMANDS[$command]['mapResults']], $result['result']);
     }
 
     /**
      * Assigns the $key => $value argument to the right
      * place in the $data structure
      *
-     * Mutates $data
+     * Mutates $data and $options
      *
      * @param $data
+     * @param $options
      * @param $getter
      * @param $key
      * @param $value
      */
-    private function assignParameter(&$data, $getter, $key, $value)
+    private function assignParameter(&$data, &$options, $getter, $key, $value)
     {
-        if ($getter || $key == '_id') {
+        if ($key == '_id') {
             $data[$key] = $value;
+        } else if ($getter) {
+            $converted = is_array($value) ? implode(',', $value) : $value;
+
+            if ($key[0] === ':') {
+                $options['httpParams'][$key] = $converted;
+            } else {
+                $options['query_parameters'][$key] = $converted;
+            }
         } else {
+            if (!isset($data['body'])) {
+                $data['body'] = [];
+            }
+
             $data['body'][$key] = $value;
         }
     }
@@ -383,31 +399,38 @@ class MemoryStorage
      * Assign the provided options for the georadius* redis functions
      * to the request object, as expected by Kuzzle API
      *
-     * Mutates the provided data and options objects
+     * Mutates the provided options object
      *
-     * @param $data
      * @param $options
      */
-    private function assignGeoRadiusOptions(&$data, $options)
+    private function assignGeoRadiusOptions(&$options)
     {
-        $parsed = [];
+        $parsed = '';
 
-        foreach ($options as $opt) {
-            if ($opt == 'withcoord' || $opt == 'withdist') {
-                array_push($parsed, $opt);
-                unset($options[$opt]);
-            } else if ($opt == 'count' || $opt == 'sort') {
-                if ($opt == 'count') {
-                    array_push($parsed, 'count');
+        foreach ($options as $key => $opt) {
+            if ($key === 'withcoord' || $key === 'withdist') {
+                if (!empty($parsed)) {
+                    $parsed .= ',';
                 }
 
-                array_push($parsed, $options[$opt]);
+                $parsed .= $key;
+                unset($options[$opt]);
+            } else if ($key === 'count' || $key === 'sort') {
+                if (!empty($parsed)) {
+                    $parsed .= ',';
+                }
+
+                if ($key === 'count') {
+                    $parsed .= 'count,';
+                }
+
+                $parsed .= $opt;
                 unset($options[$opt]);
             }
         }
 
-        if (count($parsed) > 0) {
-            $data['options'] = $parsed;
+        if (!empty($parsed)) {
+            $options['query_parameters']['options'] = $parsed;
         }
     }
 
@@ -419,15 +442,14 @@ class MemoryStorage
      * @param data
      * @param options
      */
-    private function assignZrangeOptions($data, $options)
+    private function assignZrangeOptions(&$options)
     {
-        $data['options'] = ['withscores'];
-echo 'ZRANGE OPTIONS';
+        $options['query_parameters']['options'] = ['withscores'];
+
         if (isset($options['limit'])) {
-            $data['limit'] = $options['limit'];
+            $options['query_parameters']['limit'] = implode(',', $options['limit']);
             unset($options['limit']);
         }
-        var_dump($data);
     }
 
     /**
@@ -495,9 +517,9 @@ echo 'ZRANGE OPTIONS';
                     // ... while withdist ones are not
                     $p['distance'] = floatval($point[$i]);
                 }
-
-                array_push($ret, $p);
             }
+
+            array_push($ret, $p);
         }
 
         return $ret;
@@ -533,30 +555,6 @@ echo 'ZRANGE OPTIONS';
     }
 
     /**
-     * Map results like ['key', 'value', 'key', 'value', ...]
-     * to a JSON object ['key' => 'value', 'key' => 'value', ...]
-     *
-     * @param results
-     * @return array
-     */
-    private function mapKeyValueResults($results)
-    {
-        $buffer = null;
-        $mapped = [];
-
-        foreach ($results as $value) {
-            if ($buffer === null) {
-                $buffer = $value;
-            } else {
-                $mapped[$buffer] = $value;
-                $buffer = null;
-            }
-        }
-
-        return $mapped;
-    }
-
-    /**
      * Map zrange results with WITHSCORES:
      * [
      *  "member1",
@@ -585,9 +583,21 @@ echo 'ZRANGE OPTIONS';
                 $buffer = $value;
             } else {
                 array_push($mapped, ['member' => $buffer, 'score' => floatval($value)]);
+                $buffer = null;
             }
         }
 
         return $mapped;
+    }
+
+    /**
+     * Allow call_user_func to work as it is always used with this class
+     * as a context
+     *
+     * @param $results
+     * @return float
+     */
+    private function mapStringToFloat($results) {
+        return floatval($results);
     }
 }
