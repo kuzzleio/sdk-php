@@ -225,11 +225,11 @@ class MemoryStorage
         'setnx' => ['required' => ['_id', 'value']],
         'sinter' => ['getter' => true, 'required' => ['keys']],
         'sinterstore' => ['required' => ['destination', 'keys']],
-        'sismember' => ['required' => ['_id', 'member']],
+        'sismember' => ['getter' => true, 'required' => ['_id', ':member']],
         'smembers' => ['getter' => true, 'required' => ['_id']],
         'smove' => ['required' => ['_id', 'destination', 'member']],
-        'sort' => ['getter' => true, 'required' => ['_id'], 'opts' => ['alpha', 'by', 'direction', 'get', 'limit']],
-        'spop' => ['required' => ['_id'], 'mapResults' => 'mapStringToArray'],
+        'sort' => ['required' => ['_id'], 'opts' => ['alpha', 'by', 'direction', 'get', 'limit']],
+        'spop' => ['required' => ['_id'], 'opts' => ['count'], 'mapResults' => 'mapStringToArray'],
         'srandmember' => ['getter' => true, 'required' => ['_id'], 'opts' => ['count'], 'mapResults' => 'mapStringToArray'],
         'srem' => ['required' => ['_id', 'members']],
         'sscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count']],
@@ -237,10 +237,11 @@ class MemoryStorage
         'sunion' => ['getter' => true, 'required' => ['keys']],
         'sunionstore' => ['required' => ['destination', 'keys']],
         'time' => ['getter' => true, 'mapResults' => 'mapArrayStringToArrayInt'],
-        'touch' => ['required' => 'keys'],
+        'touch' => ['required' => ['keys']],
         'ttl' => ['getter' => 'true', 'required' => ['_id']],
         'type' => ['getter' => 'true', 'required' => ['_id']],
         'zadd' => ['required' => ['_id', 'elements'], 'opts' => ['nx', 'xx', 'ch', 'incr']],
+        'zcard' => ['getter' => true, 'required' => ['_id']],
         'zcount' => ['getter' => true, 'required' => ['_id', 'min', 'max']],
         'zincrby' => ['required' => ['_id', 'member', 'value']],
         'zinterstore' => ['required' => ['_id', 'keys'], 'opts' => ['weights', 'aggregate']],
@@ -258,7 +259,7 @@ class MemoryStorage
             'opts' => 'assignZrangeOptions',
             'mapResults' => 'mapZrangeResults'
         ],
-        'zrank' => ['getter' => true, 'required' => ['_id', 'member']],
+        'zrank' => ['getter' => true, 'required' => ['_id', ':member']],
         'zrem' => ['required' => ['_id', 'members']],
         'zremrangebylex' => ['required' => ['_id', 'min', 'max']],
         'zremrangebyrank' => ['required' => ['_id', 'start', 'stop']],
@@ -269,16 +270,16 @@ class MemoryStorage
             'opts' => 'assignZrangeOptions',
             'mapResults' => 'mapZrangeResults'
         ],
-        'zrevangebylex' => ['getter' => true, 'required' => ['_id', 'min', 'max'], 'opts' => ['limit']],
+        'zrevrangebylex' => ['getter' => true, 'required' => ['_id', 'min', 'max'], 'opts' => ['limit']],
         'zrevrangebyscore' => [
             'getter' => true,
             'required' => ['_id', 'min', 'max'],
             'opts' => 'assignZrangeOptions',
             'mapResults' => 'mapZrangeResults'
         ],
-        'zrevrank' => ['getter' => true, 'required' => ['_id', 'member']],
+        'zrevrank' => ['getter' => true, 'required' => ['_id', ':member']],
         'zscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count']],
-        'zscore' => ['getter' => true, 'required' => ['_id', 'member']],
+        'zscore' => ['getter' => true, 'required' => ['_id', ':member']],
         'zunionstore' => ['required' => ['_id', 'keys'], 'opts' => ['weights', 'aggregate']]
     ];
 
@@ -444,7 +445,7 @@ class MemoryStorage
      */
     private function assignZrangeOptions(&$options)
     {
-        $options['query_parameters']['options'] = ['withscores'];
+        $options['query_parameters']['options'] = 'withscores';
 
         if (isset($options['limit'])) {
             $options['query_parameters']['limit'] = implode(',', $options['limit']);
@@ -597,7 +598,8 @@ class MemoryStorage
      * @param $results
      * @return float
      */
-    private function mapStringToFloat($results) {
+    private function mapStringToFloat($results)
+    {
         return floatval($results);
     }
 }
