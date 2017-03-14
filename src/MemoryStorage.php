@@ -327,7 +327,7 @@ class MemoryStorage
             throw new InvalidArgumentException('MemoryStorage.' . $command . ': Invalid optional parameter (expected an associative array)');
         }
 
-        if ($argsLeft == 1) {
+        if ($argsLeft === 1) {
             $options = array_merge($options, array_shift($arguments));
 
             if (isset($this->COMMANDS[$command]['opts'])) {
