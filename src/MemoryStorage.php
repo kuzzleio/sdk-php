@@ -279,7 +279,7 @@ class MemoryStorage
         ],
         'zrevrank' => ['getter' => true, 'required' => ['_id', ':member']],
         'zscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count']],
-        'zscore' => ['getter' => true, 'required' => ['_id', ':member']],
+        'zscore' => ['getter' => true, 'required' => ['_id', ':member'], 'mapResults' => 'mapStringToFloat'],
         'zunionstore' => ['required' => ['_id', 'keys'], 'opts' => ['weights', 'aggregate']]
     ];
 

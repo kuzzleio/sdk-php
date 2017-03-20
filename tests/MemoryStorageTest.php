@@ -1844,11 +1844,11 @@ class MemoryStorageTest extends TestCase
             '/ms/_zscore/key/foobar',
             ['_id' => 'key'],
             [],
-            1
+            '3.14159'
         );
 
         $result = $this->memoryStorage->zscore('key', 'foobar', $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, 3.14159);
     }
 
     public function testZunionstore() {
