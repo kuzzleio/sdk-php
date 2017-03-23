@@ -539,6 +539,10 @@ class Kuzzle
                 }
             }
 
+            if (isset($options['query_parameters'])) {
+                $httpParams['query_parameters'] = array_merge($httpParams['query_parameters'], $options['query_parameters']);
+            }
+
             if (array_key_exists('refresh', $options)) {
                 $httpParams['query_parameters']['refresh'] = $options['refresh'];
             }
