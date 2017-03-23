@@ -1086,7 +1086,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 '_id' => $documentId,
             ],
-            'query_parameters' => []
+            'query_parameters' => [
+                'retryOnConflict' => 42
+            ]
         ];
         $updateDocumentResponse = [
             '_id' => $documentId,
@@ -1138,7 +1140,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $document = $dataCollection->updateDocument($documentId, $documentContent, ['requestId' => $requestId]);
+        $document = $dataCollection->updateDocument($documentId, $documentContent, ['requestId' => $requestId, 'retryOnConflict' => 42]);
 
         $this->assertInstanceOf('Kuzzle\Document', $document);
         $this->assertAttributeEquals($documentId, 'id', $document);
