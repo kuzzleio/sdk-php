@@ -452,11 +452,18 @@ class Collection
         $queryArgs['route'] = '/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
         $queryArgs['method'] = 'put';
 
+        if (isset($options['retryOnConflict'])) {
+            $options['query_parameters']['retryOnConflict'] = $options['retryOnConflict'];
+            unset($options['retryOnConflict']);
+        }
+
         $response = $this->kuzzle->query(
             $queryArgs,
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
+
+        unset($options['query_parameters']['retryOnConflict']);
 
         return (new Document($this, $response['result']['_id']))->refresh($options);
     }
