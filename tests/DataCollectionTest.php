@@ -25,7 +25,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'search',
                 'requestId' => $requestId,
@@ -119,7 +119,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'scroll',
                 'controller' => 'document',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -200,7 +200,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_count',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'count',
                 'requestId' => $requestId,
@@ -251,7 +251,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection ,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'collection',
                 'action' => 'create',
                 'requestId' => $requestId,
@@ -306,7 +306,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_create',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'create',
                 'body' => $documentContent,
@@ -368,7 +368,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'createOrReplace',
                 'body' => $documentContent,
@@ -458,7 +458,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'delete',
                 'requestId' => $requestId,
@@ -513,7 +513,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_query',
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'deleteByQuery',
                 'requestId' => $requestId,
@@ -570,7 +570,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'GET',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'get',
                 'requestId' => $requestId,
@@ -627,7 +627,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'search',
                 'requestId' => $requestId,
@@ -646,7 +646,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/_scroll/' . $scrollId,
             'method' => 'GET',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'scroll',
                 'requestId' => $requestId,
@@ -731,7 +731,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'search',
                 'requestId' => $requestId,
@@ -749,7 +749,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_search',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'search',
                 'requestId' => $requestId,
@@ -841,7 +841,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_publish',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'realtime',
                 'action' => 'publish',
                 'body' => $document,
@@ -897,7 +897,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_publish',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'realtime',
                 'action' => 'publish',
                 'body' => $document,
@@ -956,7 +956,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'createOrReplace',
                 'body' => $documentContent,
@@ -1015,7 +1015,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_truncate',
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'collection',
                 'action' => 'truncate',
                 'requestId' => $requestId,
@@ -1077,7 +1077,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_update',
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'update',
                 'body' => $documentContent,
@@ -1103,7 +1103,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'GET',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'get',
                 'requestId' => $requestId,
