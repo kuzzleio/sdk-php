@@ -221,7 +221,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'checkToken',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'token' => $fakeToken
                 ],
@@ -273,7 +273,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'create',
                 'controller' => 'index',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'index' => $index
                 ],
@@ -324,7 +324,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getAllStats',
                 'controller' => 'server',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -372,7 +372,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getMyRights',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -423,7 +423,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'info',
                 'controller' => 'server',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET'
@@ -467,7 +467,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getLastStats',
                 'controller' => 'server',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -516,7 +516,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getStats',
                 'controller' => 'server',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'startTime' => $statsTime
                 ],
@@ -574,7 +574,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 'action' => 'list',
                 'controller' => 'collection',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'type' => $collectionType,
                 ],
@@ -631,7 +631,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 'action' => 'list',
                 'controller' => 'collection',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'type' => $collectionType
                 ],
@@ -686,7 +686,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 'action' => 'list',
                 'controller' => 'collection',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'type' => $collectionType
                 ],
@@ -754,7 +754,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'list',
                 'controller' => 'index',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -808,7 +808,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'login',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'username' => $credentials['username'],
                     'password' => $credentials['password'],
@@ -862,7 +862,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'logout',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -911,7 +911,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'now',
                 'controller' => 'server',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -962,7 +962,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 'action' => 'refresh',
                 'controller' => 'index',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'POST',
@@ -1012,7 +1012,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 'action' => 'refresh',
                 'controller' => 'index',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'POST',
@@ -1080,7 +1080,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 'action' => 'setAutoRefresh',
                 'controller' => 'index',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'autoRefresh' => $autoRefresh
                 ],
@@ -1134,7 +1134,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 'action' => 'setAutoRefresh',
                 'controller' => 'index',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => [
                     'autoRefresh' => $autoRefresh
                 ],
@@ -1203,7 +1203,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'updateSelf',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => $content,
                 'requestId' => $options['requestId']
             ],
@@ -1252,7 +1252,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getCurrentUser',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -1614,7 +1614,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'route' => '/my-foo',
             'method' => 'POST',
             'request' => [
-                'metadata' => [
+                'volatile' => [
                     'foo' => 'bar',
                     'bar' => 'baz'
                 ],
@@ -1636,13 +1636,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'method' => 'post'
         ];
         $query = [
-            'metadata' => [
+            'volatile' => [
                 'bar' => 'baz'
             ]
         ];
         $options = [
             'refresh' => 'foo',
-            'metadata' => [
+            'volatile' => [
                 'foo' => 'bar'
             ],
             'httpParams' => [
@@ -1688,7 +1688,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'action' => 'checkToken',
                 'controller' => 'auth',
                 'requestId' => $requestId,
-                'metadata' => []
+                'volatile' => []
             ],
             'query_parameters' => []
         ];
@@ -1799,7 +1799,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
           'body' => []
         ];
         $options = [
-            'metadata' => [],
+            'volatile' => [],
             'requestId' => $requestId
         ];
 
@@ -1808,7 +1808,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'method' => 'POST',
             'request' => [
               'body' => (object)[],
-              'metadata' => [],
+              'volatile' => [],
               'controller' => '',
               'action' => '',
               'requestId' => $requestId

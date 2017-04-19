@@ -44,9 +44,9 @@ class Kuzzle
     protected $headers = [];
 
     /**
-     * @var array Common metadata, will be sent to all future requests
+     * @var array Common volatile data, will be sent to all future requests
      */
-    protected $metadata = [];
+    protected $volatile = [];
 
     /**
      * @var string Token used in requests for authentication.
@@ -265,9 +265,9 @@ class Kuzzle
     /**
      * @return array
      */
-    public function getMetadata()
+    public function getVolatile()
     {
-        return $this->metadata;
+        return $this->volatile;
     }
 
     /**
@@ -499,7 +499,7 @@ class Kuzzle
             'query_parameters' => []
         ];
         $request = [
-            'metadata' => $this->metadata
+            'volatile' => $this->volatile
         ];
 
         if (array_key_exists('controller', $queryArgs)) {
@@ -523,9 +523,9 @@ class Kuzzle
         }
 
         if (!empty($options)) {
-            if (array_key_exists('metadata', $options)) {
-                foreach ($options['metadata'] as $meta => $value) {
-                    $request['metadata'][$meta] = $value;
+            if (array_key_exists('volatile', $options)) {
+                foreach ($options['volatile'] as $meta => $value) {
+                    $request['volatile'][$meta] = $value;
                 }
             }
 
@@ -557,16 +557,16 @@ class Kuzzle
             }
         }
 
-        if (array_key_exists('metadata', $query)) {
-            foreach ($query['metadata'] as $meta => $value) {
-                $request['metadata'][$meta] = $value;
+        if (array_key_exists('volatile', $query)) {
+            foreach ($query['volatile'] as $meta => $value) {
+                $request['volatile'][$meta] = $value;
             }
         }
 
         foreach ($query as $attr => $value) {
             if ($attr === 'body' && empty($value)) {
                 $request['body'] = (object)[];
-            } else if ($attr !== 'metadata') {
+            } else if ($attr !== 'volatile') {
                 $request[$attr] = $value;
             }
         }
@@ -803,17 +803,17 @@ class Kuzzle
     }
 
     /**
-     * @param array $metadata
+     * @param array $volatile
      * @param bool $replace
      * @return Kuzzle
      */
-    public function setMetadata(array $metadata, $replace = false)
+    public function setVolatile(array $volatile, $replace = false)
     {
         if ($replace) {
-            $this->metadata = $metadata;
+            $this->volatile = $volatile;
         } else {
-            foreach ($metadata as $key => $value) {
-                $this->metadata[$key] = $value;
+            foreach ($volatile as $key => $value) {
+                $this->volatile[$key] = $value;
             }
         }
 

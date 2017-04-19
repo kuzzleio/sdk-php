@@ -31,7 +31,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/' . $profileId . '/_create',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createProfile',
                 'requestId' => $requestId,
@@ -94,7 +94,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/' . $profileId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createOrReplaceProfile',
                 'requestId' => $requestId,
@@ -161,7 +161,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/' . $roleId . '/_create',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createRole',
                 'requestId' => $requestId,
@@ -225,7 +225,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/' . $roleId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createOrReplaceRole',
                 'requestId' => $requestId,
@@ -285,7 +285,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId . '/_create',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createUser',
                 'requestId' => $requestId,
@@ -342,7 +342,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId . '/_createRestricted',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createRestrictedUser',
                 'requestId' => $requestId,
@@ -399,7 +399,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createOrReplaceUser',
                 'requestId' => $requestId,
@@ -456,7 +456,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/' . $profileId,
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'deleteProfile',
                 'requestId' => $requestId,
@@ -506,7 +506,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId,
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'deleteUser',
                 'requestId' => $requestId,
@@ -556,7 +556,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/' . $roleId,
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'deleteRole',
                 'requestId' => $requestId,
@@ -615,7 +615,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/' . $profileId,
             'method' => 'GET',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'getProfile',
                 'requestId' => $requestId,
@@ -677,7 +677,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/' . $roleId,
             'method' => 'GET',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'getRole',
                 'requestId' => $requestId,
@@ -732,7 +732,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId,
             'method' => 'GET',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'getUser',
                 'requestId' => $requestId,
@@ -793,7 +793,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId . '/_rights',
             'method' => 'GET',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'getUserRights',
                 'requestId' => $requestId,
@@ -884,7 +884,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/_search',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'searchProfiles',
                 'requestId' => $requestId,
@@ -975,7 +975,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/_search',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'searchRoles',
                 'requestId' => $requestId,
@@ -1068,7 +1068,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/_search',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'searchUsers',
                 'requestId' => $requestId,
@@ -1163,7 +1163,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/' . $profileId . '/_update',
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'updateProfile',
                 'requestId' => $requestId,
@@ -1230,7 +1230,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/' . $roleId . '/_update',
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'updateRole',
                 'requestId' => $requestId,
@@ -1291,7 +1291,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId . '/_update',
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'updateUser',
                 'requestId' => $requestId,

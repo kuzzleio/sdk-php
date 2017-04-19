@@ -53,7 +53,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createOrReplaceUser',
                 'requestId' => $requestId,
@@ -124,7 +124,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId . '/_update',
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'updateUser',
                 'requestId' => $requestId,
@@ -179,7 +179,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
             'route' => '/users/' . $userId,
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'deleteUser',
                 'requestId' => $requestId,

@@ -22,7 +22,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'delete',
                 'requestId' => $requestId,
@@ -124,7 +124,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'document',
                 'action' => 'createOrReplace',
                 'requestId' => $requestId,
@@ -188,7 +188,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
             'route' => '/' . $index . '/' . $collection . '/_publish',
             'method' => 'POST',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'realtime',
                 'action' => 'publish',
                 'requestId' => $requestId,

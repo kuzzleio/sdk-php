@@ -57,7 +57,7 @@ class MemoryStorageTest extends TestCase
             'request' => [
                 'action' => $command,
                 'controller' => 'memoryStorage',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $this->options['requestId'],
             ],
             'method' => $verb,
