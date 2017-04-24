@@ -123,14 +123,28 @@ class Security
         ];
 
         if (array_key_exists('replaceIfExist', $options)) {
-            $action = 'createOrReplaceUser';
-        }
+            $fetchResponse = $this->kuzzle->query(
+                $this->buildQueryArgs('getUser'),
+                $data,
+                $options
+            );
 
-        $response = $this->kuzzle->query(
-            $this->buildQueryArgs($action),
-            $data,
-            $options
-        );
+            if ($fetchResponse["error"] === null && $fetchResponse["result"]["_id"] === $id && $options['replaceIfExist']) {
+                $action = 'replaceUser';
+            }
+
+            $response = $this->kuzzle->query(
+                $this->buildQueryArgs($action),
+                $data,
+                $options
+            );
+        } else {
+            $response = $this->kuzzle->query(
+                $this->buildQueryArgs($action),
+                $data,
+                $options
+            );
+        }
 
         return new User($this, $response['result']['_id'], $response['result']['_source']);
     }
@@ -146,6 +160,31 @@ class Security
     public function createRestrictedUser($id, array $content, array $options = [])
     {
         $action = 'createRestrictedUser';
+        $data = [
+            '_id' => $id,
+            'body' => $content
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs($action),
+            $data,
+            $options
+        );
+
+        return new User($this, $response['result']['_id'], $response['result']['_source']);
+    }
+
+    /**
+     * Replaces an existing user in Kuzzle.
+     *
+     * @param integer $id Unique user identifier, will be used as username
+     * @param array $content Data representing the user
+     * @param array $options Optional arguments
+     * @return User
+     */
+    public function replaceUser($id, array $content, array $options = [])
+    {
+        $action = 'replaceUser';
         $data = [
             '_id' => $id,
             'body' => $content
