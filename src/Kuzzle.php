@@ -121,7 +121,6 @@ class Kuzzle
      *
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      * @param callable $listener The function to call each time one of the registered event is fired
-     * @return string containing an unique listener ID.
      *
      * @throws InvalidArgumentException
      */
@@ -131,15 +130,14 @@ class Kuzzle
             throw new InvalidArgumentException('Unable to add a listener on event "' . $event . '": given listener is not callable');
         }
 
-        $listenerId = uniqid();
-
         if (!array_key_exists($event, $this->listeners)) {
             $this->listeners[$event] = [];
         }
 
-        $this->listeners[$event][$listenerId] = $listener;
+        $this->listeners[$event][spl_object_hash($listener)] = $listener;
 
-        return $listenerId;
+        return $this;
+
     }
 
     /**
@@ -650,13 +648,14 @@ class Kuzzle
 
     /**
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
-     * @param string $listenerID The ID returned by Kuzzle->addListener()
+     * @param callback $listener The listener callback
      */
-    public function removeListener($event, $listenerID)
+    public function removeListener($event, $listener)
     {
         if (array_key_exists($event, $this->listeners)) {
-            if (array_key_exists($listenerID, $this->listeners[$event])) {
-                unset($this->listeners[$event][$listenerID]);
+            $key = array_search($listener, $this->listeners[$event]);
+            if ($key !== false) {
+                unset($this->listeners[$event][$key]);
             }
         }
     }
