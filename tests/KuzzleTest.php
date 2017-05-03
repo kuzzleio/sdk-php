@@ -1393,6 +1393,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->with($curlRequest)
             ->willReturn(['error' => 'HTTP Error', 'response' => '']);
 
+        $triggerCount = 0;
+        $triggerArgs = [];
+        $errListener = function() use (&$triggerArgs, &$triggerCount){
+          $triggerArgs[$triggerCount++] = func_get_args();
+        };
+        $kuzzle->addListener('queryError', $errListener);
+
         try {
             $method->invokeArgs($kuzzle, [$httpRequest]);
 
@@ -1401,6 +1408,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         catch (Exception $e) {
             $this->assertInstanceOf('ErrorException', $e);
             $this->assertEquals('HTTP Error', $e->getMessage());
+            $this->assertEquals($triggerCount, 1);
+            $this->assertEquals('HTTP Error', $triggerArgs[0][0]);
         }
     }
 
@@ -1448,6 +1457,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->with($curlRequest)
             ->willReturn(['error' => '', 'response' => '{"error": {"message": "Kuzzle Error"}}']);
 
+        $triggerCount = 0;
+        $triggerArgs = [];
+        $errListener = function() use (&$triggerArgs, &$triggerCount){
+          $triggerArgs[$triggerCount++] = func_get_args();
+        };
+        $kuzzle->addListener('queryError', $errListener);
+
         try {
             $emitRestRequest->invokeArgs($kuzzle, [$httpRequest]);
 
@@ -1456,6 +1472,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         catch (Exception $e) {
             $this->assertEquals('Kuzzle Error', $e->getMessage());
             $this->assertInstanceOf('ErrorException', $e);
+            $this->assertEquals($triggerCount, 1);
+            $this->assertEquals(['message' => 'Kuzzle Error'], $triggerArgs[0][0]);
         }
     }
 
@@ -1922,6 +1940,37 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $kuzzle->removeAllListeners();
 
         $this->assertAttributeEquals([], 'listeners', $kuzzle);
+    }
+
+    public function testEmitEvent()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $event = 'foo';
+        $triggerCount = 0;
+        $triggerArgs = [];
+
+        $listener1 = function() use (&$triggerArgs, &$triggerCount){
+          $triggerArgs[$triggerCount++] = func_get_args();
+        };
+
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        $kuzzle->addListener($event, $listener1);
+
+        $kuzzle->emitEvent($event, 'foo', 'bar');
+        $this->assertEquals($triggerCount, 1);
+        $this->assertEquals(['foo', 'bar'], $triggerArgs[0]);
+
+        $listener2 = Closure::bind($listener1, null);
+        $kuzzle->addListener($event, $listener2);
+
+        $triggerCount = 0;
+        $triggerArgs = [];
+
+        $kuzzle->emitEvent($event, 'foo', 'bar');
+        $this->assertEquals($triggerCount, 2);
+        $this->assertEquals(['foo', 'bar'], $triggerArgs[1]);
     }
 
     public function testAddHeaders()

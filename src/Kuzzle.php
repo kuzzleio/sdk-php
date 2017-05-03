@@ -137,7 +137,24 @@ class Kuzzle
         $this->listeners[$event][spl_object_hash($listener)] = $listener;
 
         return $this;
+    }
 
+    /**
+     * Emit an event to all registered listeners
+     *
+     * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
+     *
+     */
+    public function emitEvent($event)
+    {
+        if (array_key_exists($event, $this->listeners)) {
+            $arg_list = func_get_args();
+            array_shift($arg_list);
+            foreach($this->listeners[$event] as $callback) {
+                call_user_func_array($callback,$arg_list);
+            }
+        }
+        return $this;
     }
 
     /**
@@ -921,6 +938,7 @@ class Kuzzle
         ]);
 
         if (!empty($result['error'])) {
+            $this->emitEvent('queryError', $result['error'], $httpRequest);
             throw new ErrorException($result['error']);
         }
 
@@ -930,6 +948,7 @@ class Kuzzle
          * @todo: manage custom exceptions
          */
         if (!empty($response['error'])) {
+            $this->emitEvent('queryError', $response['error'], $httpRequest);
             throw new ErrorException($response['error']['message']);
         }
 
