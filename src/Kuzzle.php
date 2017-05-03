@@ -150,8 +150,8 @@ class Kuzzle
         if (array_key_exists($event, $this->listeners)) {
             $arg_list = func_get_args();
             array_shift($arg_list);
-            foreach($this->listeners[$event] as $callback) {
-                call_user_func_array($callback,$arg_list);
+            foreach ($this->listeners[$event] as $callback) {
+                call_user_func_array($callback, $arg_list);
             }
         }
         return $this;
