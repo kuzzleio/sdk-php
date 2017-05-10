@@ -122,29 +122,11 @@ class Security
             'body' => $content
         ];
 
-        if (array_key_exists('replaceIfExist', $options)) {
-            $fetchResponse = $this->kuzzle->query(
-                $this->buildQueryArgs('getUser'),
-                $data,
-                $options
-            );
-
-            if ($fetchResponse["error"] === null && $fetchResponse["result"]["_id"] === $id && $options['replaceIfExist']) {
-                $action = 'replaceUser';
-            }
-
-            $response = $this->kuzzle->query(
-                $this->buildQueryArgs($action),
-                $data,
-                $options
-            );
-        } else {
-            $response = $this->kuzzle->query(
-                $this->buildQueryArgs($action),
-                $data,
-                $options
-            );
-        }
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs($action),
+            $data,
+            $options
+        );
 
         return new User($this, $response['result']['_id'], $response['result']['_source']);
     }
