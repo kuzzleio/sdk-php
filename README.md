@@ -21,6 +21,12 @@ You can access the Kuzzle repository on [Github](https://github.com/kuzzleio/kuz
 
 The complete SDK documentation is available [here](http://kuzzle.io/sdk-documentation/?php)
 
+## Report an issue
+
+Use following meta repository to report issues on SDK:
+
+https://github.com/kuzzleio/kuzzle-sdk/issues
+
 ## Installation
 
 This SDK can be used in any project using composer.
