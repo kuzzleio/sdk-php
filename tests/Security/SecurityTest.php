@@ -278,7 +278,10 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profileIds' => ['admin']
+            'content' => [
+                'profileIds' => ['admin']
+            ],
+            'credentials' => ['some' => 'credentials']
         ];
 
         $httpRequest = [
