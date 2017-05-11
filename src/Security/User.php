@@ -239,6 +239,7 @@ class User extends Document
 
     /**
      * @param array $credentials
+     * @return $this
      * @throws \InvalidArgumentException
      */
     public function setCredentials($credentials)
@@ -248,6 +249,8 @@ class User extends Document
         }
 
         $this->credentials = $credentials;
+
+        return $this;
     }
 
 }
