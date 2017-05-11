@@ -10,10 +10,8 @@ For UI and linked objects developers, Kuzzle is an open-source solution that han
 You can access the Kuzzle repository on [Github](https://github.com/kuzzleio/kuzzle)
 
 * [SDK Documentation](#sdk-documentation)
+* [Report an issue](#report-an-issue)
 * [Installation](#installation)
-  * [Composer](#composer)
-    * [Basic usage](#basic-usage)
-    * [Bundle Symfony](#bundle)
 * [Running tests](#tests)
 * [License](#license)
 
@@ -29,52 +27,11 @@ https://github.com/kuzzleio/kuzzle-sdk/issues
 
 ## Installation
 
-This SDK can be used in any project using composer.
-You can also find a bridge bundle for Symfony [here](https://github.com/kuzzleio/kuzzle-symfony-bridge)
-
-### <a name="composer"></a> Composer
+This SDK can be used in any project using composer:
 
 ```
 composer require kuzzleio/kuzzle-sdk
 ```
-
-#### <a name="basic-usage"></a> Basic usage
-
-```php
-<?php
-
-$kuzzle = new \Kuzzle\Kuzzle('localhost');
-$collection = $kuzzle->dataCollectionFactory('mycollection', 'myindex');
-
-$myDocument = [
-  'name' => 'Rick Astley',
-  'birthDate' => '1966/02/06',
-  'mainActivity' => 'Singer',
-  'website' => 'http://www.rickastley.co.uk',
-  'comment' => 'Never gonna give you up, never gonna let you down'
-];
-
-try {
-    $result = $collection->createDocument($myDocument);
-    /*
-    'result' is a \Kuzzle\Document object
-    */
-}
-catch (Exception $error) {
-    // handle error...
-}
-
-```
-
-#### <a name="bundle"></a> Symfony Bridge Bundle
-
-You can find a Symfony bridge bundle for this module [here](https://github.com/kuzzleio/kuzzle-symfony-bridge)
-
-
-```
-composer require kuzzleio/kuzzle-symfony-bridge
-```
-
 
 ## <a name="tests"></a> Running Tests
 
