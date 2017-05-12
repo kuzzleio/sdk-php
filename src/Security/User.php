@@ -252,5 +252,4 @@ class User extends Document
 
         return $this;
     }
-
 }
