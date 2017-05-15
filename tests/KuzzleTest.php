@@ -865,7 +865,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'volatile' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET',
+            'method' => 'POST',
             'query_parameters' => []
         ];
 
