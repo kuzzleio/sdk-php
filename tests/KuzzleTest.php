@@ -842,6 +842,20 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($loginResponse['jwt'], 'jwtToken', $kuzzle);
     }
 
+    public function testLoginWithoutStrategy() {
+        $url = self::FAKE_KUZZLE_HOST;
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        try {
+            $kuzzle->login('');
+
+            $this->fail("KuzzleTest::testLoginWithoutStrategy => Should raise an exception");
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+        }
+    }
+
     public function testLogout()
     {
         $url = self::FAKE_KUZZLE_HOST;

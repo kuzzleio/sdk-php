@@ -405,6 +405,10 @@ class Kuzzle
     {
         $body = $credentials;
 
+        if (empty($strategy)) {
+            throw new InvalidArgumentException('Unable to login: no strategy specified');
+        }
+
         if (!empty($expiresIn)) {
             $body['expiresIn'] = $expiresIn;
         }
