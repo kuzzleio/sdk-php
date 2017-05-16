@@ -278,7 +278,10 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'profileIds' => ['admin']
+            'content' => [
+                'profileIds' => ['admin']
+            ],
+            'credentials' => ['some' => 'credentials']
         ];
 
         $httpRequest = [
@@ -385,37 +388,38 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($userContent, 'content', $result);
     }
 
-    function testCreateOrReplaceUser()
+    function testReplaceUser()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
 
         $userId = uniqid();
+
         $userContent = [
             'profileIds' => ['admin']
         ];
 
         $httpRequest = [
-            'route' => '/users/' . $userId,
+            'route' => '/users/' . $userId . '/_replace',
             'method' => 'PUT',
             'request' => [
                 'volatile' => [],
                 'controller' => 'security',
-                'action' => 'createOrReplaceUser',
+                'action' => 'replaceUser',
                 'requestId' => $requestId,
                 '_id' => $userId,
                 'body' => $userContent
             ],
-            'query_parameters' => []
+            'query_parameters' => [],
         ];
-        $saveResponse = [
+        $replaceResponse = [
             '_id' => $userId,
             '_source' => $userContent,
             '_version' => 1
         ];
         $httpResponse = [
             'error' => null,
-            'result' => $saveResponse
+            'result' => $replaceResponse
         ];
 
         $kuzzle = $this
@@ -435,14 +439,9 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->createUser($userId, $userContent, [
-            'replaceIfExist' => true,
-            'requestId' => $requestId
-        ]);
+        $result = $security->replaceUser($userId, $userContent, ['requestId' => $requestId]);
 
-        $this->assertInstanceOf('Kuzzle\Security\User', $result);
-        $this->assertAttributeEquals($userId, 'id', $result);
-        $this->assertAttributeEquals($userContent, 'content', $result);
+        $this->assertEquals($userContent, $result->getContent());
     }
 
     function testDeleteProfile()

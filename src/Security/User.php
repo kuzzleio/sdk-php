@@ -2,6 +2,8 @@
 
 namespace Kuzzle\Security;
 
+use BadMethodCallException;
+
 /**
  * Class User
  * @package kuzzleio/kuzzle-sdk
@@ -12,9 +14,11 @@ class User extends Document
 
     protected $updateActionName = 'updateUser';
 
-    protected $saveActionName = 'createOrReplaceUser';
+    protected $saveActionName = 'createUser';
 
     const DEFAULT_PROFILE = 'default';
+
+    protected $credentials = [];
 
     /**
      * Role constructor.
@@ -135,5 +139,117 @@ class User extends Document
         }
 
         return $profile;
+    }
+
+    /**
+     * Throws an error as this method can't be implemented for User
+     *
+     * @param array $options Optional parameters
+     * @return void
+     * @throws BadMethodCallException
+     */
+    public function save(array $options = [])
+    {
+        throw new BadMethodCallException('This method does not exist in User');
+    }
+
+
+    /**
+     * Performs a partial content update on this object.
+     *
+     * @param array $content New profile content
+     * @param array $options Optional parameters
+     * @return Document
+     */
+    public function update(array $content, array $options = [])
+    {
+        $data = [
+            '_id' => $this->id,
+            'body' => $content
+        ];
+
+        $response = $this->security->getKuzzle()->query(
+            $this->security->buildQueryArgs($this->updateActionName),
+            $data,
+            $options
+        );
+
+        $this->setContent($response['result']['_source']);
+
+        return $this;
+    }
+
+    /**
+     * Creates the user in Kuzzle’s database layer.
+     *
+     * @param array $options Optional parameters
+     * @return Document
+     */
+    public function create(array $options = [])
+    {
+        $data = $this->creationSerialize();
+
+        $this->security->getKuzzle()->query(
+            $this->security->buildQueryArgs('createUser'),
+            $data,
+            $options
+        );
+
+        return $this;
+    }
+
+    /**
+     * Replaces the user in Kuzzle’s database layer.
+     *
+     * @param array $options Optional parameters
+     * @return Document
+     */
+    public function replace(array $options = [])
+    {
+        $data = $this->serialize();
+
+        $this->security->getKuzzle()->query(
+            $this->security->buildQueryArgs('replaceUser'),
+            $data,
+            $options
+        );
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    private function creationSerialize()
+    {
+        $data = [];
+
+        if (!empty($this->id)) {
+            $data['_id'] = $this->id;
+        }
+
+        $data['body'] = [
+            'content' => $this->content,
+            'credentials' => $this->credentials
+        ];
+
+
+        return $data;
+    }
+
+    /**
+     * @param array $credentials
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function setCredentials($credentials)
+    {
+        if (!is_array($credentials)) {
+            throw new \InvalidArgumentException('Parameter "credentials" must be a object');
+        }
+
+        $this->credentials = $credentials;
+
+        return $this;
     }
 }

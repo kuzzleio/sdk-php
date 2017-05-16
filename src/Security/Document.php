@@ -103,7 +103,7 @@ abstract class Document
     }
 
     /**
-     * Creates or replaces the profile in Kuzzle’s database layer.
+     * Creates or replaces the document in Kuzzle’s database layer.
      *
      * @param array $options Optional parameters
      * @return Document

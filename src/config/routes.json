@@ -1556,6 +1556,11 @@
       "route": "/users/:_id/_createRestricted",
       "method": "post"
     },
+    "replaceUser": {
+      "name": "replaceUser",
+      "route": "/users/:_id/_replace",
+      "method": "put"
+    },
     "updateUser": {
       "name": "updateUser",
       "route": "/users/:_id/_update",
