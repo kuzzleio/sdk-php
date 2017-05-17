@@ -1516,6 +1516,11 @@
       "route": "/profiles/:_id",
       "method": "delete"
     },
+    "scrollProfiles": {
+      "name": "scrollProfiles",
+      "route": "/profiles/_scroll/:scrollId",
+      "method": "get"
+    },
     "searchProfiles": {
       "name": "searchProfiles",
       "route": "/profiles/_search",
@@ -1545,6 +1550,11 @@
       "name": "deleteUser",
       "route": "/users/:_id",
       "method": "delete"
+    },
+    "scrollUsers": {
+      "name": "scrollUsers",
+      "route": "/users/_scroll/:scrollId",
+      "method": "get"
     },
     "createUser": {
       "name": "createUser",
