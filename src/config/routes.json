@@ -3,7 +3,7 @@
     "logout": {
       "name": "logout",
       "route": "/_logout",
-      "method": "get"
+      "method": "post"
     },
     "login": {
       "name": "login",
