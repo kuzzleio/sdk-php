@@ -26,6 +26,11 @@ class Document
     protected $headers = [];
 
     /**
+     * @var array Document metadata
+     */
+    protected $meta;
+
+    /**
      * @var string Unique document identifier
      */
     protected $id;
@@ -41,9 +46,10 @@ class Document
      * @param Collection $kuzzleDataCollection An instantiated KuzzleDataCollection object
      * @param string $documentId ID of an existing document.
      * @param array $content Initializes this document with the provided content
+     * @param array $meta Initializes this document with the provided metadata
      * @return Document
      */
-    public function __construct(Collection $kuzzleDataCollection, $documentId = '', array $content = [])
+    public function __construct(Collection $kuzzleDataCollection, $documentId = '', array $content = [], array $meta = [])
     {
         $this->collection = $kuzzleDataCollection;
 
@@ -58,6 +64,10 @@ class Document
             }
 
             $this->setContent($content, true);
+        }
+
+        if (!empty($meta)) {
+            $this->setMeta($meta, true);
         }
 
         return $this;
@@ -110,10 +120,11 @@ class Document
             $options
         );
 
-        $content = $response['result']['_source'];
-        $content['_version'] = $response['result']['_version'];
+        $documentContent = $response['result']['_source'];
+        $documentContent['_version'] = $response['result']['_version'];
+        $documentMeta = $response['result']['_meta'];
 
-        return new Document($this->collection, $response['result']['_id'], $content);
+        return new Document($this->collection, $response['result']['_id'], $documentContent, $documentMeta);
     }
 
     /**
@@ -191,6 +202,35 @@ class Document
     }
 
     /**
+     * Replaces the current metadata with new metadata.
+     * This is a helper function returning itself, allowing to easily chain calls.
+     *
+     * @param array $meta
+     * @param bool $replace true: replace the current metadata with the provided ones, false: merge it
+     * @return Document
+     */
+    public function setMeta(array $meta, $replace = false)
+    {
+        if ($replace) {
+            $this->meta = $meta;
+        } else {
+            foreach ($meta as $key => $value) {
+                $this->meta[$key] = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMeta()
+    {
+        return $this->meta;
+    }
+
+    /**
      * This is a helper function returning itself, allowing to easily chain calls.
      *
      * @param array $headers New content
@@ -234,7 +274,7 @@ class Document
         }
 
         $data['body'] = $this->content;
-
+        $data['meta'] = $this->meta;
 
         return $data;
     }

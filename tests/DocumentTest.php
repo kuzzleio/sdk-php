@@ -17,6 +17,9 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $documentContent = [
             'foo' => 'bar'
         ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
@@ -29,7 +32,8 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
-                'body' => $documentContent
+                'body' => $documentContent,
+                'meta' => $documentMeta
             ],
             'query_parameters' => []
         ];
@@ -57,7 +61,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
          * @var Kuzzle $kuzzle
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
-        $document = new Document($dataCollection, $documentId, $documentContent);
+        $document = new Document($dataCollection, $documentId, $documentContent, $documentMeta);
 
         $result = $document->delete(['requestId' => $requestId]);
 
@@ -119,6 +123,9 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $documentContent = [
             'foo' => 'bar'
         ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
@@ -131,13 +138,15 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
-                'body' => array_merge($documentContent, ['baz' => 'baz'])
+                'body' => array_merge($documentContent, ['baz' => 'baz']),
+                'meta' => array_merge($documentMeta, ['author' => 'bar']),
             ],
             'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $documentId,
             '_source' => $documentContent,
+            '_meta' => $documentMeta,
             '_version' => 1
         ];
         $httpResponse = [
@@ -161,14 +170,16 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
          * @var Kuzzle $kuzzle
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
-        $document = new Document($dataCollection, $documentId, $documentContent);
+        $document = new Document($dataCollection, $documentId, $documentContent, $documentMeta);
 
         $document->setContent(['baz' => 'baz']);
+        $document->setMeta(['author' => 'bar']);
         $result = $document->save(['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $result);
         $this->assertAttributeEquals($documentId, 'id', $result);
         $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
+        $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'bar']), 'meta', $result);
         $this->assertAttributeEquals(1, 'version', $result);
     }
 
@@ -183,6 +194,9 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $documentContent = [
             'foo' => 'bar'
         ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection . '/_publish',
@@ -195,7 +209,8 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
-                'body' => array_merge($documentContent, ['baz' => 'baz'])
+                'body' => array_merge($documentContent, ['baz' => 'baz']),
+                'meta' => array_merge($documentMeta, ['author' => 'bar'])
             ],
             'query_parameters' => []
         ];
@@ -223,14 +238,16 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
          * @var Kuzzle $kuzzle
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
-        $document = new Document($dataCollection, $documentId, $documentContent);
+        $document = new Document($dataCollection, $documentId, $documentContent, $documentMeta);
 
         $document->setContent(['baz' => 'baz']);
+        $document->setMeta(['author' => 'bar']);
         $result = $document->publish(['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $result);
         $this->assertAttributeEquals($documentId, 'id', $result);
         $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
+        $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'bar']), 'meta', $result);
     }
 
     function testSerialize()
@@ -243,16 +260,20 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $documentContent = [
             'foo' => 'bar'
         ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
         $dataCollection = new Collection($kuzzle, $collection, $index);
-        $document = $dataCollection->document($documentId, array_merge($documentContent, ['_version' => 1]));
+        $document = $dataCollection->document($documentId, array_merge($documentContent, ['_version' => 1]), $documentMeta);
 
         $result = $document->serialize();
 
         $this->assertEquals([
             '_id' => $documentId,
             'body' => $documentContent,
+            'meta' => $documentMeta,
             '_version' => 1,
         ], $result);
     }
