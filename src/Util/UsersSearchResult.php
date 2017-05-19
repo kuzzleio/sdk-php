@@ -21,15 +21,22 @@ class UsersSearchResult
     private $users = [];
 
     /**
+     * @var null|string
+     */
+    private $scrollId = null;
+
+    /**
      * UsersSearchResult constructor.
      *
      * @param integer $total
      * @param User[] $users
+     * @param string|null $scrollId
      */
-    public function __construct($total, array $users)
+    public function __construct($total, array $users, $scrollId = null)
     {
         $this->total = $total;
         $this->users = $users;
+        $this->scrollId = $scrollId;
 
         return $this;
     }
@@ -48,5 +55,13 @@ class UsersSearchResult
     public function getUsers()
     {
         return $this->users;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getScrollId()
+    {
+        return $this->scrollId;
     }
 }
