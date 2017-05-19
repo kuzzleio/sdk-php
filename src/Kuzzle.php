@@ -882,6 +882,78 @@ class Kuzzle
         $this->requestHandler = $handler;
     }
 
+    /**
+     * Create credentials of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function createMyCredentials($strategy, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'createMyCredentials'), ['body' => $credentials], $options)['result'];
+    }
+
+    /**
+     * Delete credentials of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param array $options
+     * @return mixed
+     */
+    public function deleteMyCredentials($strategy, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'deleteMyCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Get credential information of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param array $options
+     * @return mixed
+     */
+    public function getMyCredentials($strategy, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'getMyCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Update credentials of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function updateMyCredentials($strategy, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'updateMyCredentials'), ['body' => $credentials], $options)['result'];
+    }
+
+    /**
+     * Validate credentials of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function validateMyCredentials($strategy, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'validateMyCredentials'), ['body' => $credentials], $options)['result'];
+    }
 
     /**
      * @internal
