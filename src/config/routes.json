@@ -93,6 +93,36 @@
       "name": "create",
       "route": "/:index/:collection",
       "method": "put"
+    },
+    "mCreate": {
+      "name": "mCreate",
+      "route": "/:index/:collection/_mCreate",
+      "method": "post"
+    },
+    "mCreateOrReplace": {
+      "name": "mCreateOrReplace",
+      "route": "/:index/:collection/_mCreateOrReplace",
+      "method": "put"
+    },
+    "mDelete": {
+      "name": "mDelete",
+      "route": "/:index/:collection/_mDelete",
+      "method": "delete"
+    },
+    "mGet": {
+      "name": "mGet",
+      "route": "/:index/:collection/_mGet",
+      "method": "post"
+    },
+    "mReplace": {
+      "name": "mReplace",
+      "route": "/:index/:collection/_mReplace",
+      "method": "put"
+    },
+    "mUpdate": {
+      "name": "mUpdate",
+      "route": "/:index/:collection/_mUpdate",
+      "method": "put"
     }
   },
   "document": {

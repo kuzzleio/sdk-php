@@ -341,6 +341,164 @@ class Collection
     }
 
     /**
+     * Create the provided documents
+     *
+     * @param array $documents Array of documents to create
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function mCreate($documents, array $options = [])
+    {
+        if (!is_array($documents)) {
+            throw new InvalidArgumentException('Collection.mCreate: documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $documents = array_map(function ($document) {
+            return $document instanceof Document ? $document->serialize() : $document;
+        }, $documents);
+
+        $data = ['body' => ['documents' => $documents]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mCreate'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Create or replace the provided documents
+     *
+     * @param array $documents Array of documents to create or replace
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function mCreateOrReplace($documents, array $options = [])
+    {
+        if (!is_array($documents)) {
+            throw new InvalidArgumentException('Collection.mCreateOrReplace: documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $documents = array_map(function ($document) {
+            return $document instanceof Document ? $document->serialize() : $document;
+        }, $documents);
+
+        $data = ['body' => ['documents' => $documents]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mCreateOrReplace'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Delete specific documents according to given IDs
+     *
+     * @param array $documentIds IDs of the documents to delete
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function mDelete($documentIds, array $options = [])
+    {
+        if (!is_array($documentIds)) {
+            throw new InvalidArgumentException('Collection.mDelete: documents parameter format is invalid (should be an array of document IDs)');
+        }
+
+        $data = ['body' => ['ids' => $documentIds]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mDelete'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Get specific documents according to given IDs
+     *
+     * @param array $documentIds IDs of the documents to retrieve
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function mGet($documentIds, array $options = [])
+    {
+        if (!is_array($documentIds)) {
+            throw new InvalidArgumentException('Collection.mGet: documents parameter format is invalid (should be an array of document IDs)');
+        }
+
+        $data = ['body' => ['ids' => $documentIds]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mGet'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Replace the provided documents
+     *
+     * @param array $documents Array of documents to replace
+     * @param array $options Optional parameters
+     */
+    public function mReplace($documents, array $options = [])
+    {
+        if (!is_array($documents)) {
+            throw new InvalidArgumentException('Collection.mReplace: documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $documents = array_map(function ($document) {
+            return $document instanceof Document ? $document->serialize() : $document;
+        }, $documents);
+
+        $data = ['body' => ['documents' => $documents]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mReplace'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Update the provided documents
+     *
+     * @param array $documents Array of documents to update
+     * @param array $options Optional parameters
+     */
+    public function mUpdate($documents, array $options = [])
+    {
+        if (!is_array($documents)) {
+            throw new InvalidArgumentException('Collection.mUpdate: documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $documents = array_map(function ($document) {
+            return $document instanceof Document ? $document->serialize() : $document;
+        }, $documents);
+
+        $data = ['body' => ['documents' => $documents]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mUpdate'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
      * Create a new document in Kuzzle.
      *
      * @param array|Document $document either an instance of a KuzzleDocument object, or a document
