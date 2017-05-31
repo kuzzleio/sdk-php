@@ -113,7 +113,8 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'collection' => $collection,
                 'index' => $index,
                 '_id' => $documentId,
-                'body' => $documentContent
+                'body' => $documentContent,
+                'meta' => null
             ],
             'query_parameters' => []
         ];
