@@ -1973,6 +1973,224 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['foo', 'bar'], $triggerArgs[1]);
     }
 
+    public function testCreateMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me/_create',
+            'request' => [
+                'action' => 'createMyCredentials',
+                'controller' => 'auth',
+                'metadata' => [],
+                'requestId' => $options['requestId'],
+                'body' => ['foo' => 'bar']
+            ],
+            'method' => 'POST',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->createMyCredentials("local", ["foo"=>"bar"], $options);
+    }
+
+    public function testDeleteMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me',
+            'request' => [
+                'action' => 'deleteMyCredentials',
+                'controller' => 'auth',
+                'metadata' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'DELETE',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "acknowledged" => true
+            ]
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->deleteMyCredentials("local", $options);
+    }
+
+    public function testGetMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me',
+            'request' => [
+                'action' => 'getMyCredentials',
+                'controller' => 'auth',
+                'metadata' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->getMyCredentials("local", $options);
+    }
+
+    public function testUpdateMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me/_update',
+            'request' => [
+                'action' => 'updateMyCredentials',
+                'controller' => 'auth',
+                'metadata' => [],
+                'requestId' => $options['requestId'],
+                'body' => [
+                    'foo' => 'bar'
+                ]
+            ],
+            'method' => 'PUT',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->updateMyCredentials("local", ['foo' => 'bar'], $options);
+    }
+
+    public function testValidateMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me/_validate',
+            'request' => [
+                'action' => 'validateMyCredentials',
+                'controller' => 'auth',
+                'metadata' => [],
+                'requestId' => $options['requestId'],
+                'body' => [
+                    'foo' => 'bar'
+                ]
+            ],
+            'method' => 'POST',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => true
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->validateMyCredentials("local", ['foo' => 'bar'], $options);
+    }
+
     public function testAddHeaders()
     {
         /**

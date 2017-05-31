@@ -29,6 +29,31 @@
       "name": "updateSelf",
       "route": "/_updateSelf",
       "method": "put"
+    },
+    "createMyCredentials": {
+      "name": "createMyCredentials",
+      "route": "/credentials/:strategy/_me/_create",
+      "method": "post"
+    },
+    "deleteMyCredentials": {
+      "name": "deleteMyCredentials",
+      "route": "/credentials/:strategy/_me",
+      "method": "delete"
+    },
+    "getMyCredentials": {
+      "name": "getMyCredentials",
+      "route": "/credentials/:strategy/_me",
+      "method": "get"
+    },
+    "updateMyCredentials": {
+      "name": "updateMyCredentials",
+      "route": "/credentials/:strategy/_me/_update",
+      "method": "put"
+    },
+    "validateMyCredentials": {
+      "name": "validateMyCredentials",
+      "route": "/credentials/:strategy/_me/_validate",
+      "method": "post"
     }
   },
   "bulk": {
@@ -1599,6 +1624,51 @@
     "mDeleteUsers": {
       "name": "mDeleteUsers",
       "route": "/users/_mDelete",
+      "method": "post"
+    },
+    "createCredentials": {
+      "name": "createCredentials",
+      "route": "/credentials/:strategy/:kuid/_create",
+      "method": "post"
+    },
+    "deleteCredentials": {
+      "name": "deleteCredentials",
+      "route": "/credentials/:strategy/:kuid",
+      "method": "delete"
+    },
+    "getAllCredentialFields": {
+      "name": "getAllCredentialFields",
+      "route": "/credentials/_fields",
+      "method": "get"
+    },
+    "getCredentialFields": {
+      "name": "getCredentialFields",
+      "route": "/credentials/:strategy/_fields",
+      "method": "get"
+    },
+    "getCredentials": {
+      "name": "getCredentials",
+      "route": "/credentials/:strategy/:kuid",
+      "method": "get"
+    },
+    "getCredentialsById": {
+      "name": "getCredentialsById",
+      "route": "/credentials/:strategy/:kuid/_byId",
+      "method": "get"
+    },
+    "hasCredentials": {
+      "name": "hasCredentials",
+      "route": "/credentials/:strategy/:kuid/_exists",
+      "method": "get"
+    },
+    "updateCredentials": {
+      "name": "updateCredentials",
+      "route": "/credentials/:strategy/:kuid/_update",
+      "method": "put"
+    },
+    "validateCredentials": {
+      "name": "validateCredentials",
+      "route": "/credentials/:strategy/:kuid/_validate",
       "method": "post"
     }
   },
