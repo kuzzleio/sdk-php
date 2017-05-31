@@ -90,7 +90,6 @@ class Collection
      * Retrieves next result of a search with scroll query.
      *
      * @param string $scrollId
-     * @param string $scroll
      * @param array $options (optional) arguments
      * @param array $filters (optional) original filters
      * @return SearchResult
@@ -266,6 +265,28 @@ class Collection
     public function document($id = '', array $content = [])
     {
         return new Document($this, $id, $content);
+    }
+
+    /**
+     * Returns a boolean indicating whether or not a document with provided ID exists.
+     *
+     * @param string $documentId
+     * @param array $options
+     * @return boolean
+     */
+    public function documentExists($documentId, array $options = [])
+    {
+        $data = [
+            '_id' => $documentId
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'exists'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**

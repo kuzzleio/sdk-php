@@ -554,6 +554,57 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($result, [$documentId]);
     }
 
+    function testDocumentExists()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_exists',
+            'method' => 'GET',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'exists',
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index,
+                '_id' => $documentId
+            ],
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            'error' => null,
+            'result' => true
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        $result = $dataCollection->documentExists($documentId, ['requestId' => $requestId]);
+
+        $this->assertEquals(true, $result);
+    }
+
     function testFetchDocument()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;

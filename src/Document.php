@@ -87,6 +87,29 @@ class Document
     }
 
     /**
+     * Checks if this document exists in Kuzzle.
+     *
+     * @param array $options
+     * @return boolean
+     *
+     * @throws InvalidArgumentException
+     */
+    public function exists(array $options = [])
+    {
+        if (!$this->id) {
+            throw new InvalidArgumentException('Kuzzle\Document::exists: cannot check if the document exists without a document ID');
+        }
+
+        $response = $this->collection->getKuzzle()->query(
+            $this->collection->buildQueryArgs('document', 'exists'),
+            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+            $options
+        );
+
+        return  $response['result'];
+    }
+
+    /**
      * Creates a new KuzzleDocument object with the last version of this document stored in Kuzzle.
      *
      * @param array $options Optional parameters

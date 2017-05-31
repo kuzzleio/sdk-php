@@ -121,7 +121,6 @@ class Kuzzle
      *
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      * @param callable $listener The function to call each time one of the registered event is fired
-     * @return string containing an unique listener ID.
      *
      * @throws InvalidArgumentException
      */
@@ -131,15 +130,31 @@ class Kuzzle
             throw new InvalidArgumentException('Unable to add a listener on event "' . $event . '": given listener is not callable');
         }
 
-        $listenerId = uniqid();
-
         if (!array_key_exists($event, $this->listeners)) {
             $this->listeners[$event] = [];
         }
 
-        $this->listeners[$event][$listenerId] = $listener;
+        $this->listeners[$event][spl_object_hash($listener)] = $listener;
 
-        return $listenerId;
+        return $this;
+    }
+
+    /**
+     * Emit an event to all registered listeners
+     *
+     * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
+     *
+     */
+    public function emitEvent($event)
+    {
+        if (array_key_exists($event, $this->listeners)) {
+            $arg_list = func_get_args();
+            array_shift($arg_list);
+            foreach ($this->listeners[$event] as $callback) {
+                call_user_func_array($callback, $arg_list);
+            }
+        }
+        return $this;
     }
 
     /**
@@ -654,13 +669,14 @@ class Kuzzle
 
     /**
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
-     * @param string $listenerID The ID returned by Kuzzle->addListener()
+     * @param callback $listener The listener callback
      */
-    public function removeListener($event, $listenerID)
+    public function removeListener($event, $listener)
     {
         if (array_key_exists($event, $this->listeners)) {
-            if (array_key_exists($listenerID, $this->listeners[$event])) {
-                unset($this->listeners[$event][$listenerID]);
+            $key = array_search($listener, $this->listeners[$event]);
+            if ($key !== false) {
+                unset($this->listeners[$event][$key]);
             }
         }
     }
@@ -890,6 +906,78 @@ class Kuzzle
         $this->requestHandler = $handler;
     }
 
+    /**
+     * Create credentials of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function createMyCredentials($strategy, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'createMyCredentials'), ['body' => $credentials], $options)['result'];
+    }
+
+    /**
+     * Delete credentials of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param array $options
+     * @return mixed
+     */
+    public function deleteMyCredentials($strategy, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'deleteMyCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Get credential information of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param array $options
+     * @return mixed
+     */
+    public function getMyCredentials($strategy, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'getMyCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Update credentials of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function updateMyCredentials($strategy, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'updateMyCredentials'), ['body' => $credentials], $options)['result'];
+    }
+
+    /**
+     * Validate credentials of the specified <strategy> for the current user.
+     *
+     * @param $strategy
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function validateMyCredentials($strategy, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->query($this->buildQueryArgs('auth', 'validateMyCredentials'), ['body' => $credentials], $options)['result'];
+    }
 
     /**
      * @internal
@@ -926,6 +1014,7 @@ class Kuzzle
         ]);
 
         if (!empty($result['error'])) {
+            $this->emitEvent('queryError', $result['error'], $httpRequest);
             throw new ErrorException($result['error']);
         }
 
@@ -935,6 +1024,7 @@ class Kuzzle
          * @todo: manage custom exceptions
          */
         if (!empty($response['error'])) {
+            $this->emitEvent('queryError', $response['error'], $httpRequest);
             throw new ErrorException($response['error']['message']);
         }
 

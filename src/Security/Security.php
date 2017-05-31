@@ -678,4 +678,146 @@ class Security
     {
         return $this->kuzzle->buildQueryArgs('security', $action);
     }
+
+    /**
+     * Create credentials of the specified <strategy> for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function createCredentials($strategy, $kuid, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+
+        return $this->kuzzle->query($this->buildQueryArgs('createCredentials'), ['body' => $credentials], $options)['result'];
+    }
+
+    /**
+     * Delete credentials of the specified <strategy> for the user <kuid> .
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param array $options
+     * @return mixed
+     */
+    public function deleteCredentials($strategy, $kuid, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+
+        return $this->kuzzle->query($this->buildQueryArgs('deleteCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Retrieve a list of accepted fields per authentication strategy.
+     *
+     * @param array $options
+     * @return mixed
+     */
+    public function getAllCredentialFields(array $options = [])
+    {
+        return $this->kuzzle->query($this->buildQueryArgs('getAllCredentialFields'), [], $options)['result'];
+    }
+
+    /**
+     * Retrieve the list of accepted field names by the specified <strategy>.
+     *
+     * @param $strategy
+     * @param array $options
+     * @return mixed
+     */
+    public function getCredentialFields($strategy, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->kuzzle->query($this->buildQueryArgs('getCredentialFields'), [], $options)['result'];
+    }
+
+    /**
+     * Get credential information of the specified <strategy> for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param array $options
+     * @return mixed
+     */
+    public function getCredentials($strategy, $kuid, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('getCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Get credential information of the specified <strategyId> (storage key of the strategy) of the user.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param array $options
+     * @return mixed
+     */
+    public function getCredentialsById($strategy, $kuid, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('getCredentialsById'), [], $options)['result'];
+    }
+
+    /**
+     * Check the existence of the specified <strategy>'s credentials for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param array $options
+     * @return mixed
+     */
+    public function hasCredentials($strategy, $kuid, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('hasCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Updates credentials of the specified <strategy> for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function updateCredentials($strategy, $kuid, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('updateCredentials'), ["body" => $credentials], $options)['result'];
+    }
+
+    /**
+     * Validate credentials of the specified <strategy> for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function validateCredentials($strategy, $kuid, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('validateCredentials'), ["body" => $credentials], $options)['result'];
+    }
 }
