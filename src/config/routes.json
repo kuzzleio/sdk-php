@@ -3,7 +3,7 @@
     "logout": {
       "name": "logout",
       "route": "/_logout",
-      "method": "get"
+      "method": "post"
     },
     "login": {
       "name": "login",
@@ -117,6 +117,36 @@
     "create": {
       "name": "create",
       "route": "/:index/:collection",
+      "method": "put"
+    },
+    "mCreate": {
+      "name": "mCreate",
+      "route": "/:index/:collection/_mCreate",
+      "method": "post"
+    },
+    "mCreateOrReplace": {
+      "name": "mCreateOrReplace",
+      "route": "/:index/:collection/_mCreateOrReplace",
+      "method": "put"
+    },
+    "mDelete": {
+      "name": "mDelete",
+      "route": "/:index/:collection/_mDelete",
+      "method": "delete"
+    },
+    "mGet": {
+      "name": "mGet",
+      "route": "/:index/:collection/_mGet",
+      "method": "post"
+    },
+    "mReplace": {
+      "name": "mReplace",
+      "route": "/:index/:collection/_mReplace",
+      "method": "put"
+    },
+    "mUpdate": {
+      "name": "mUpdate",
+      "route": "/:index/:collection/_mUpdate",
       "method": "put"
     }
   },
@@ -1546,6 +1576,11 @@
       "route": "/profiles/:_id",
       "method": "delete"
     },
+    "scrollProfiles": {
+      "name": "scrollProfiles",
+      "route": "/profiles/_scroll/:scrollId",
+      "method": "get"
+    },
     "searchProfiles": {
       "name": "searchProfiles",
       "route": "/profiles/_search",
@@ -1576,6 +1611,11 @@
       "route": "/users/:_id",
       "method": "delete"
     },
+    "scrollUsers": {
+      "name": "scrollUsers",
+      "route": "/users/_scroll/:scrollId",
+      "method": "get"
+    },
     "createUser": {
       "name": "createUser",
       "route": "/users/:_id/_create",
@@ -1585,6 +1625,11 @@
       "name": "createRestrictedUser",
       "route": "/users/:_id/_createRestricted",
       "method": "post"
+    },
+    "replaceUser": {
+      "name": "replaceUser",
+      "route": "/users/:_id/_replace",
+      "method": "put"
     },
     "updateUser": {
       "name": "updateUser",
