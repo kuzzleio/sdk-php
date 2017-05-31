@@ -2007,7 +2007,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'createMyCredentials',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId'],
                 'body' => ['foo' => 'bar']
             ],
@@ -2051,7 +2051,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'deleteMyCredentials',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'DELETE',
@@ -2093,7 +2093,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getMyCredentials',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -2136,7 +2136,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'updateMyCredentials',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId'],
                 'body' => [
                     'foo' => 'bar'
@@ -2182,7 +2182,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'validateMyCredentials',
                 'controller' => 'auth',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId'],
                 'body' => [
                     'foo' => 'bar'

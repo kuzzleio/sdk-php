@@ -1555,7 +1555,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'createCredentials',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId'],
                 'body' => ['foo' => 'bar']
             ],
@@ -1601,7 +1601,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'deleteCredentials',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'DELETE',
@@ -1645,7 +1645,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getAllCredentialFields',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -1692,7 +1692,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getCredentialFields',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -1739,7 +1739,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getCredentials',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -1784,7 +1784,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'getCredentialsById',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -1829,7 +1829,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'hasCredentials',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -1874,7 +1874,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'updateCredentials',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => ["foo" => "bar"],
                 'requestId' => $options['requestId']
             ],
@@ -1920,7 +1920,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             'request' => [
                 'action' => 'validateCredentials',
                 'controller' => 'security',
-                'metadata' => [],
+                'volatile' => [],
                 'body' => ["foo" => "bar"],
                 'requestId' => $options['requestId']
             ],
