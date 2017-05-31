@@ -3,7 +3,7 @@
     "logout": {
       "name": "logout",
       "route": "/_logout",
-      "method": "get"
+      "method": "post"
     },
     "login": {
       "name": "login",
@@ -29,6 +29,31 @@
       "name": "updateSelf",
       "route": "/_updateSelf",
       "method": "put"
+    },
+    "createMyCredentials": {
+      "name": "createMyCredentials",
+      "route": "/credentials/:strategy/_me/_create",
+      "method": "post"
+    },
+    "deleteMyCredentials": {
+      "name": "deleteMyCredentials",
+      "route": "/credentials/:strategy/_me",
+      "method": "delete"
+    },
+    "getMyCredentials": {
+      "name": "getMyCredentials",
+      "route": "/credentials/:strategy/_me",
+      "method": "get"
+    },
+    "updateMyCredentials": {
+      "name": "updateMyCredentials",
+      "route": "/credentials/:strategy/_me/_update",
+      "method": "put"
+    },
+    "validateMyCredentials": {
+      "name": "validateMyCredentials",
+      "route": "/credentials/:strategy/_me/_validate",
+      "method": "post"
     }
   },
   "bulk": {
@@ -93,6 +118,36 @@
       "name": "create",
       "route": "/:index/:collection",
       "method": "put"
+    },
+    "mCreate": {
+      "name": "mCreate",
+      "route": "/:index/:collection/_mCreate",
+      "method": "post"
+    },
+    "mCreateOrReplace": {
+      "name": "mCreateOrReplace",
+      "route": "/:index/:collection/_mCreateOrReplace",
+      "method": "put"
+    },
+    "mDelete": {
+      "name": "mDelete",
+      "route": "/:index/:collection/_mDelete",
+      "method": "delete"
+    },
+    "mGet": {
+      "name": "mGet",
+      "route": "/:index/:collection/_mGet",
+      "method": "post"
+    },
+    "mReplace": {
+      "name": "mReplace",
+      "route": "/:index/:collection/_mReplace",
+      "method": "put"
+    },
+    "mUpdate": {
+      "name": "mUpdate",
+      "route": "/:index/:collection/_mUpdate",
+      "method": "put"
     }
   },
   "document": {
@@ -104,6 +159,11 @@
     "scroll": {
       "name": "scroll",
       "route": "/_scroll/:scrollId",
+      "method": "get"
+    },
+    "exists": {
+      "name": "exists",
+      "route": "/:index/:collection/:_id/_exists",
       "method": "get"
     },
     "get": {
@@ -1516,6 +1576,11 @@
       "route": "/profiles/:_id",
       "method": "delete"
     },
+    "scrollProfiles": {
+      "name": "scrollProfiles",
+      "route": "/profiles/_scroll/:scrollId",
+      "method": "get"
+    },
     "searchProfiles": {
       "name": "searchProfiles",
       "route": "/profiles/_search",
@@ -1545,6 +1610,11 @@
       "name": "deleteUser",
       "route": "/users/:_id",
       "method": "delete"
+    },
+    "scrollUsers": {
+      "name": "scrollUsers",
+      "route": "/users/_scroll/:scrollId",
+      "method": "get"
     },
     "createUser": {
       "name": "createUser",
@@ -1599,6 +1669,51 @@
     "mDeleteUsers": {
       "name": "mDeleteUsers",
       "route": "/users/_mDelete",
+      "method": "post"
+    },
+    "createCredentials": {
+      "name": "createCredentials",
+      "route": "/credentials/:strategy/:kuid/_create",
+      "method": "post"
+    },
+    "deleteCredentials": {
+      "name": "deleteCredentials",
+      "route": "/credentials/:strategy/:kuid",
+      "method": "delete"
+    },
+    "getAllCredentialFields": {
+      "name": "getAllCredentialFields",
+      "route": "/credentials/_fields",
+      "method": "get"
+    },
+    "getCredentialFields": {
+      "name": "getCredentialFields",
+      "route": "/credentials/:strategy/_fields",
+      "method": "get"
+    },
+    "getCredentials": {
+      "name": "getCredentials",
+      "route": "/credentials/:strategy/:kuid",
+      "method": "get"
+    },
+    "getCredentialsById": {
+      "name": "getCredentialsById",
+      "route": "/credentials/:strategy/:kuid/_byId",
+      "method": "get"
+    },
+    "hasCredentials": {
+      "name": "hasCredentials",
+      "route": "/credentials/:strategy/:kuid/_exists",
+      "method": "get"
+    },
+    "updateCredentials": {
+      "name": "updateCredentials",
+      "route": "/credentials/:strategy/:kuid/_update",
+      "method": "put"
+    },
+    "validateCredentials": {
+      "name": "validateCredentials",
+      "route": "/credentials/:strategy/:kuid/_validate",
       "method": "post"
     }
   },

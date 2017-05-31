@@ -2,12 +2,6 @@
 
 use Kuzzle\Kuzzle;
 use Kuzzle\Security\Security;
-use Kuzzle\Security\User;
-use Kuzzle\Security\Profile;
-use Kuzzle\Security\Role;
-use Kuzzle\Util\UsersSearchResult;
-use Kuzzle\Util\ProfilesSearchResult;
-use Kuzzle\Util\RolesSearchResult;
 
 class SecurityTest extends \PHPUnit_Framework_TestCase
 {
@@ -494,6 +488,110 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($profileId, $result);
     }
 
+    function testScrollProfiles()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $scrollId = uniqid();
+
+        $httpSearchRequest = [
+            'route' => '/profiles/_search',
+            'method' => 'POST',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'security',
+                'action' => 'searchProfiles',
+                'requestId' => $requestId,
+                'body' => (object)[]
+            ],
+            'query_parameters' => [
+                'from' => 0,
+                'size' => 1,
+                'scroll' => '30s'
+            ]
+        ];
+
+        $httpScrollRequest = [
+            'route' => '/profiles/_scroll/' . $scrollId,
+            'method' => 'GET',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'security',
+                'action' => 'scrollProfiles',
+                'requestId' => $requestId,
+            ],
+            'query_parameters' => []
+        ];
+        $searchResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
+            'scrollId' => $scrollId,
+            'total' => 2
+        ];
+        $scrollResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test1',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
+            'total' => 2
+        ];
+        $httpSearchResponse = [
+            'error' => null,
+            'result' => $searchResponse
+        ];
+        $httpScrollResponse = [
+            'error' => null,
+            'result' => $scrollResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->at(0))
+            ->method('emitRestRequest')
+            ->with($httpSearchRequest)
+            ->willReturn($httpSearchResponse);
+
+        $kuzzle
+            ->expects($this->at(1))
+            ->method('emitRestRequest')
+            ->with($httpScrollRequest)
+            ->willReturn($httpScrollResponse);
+
+        $security = new Security($kuzzle);
+        $searchProfilesResult = $security->searchProfiles([], ['scroll' => '30s', 'from' => 0, 'size' => 1, 'requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Util\ProfilesSearchResult', $searchProfilesResult);
+        $this->assertInternalType('array', $searchProfilesResult->getProfiles());
+        $this->assertEquals(1, count($searchProfilesResult->getProfiles()));
+        $this->assertInstanceOf('Kuzzle\Security\Profile', $searchProfilesResult->getProfiles()[0]);
+        $this->assertAttributeEquals('test', 'id', $searchProfilesResult->getProfiles()[0]);
+        $this->assertNotNull($searchProfilesResult->getScrollId());
+
+        $scrollProfilesResult = $security->scrollProfiles($searchProfilesResult->getScrollId(), ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Util\ProfilesSearchResult', $scrollProfilesResult);
+        $this->assertInternalType('array', $scrollProfilesResult->getProfiles());
+        $this->assertEquals(1, count($scrollProfilesResult->getProfiles()));
+        $this->assertInstanceOf('Kuzzle\Security\Profile', $scrollProfilesResult->getProfiles()[0]);
+        $this->assertAttributeEquals('test1', 'id', $scrollProfilesResult->getProfiles()[0]);
+        $this->assertNotNull($scrollProfilesResult->getScrollId());
+    }
+
     function testDeleteUser()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
@@ -542,6 +640,110 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $security->deleteUser($userId, ['requestId' => $requestId]);
 
         $this->assertEquals($userId, $result);
+    }
+
+    function testScrollUsers()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $scrollId = uniqid();
+
+        $httpSearchRequest = [
+            'route' => '/users/_search',
+            'method' => 'POST',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'security',
+                'action' => 'searchUsers',
+                'requestId' => $requestId,
+                'body' => (object)[]
+            ],
+            'query_parameters' => [
+                'from' => 0,
+                'size' => 1,
+                'scroll' => '30s'
+            ]
+        ];
+
+        $httpScrollRequest = [
+            'route' => '/users/_scroll/' . $scrollId,
+            'method' => 'GET',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'security',
+                'action' => 'scrollUsers',
+                'requestId' => $requestId,
+            ],
+            'query_parameters' => []
+        ];
+        $searchResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
+            'scrollId' => $scrollId,
+            'total' => 2
+        ];
+        $scrollResponse = [
+            'hits' => [
+                0 => [
+                    '_id' => 'test1',
+                    '_source' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
+            'total' => 2
+        ];
+        $httpSearchResponse = [
+            'error' => null,
+            'result' => $searchResponse
+        ];
+        $httpScrollResponse = [
+            'error' => null,
+            'result' => $scrollResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->at(0))
+            ->method('emitRestRequest')
+            ->with($httpSearchRequest)
+            ->willReturn($httpSearchResponse);
+
+        $kuzzle
+            ->expects($this->at(1))
+            ->method('emitRestRequest')
+            ->with($httpScrollRequest)
+            ->willReturn($httpScrollResponse);
+
+        $security = new Security($kuzzle);
+        $searchUsersResult = $security->searchUsers([], ['scroll' => '30s', 'from' => 0, 'size' => 1, 'requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Util\UsersSearchResult', $searchUsersResult);
+        $this->assertInternalType('array', $searchUsersResult->getUsers());
+        $this->assertEquals(1, count($searchUsersResult->getUsers()));
+        $this->assertInstanceOf('Kuzzle\Security\User', $searchUsersResult->getUsers()[0]);
+        $this->assertAttributeEquals('test', 'id', $searchUsersResult->getUsers()[0]);
+        $this->assertNotNull($searchUsersResult->getScrollId());
+        
+        $scrollUsersResult = $security->scrollUsers($searchUsersResult->getScrollId(), ['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Util\UsersSearchResult', $scrollUsersResult);
+        $this->assertInternalType('array', $scrollUsersResult->getUsers());
+        $this->assertEquals(1, count($scrollUsersResult->getUsers()));
+        $this->assertInstanceOf('Kuzzle\Security\User', $scrollUsersResult->getUsers()[0]);
+        $this->assertAttributeEquals('test1', 'id', $scrollUsersResult->getUsers()[0]);
+        $this->assertNotNull($searchUsersResult->getScrollId());
     }
 
     function testDeleteRole()
@@ -1333,4 +1535,411 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals(array_merge($userBaseContent, $userContent), 'content', $result);
     }
 
+    public function testCreateCredentials()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/42/_create',
+            'request' => [
+                'action' => 'createCredentials',
+                'controller' => 'security',
+                'volatile' => [],
+                'requestId' => $options['requestId'],
+                'body' => ['foo' => 'bar']
+            ],
+            'method' => 'POST',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->createCredentials("local", "42", ["foo"=>"bar"], $options);
+    }
+
+    public function testDeleteCredentials()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/42',
+            'request' => [
+                'action' => 'deleteCredentials',
+                'controller' => 'security',
+                'volatile' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'DELETE',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "acknowledged" => true,
+            ]
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->deleteCredentials("local", "42", $options);
+    }
+
+    public function testGetAllCredentialFields()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/_fields',
+            'request' => [
+                'action' => 'getAllCredentialFields',
+                'controller' => 'security',
+                'volatile' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "local" => [
+                    "username",
+                    "password"
+                ],
+            ]
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->getAllCredentialFields($options);
+    }
+
+    public function testGetCredentialFields()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_fields',
+            'request' => [
+                'action' => 'getCredentialFields',
+                'controller' => 'security',
+                'volatile' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "local" => [
+                    "username",
+                    "password"
+                ],
+            ]
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->getCredentialFields('local', $options);
+    }
+
+    public function testGetCredentials()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/42',
+            'request' => [
+                'action' => 'getCredentials',
+                'controller' => 'security',
+                'volatile' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->getCredentials('local', '42', $options);
+    }
+
+    public function testGetCredentialsById()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/42/_byId',
+            'request' => [
+                'action' => 'getCredentialsById',
+                'controller' => 'security',
+                'volatile' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->getCredentialsById('local', '42', $options);
+    }
+
+    public function testHasCredentials()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/42/_exists',
+            'request' => [
+                'action' => 'hasCredentials',
+                'controller' => 'security',
+                'volatile' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->hasCredentials('local', '42', $options);
+    }
+
+    public function testUpdateCredentials()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/42/_update',
+            'request' => [
+                'action' => 'updateCredentials',
+                'controller' => 'security',
+                'volatile' => [],
+                'body' => ["foo" => "bar"],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'PUT',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->updateCredentials('local', '42', ["foo" => "bar"], $options);
+    }
+
+    public function testValidateCredentials()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/42/_validate',
+            'request' => [
+                'action' => 'validateCredentials',
+                'controller' => 'security',
+                'volatile' => [],
+                'body' => ["foo" => "bar"],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'POST',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => true
+        ];
+
+        $security = new Security($kuzzle);
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $security->validateCredentials('local', '42', ["foo" => "bar"], $options);
+    }
 }

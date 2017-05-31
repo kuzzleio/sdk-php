@@ -842,6 +842,20 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($loginResponse['jwt'], 'jwtToken', $kuzzle);
     }
 
+    public function testLoginWithoutStrategy() {
+        $url = self::FAKE_KUZZLE_HOST;
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        try {
+            $kuzzle->login('');
+
+            $this->fail("KuzzleTest::testLoginWithoutStrategy => Should raise an exception");
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+        }
+    }
+
     public function testLogout()
     {
         $url = self::FAKE_KUZZLE_HOST;
@@ -865,7 +879,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'volatile' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET',
+            'method' => 'POST',
             'query_parameters' => []
         ];
 
@@ -1393,6 +1407,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->with($curlRequest)
             ->willReturn(['error' => 'HTTP Error', 'response' => '']);
 
+        $triggerCount = 0;
+        $triggerArgs = [];
+        $errListener = function() use (&$triggerArgs, &$triggerCount){
+          $triggerArgs[$triggerCount++] = func_get_args();
+        };
+        $kuzzle->addListener('queryError', $errListener);
+
         try {
             $method->invokeArgs($kuzzle, [$httpRequest]);
 
@@ -1401,6 +1422,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         catch (Exception $e) {
             $this->assertInstanceOf('ErrorException', $e);
             $this->assertEquals('HTTP Error', $e->getMessage());
+            $this->assertEquals($triggerCount, 1);
+            $this->assertEquals('HTTP Error', $triggerArgs[0][0]);
         }
     }
 
@@ -1448,6 +1471,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ->with($curlRequest)
             ->willReturn(['error' => '', 'response' => '{"error": {"message": "Kuzzle Error"}}']);
 
+        $triggerCount = 0;
+        $triggerArgs = [];
+        $errListener = function() use (&$triggerArgs, &$triggerCount){
+          $triggerArgs[$triggerCount++] = func_get_args();
+        };
+        $kuzzle->addListener('queryError', $errListener);
+
         try {
             $emitRestRequest->invokeArgs($kuzzle, [$httpRequest]);
 
@@ -1456,6 +1486,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         catch (Exception $e) {
             $this->assertEquals('Kuzzle Error', $e->getMessage());
             $this->assertInstanceOf('ErrorException', $e);
+            $this->assertEquals($triggerCount, 1);
+            $this->assertEquals(['message' => 'Kuzzle Error'], $triggerArgs[0][0]);
         }
     }
 
@@ -1849,9 +1881,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
 
-        $listenerId = $kuzzle->addListener($event, $listener);
+        $kuzzle->addListener($event, $listener);
 
-        $this->assertAttributeEquals([$event => [$listenerId => $listener]], 'listeners', $kuzzle);
+        $this->assertAttributeEquals([$event => [spl_object_hash($listener) => $listener]], 'listeners', $kuzzle);
     }
 
     public function testAddListenerWithBadListener()
@@ -1877,29 +1909,36 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $url = self::FAKE_KUZZLE_HOST;
 
         $event = 'foo';
-        $listener = function() {};
+        $listener1 = function() {};
+        $listener2 = function() {};
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
 
-        $listenerId = $kuzzle->addListener($event, $listener);
-        $kuzzle->removeListener($event, $listenerId);
+        $kuzzle->addListener($event, $listener1);
+        $kuzzle->addListener($event, $listener2);
+        $kuzzle->removeListener($event, $listener1);
 
-        $this->assertAttributeEquals([$event => []], 'listeners', $kuzzle);
+        $this->assertAttributeEquals([$event => [spl_object_hash($listener2) => $listener2]], 'listeners', $kuzzle);
     }
 
     public function testRemoveAllListenersForOneEvent()
     {
         $url = self::FAKE_KUZZLE_HOST;
 
-        $listener = function() {};
+        $listener1 = function() {};
+        $listener2 = function() {};
+        $listener3 = function() {};
+        $listener4 = function() {};
 
         $kuzzle = new \Kuzzle\Kuzzle($url);
 
-        $kuzzle->addListener('foo', $listener);
-        $listenerId = $kuzzle->addListener('bar', $listener);
+        $kuzzle->addListener('foo', $listener1);
+        $kuzzle->addListener('foo', $listener2);
+        $kuzzle->addListener('bar', $listener3);
+        $kuzzle->addListener('bar', $listener4);
         $kuzzle->removeAllListeners('foo');
 
-        $this->assertAttributeEquals(['bar' => [$listenerId => $listener]], 'listeners', $kuzzle);
+        $this->assertAttributeEquals(['bar' => [spl_object_hash($listener3) => $listener3, spl_object_hash($listener4) => $listener4]], 'listeners', $kuzzle);
     }
 
     public function testRemoveAllListeners()
@@ -1915,6 +1954,255 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $kuzzle->removeAllListeners();
 
         $this->assertAttributeEquals([], 'listeners', $kuzzle);
+    }
+
+    public function testEmitEvent()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $event = 'foo';
+        $triggerCount = 0;
+        $triggerArgs = [];
+
+        $listener1 = function() use (&$triggerArgs, &$triggerCount){
+          $triggerArgs[$triggerCount++] = func_get_args();
+        };
+
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        $kuzzle->addListener($event, $listener1);
+
+        $kuzzle->emitEvent($event, 'foo', 'bar');
+        $this->assertEquals($triggerCount, 1);
+        $this->assertEquals(['foo', 'bar'], $triggerArgs[0]);
+
+        $listener2 = Closure::bind($listener1, null);
+        $kuzzle->addListener($event, $listener2);
+
+        $triggerCount = 0;
+        $triggerArgs = [];
+
+        $kuzzle->emitEvent($event, 'foo', 'bar');
+        $this->assertEquals($triggerCount, 2);
+        $this->assertEquals(['foo', 'bar'], $triggerArgs[1]);
+    }
+
+    public function testCreateMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me/_create',
+            'request' => [
+                'action' => 'createMyCredentials',
+                'controller' => 'auth',
+                'volatile' => [],
+                'requestId' => $options['requestId'],
+                'body' => ['foo' => 'bar']
+            ],
+            'method' => 'POST',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->createMyCredentials("local", ["foo"=>"bar"], $options);
+    }
+
+    public function testDeleteMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me',
+            'request' => [
+                'action' => 'deleteMyCredentials',
+                'controller' => 'auth',
+                'volatile' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'DELETE',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "acknowledged" => true
+            ]
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->deleteMyCredentials("local", $options);
+    }
+
+    public function testGetMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me',
+            'request' => [
+                'action' => 'getMyCredentials',
+                'controller' => 'auth',
+                'volatile' => [],
+                'requestId' => $options['requestId']
+            ],
+            'method' => 'GET',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->getMyCredentials("local", $options);
+    }
+
+    public function testUpdateMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me/_update',
+            'request' => [
+                'action' => 'updateMyCredentials',
+                'controller' => 'auth',
+                'volatile' => [],
+                'requestId' => $options['requestId'],
+                'body' => [
+                    'foo' => 'bar'
+                ]
+            ],
+            'method' => 'PUT',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => [
+                "username" => "foo",
+                "kuid" => "42"
+            ]
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->updateMyCredentials("local", ['foo' => 'bar'], $options);
+    }
+
+    public function testValidateMyCredentials()
+    {
+        $url = self::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $options = [
+            'requestId' => uniqid()
+        ];
+
+        // mock http request
+        $httpRequest = [
+            'route' => '/credentials/local/_me/_validate',
+            'request' => [
+                'action' => 'validateMyCredentials',
+                'controller' => 'auth',
+                'volatile' => [],
+                'requestId' => $options['requestId'],
+                'body' => [
+                    'foo' => 'bar'
+                ]
+            ],
+            'method' => 'POST',
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            "result" => true
+        ];
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        $kuzzle->validateMyCredentials("local", ['foo' => 'bar'], $options);
     }
 
     public function testAddHeaders()

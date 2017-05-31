@@ -90,6 +90,83 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    function testExists()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+        $documentContent = [
+            'foo' => 'bar'
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_exists',
+            'method' => 'GET',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'exists',
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index,
+                '_id' => $documentId,
+                'body' => $documentContent
+            ],
+            'query_parameters' => []
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => true
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+        $document = new Document($dataCollection, $documentId, $documentContent);
+
+        $result = $document->exists(['requestId' => $requestId]);
+
+        $this->assertEquals(true, $result);
+    }
+
+    function testExistsWithoutId()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $kuzzle = new \Kuzzle\Kuzzle($url);
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+        $document = new Document($dataCollection);
+
+        try {
+            $document->exists(['requestId' => $requestId]);
+
+            $this->fail('DocumentTest::testExistsWithoutId => Should raise an exception');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Document::exists: cannot check if the document exists without a document ID', $e->getMessage());
+        }
+    }
+
     function testRefreshWithoutId()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;

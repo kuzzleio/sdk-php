@@ -576,6 +576,57 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($result, [$documentId]);
     }
 
+    function testDocumentExists()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_exists',
+            'method' => 'GET',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'exists',
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index,
+                '_id' => $documentId
+            ],
+            'query_parameters' => []
+        ];
+
+        $httpResponse = [
+            'error' => null,
+            'result' => true
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        $result = $dataCollection->documentExists($documentId, ['requestId' => $requestId]);
+
+        $this->assertEquals(true, $result);
+    }
+
     function testFetchDocument()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
@@ -862,6 +913,366 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Kuzzle\Document', $documents[0]);
         $this->assertAttributeEquals('test', 'id', $documents[0]);
         $this->assertAttributeEquals('test1', 'id', $documents[1]);
+    }
+
+    function testMCreate()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documents = [
+            'documents' => [
+                ['_id' => 'foo1', 'foo' => 'bar'],
+                ['_id' => 'foo2', 'foo' => 'bar'],
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/_mCreate',
+            'method' => 'POST',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'mCreate',
+                'body' => $documents,
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index
+            ],
+            'query_parameters' => []
+        ];
+        $mCreateResponse = [
+            '_source' => [
+                'hits' => $documents['documents'],
+                'total' => count($documents['documents'])
+            ]
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $mCreateResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        $result = $dataCollection->mCreate($documents['documents'], ['requestId' => $requestId]);
+
+        $this->assertEquals($httpResponse['result'], $result);
+    }
+
+    function testMCreateOrReplace()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documents = [
+            'documents' => [
+                ['_id' => 'foo1', 'foo' => 'bar'],
+                ['_id' => 'foo2', 'foo' => 'bar'],
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/_mCreateOrReplace',
+            'method' => 'PUT',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'mCreateOrReplace',
+                'body' => $documents,
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index
+            ],
+            'query_parameters' => []
+        ];
+        $mCreateOrReplaceResponse = [
+            '_source' => [
+                'hits' => $documents['documents'],
+                'total' => count($documents['documents'])
+            ]
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $mCreateOrReplaceResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        $result = $dataCollection->mCreateOrReplace($documents['documents'], ['requestId' => $requestId]);
+
+        $this->assertEquals($httpResponse['result'], $result);
+    }
+
+    function testMDelete()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentIds = [
+            'ids' => ['foo1', 'foo2']
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/_mDelete',
+            'method' => 'DELETE',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'mDelete',
+                'body' => $documentIds,
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index
+            ],
+            'query_parameters' => []
+        ];
+        $mDeleteResponse = [
+            '_source' => [
+                'hits' => $documentIds['ids'],
+                'total' => count($documentIds['ids'])
+            ]
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $mDeleteResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        $result = $dataCollection->mDelete($documentIds['ids'], ['requestId' => $requestId]);
+
+        $this->assertEquals($httpResponse['result'], $result);
+    }
+
+    function testMGet()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentIds = [
+            'ids' => ['foo1', 'foo2']
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/_mGet',
+            'method' => 'POST',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'mGet',
+                'body' => $documentIds,
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index
+            ],
+            'query_parameters' => []
+        ];
+        $mGetResponse = [
+            '_source' => [
+                'hits' => $documentIds['ids'],
+                'total' => count($documentIds['ids'])
+            ]
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $mGetResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        $result = $dataCollection->mGet($documentIds['ids'], ['requestId' => $requestId]);
+
+        $this->assertEquals($httpResponse['result'], $result);
+    }
+
+    function testMReplace()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documents = [
+            'documents' => [
+                ['_id' => 'foo1', 'foo' => 'bar'],
+                ['_id' => 'foo2', 'foo' => 'bar'],
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/_mReplace',
+            'method' => 'PUT',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'mReplace',
+                'body' => $documents,
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index
+            ],
+            'query_parameters' => []
+        ];
+        $mReplaceResponse = [
+            '_source' => [
+                'hits' => $documents['documents'],
+                'total' => count($documents['documents'])
+            ]
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $mReplaceResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        $result = $dataCollection->mReplace($documents['documents'], ['requestId' => $requestId]);
+
+        $this->assertEquals($httpResponse['result'], $result);
+    }
+
+    function testMUpdate()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documents = [
+            'documents' => [
+                ['_id' => 'foo1', 'foo' => 'bar'],
+                ['_id' => 'foo2', 'foo' => 'bar'],
+            ]
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/_mUpdate',
+            'method' => 'PUT',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'mUpdate',
+                'body' => $documents,
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index
+            ],
+            'query_parameters' => []
+        ];
+        $mUpdateResponse = [
+            '_source' => [
+                'hits' => $documents['documents'],
+                'total' => count($documents['documents'])
+            ]
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $mUpdateResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        $result = $dataCollection->mUpdate($documents['documents'], ['requestId' => $requestId]);
+
+        $this->assertEquals($httpResponse['result'], $result);
     }
 
     function testPublishDocument()
