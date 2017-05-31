@@ -34,7 +34,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $stubSecurity = $this
-            ->getMockBuilder(Security::class)
+            ->getMockBuilder('Kuzzle\Security\Security')
             ->setConstructorArgs([$kuzzle])
             ->getMock();
         $stubSecurity->method('fetchProfile')->willReturn(new Profile($stubSecurity, 'foo', []));
@@ -47,7 +47,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, count($profiles));
 
         foreach($profiles as $profile) {
-            $this->assertInstanceOf(Profile::class, $profile);
+            $this->assertInstanceOf('Kuzzle\Security\Profile', $profile);
             $this->assertEquals('foo', $profile->getId());
         }
     }
