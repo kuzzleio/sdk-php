@@ -1,8 +1,6 @@
 Official Kuzzle PHP SDK
 ======
 
-This SDK version is compatible with Kuzzle 1.0.0-RC10 and higher
-
 ## About Kuzzle
 
 A backend software, self-hostable and ready to use to power modern apps.
@@ -19,7 +17,7 @@ You can access the Kuzzle repository on [Github](https://github.com/kuzzleio/kuz
 
 ## SDK Documentation
 
-The complete SDK documentation is available [here](http://kuzzle.io/sdk-documentation/?php)
+The complete SDK documentation is available [here](http://docs.kuzzle.io/sdk-reference/)
 
 ## Report an issue
 
