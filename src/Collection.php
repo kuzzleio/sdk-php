@@ -67,7 +67,7 @@ class Collection
         );
 
         $response['result']['hits'] = array_map(function ($document) {
-            return new Document($this, $document['_id'], $document['_source']);
+            return new Document($this, $document['_id'], $document['_source'], $document['_meta']);
         }, $response['result']['hits']);
 
 
@@ -112,7 +112,7 @@ class Collection
         );
 
         $response['result']['hits'] = array_map(function ($document) {
-            return new Document($this, $document['_id'], $document['_source']);
+            return new Document($this, $document['_id'], $document['_source'], $document['_meta']);
         }, $response['result']['hits']);
 
 
@@ -211,9 +211,10 @@ class Collection
         );
 
         $content = $response['result']['_source'];
+        $meta = $response['result']['_meta'];
         $content['_version'] = $response['result']['_version'];
 
-        return new Document($this, $response['result']['_id'], $content);
+        return new Document($this, $response['result']['_id'], $content, $meta);
     }
 
     /**
@@ -242,7 +243,7 @@ class Collection
             $data['_id'] = $filters;
             $action = 'delete';
         } else {
-            $data['body'] = $filters;
+            $data['body'] = ['query' => (object)$filters];
             $action = 'deleteByQuery';
         }
 
@@ -260,11 +261,12 @@ class Collection
      *
      * @param string $id Optional document unique ID
      * @param array $content Optional document content
+     * @param array $meta Document metadata
      * @return Document the newly created Kuzzle\Document object
      */
-    public function document($id = '', array $content = [])
+    public function document($id = '', array $content = [], array $meta = [])
     {
-        return new Document($this, $id, $content);
+        return new Document($this, $id, $content, $meta);
     }
 
     /**
@@ -310,8 +312,9 @@ class Collection
 
         $content = $response['result']['_source'];
         $content['_version'] = $response['result']['_version'];
+        $meta = $response['result']['_meta'];
 
-        return new Document($this, $response['result']['_id'], $content);
+        return new Document($this, $response['result']['_id'], $content, $meta);
     }
 
     /**
@@ -569,8 +572,9 @@ class Collection
 
         $content = $response['result']['_source'];
         $content['_version'] = $response['result']['_version'];
+        $meta = $response['result']['_meta'];
 
-        return new Document($this, $response['result']['_id'], $content);
+        return new Document($this, $response['result']['_id'], $content, $meta);
     }
 
     /**

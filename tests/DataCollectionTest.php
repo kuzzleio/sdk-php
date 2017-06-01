@@ -41,12 +41,18 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test',
                     '_source' => [
                         'foo' => 'bar'
+                    ],
+                    '_meta' => [
+                        'author' => 'foo'
                     ]
                 ],
                 1 => [
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar'
+                    ],
+                    '_meta' => [
+                        'author' => 'bar'
                     ]
                 ]
             ],
@@ -135,12 +141,18 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test',
                     '_source' => [
                         'foo' => 'bar'
+                    ],
+                    '_meta' => [
+                        'author' => 'foo'
                     ]
                 ],
                 1 => [
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar'
+                    ],
+                    '_meta' => [
+                        'author' => 'bar'
                     ]
                 ]
             ],
@@ -301,6 +313,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $documentContent = [
             'foo' => 'bar'
         ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_create',
@@ -320,6 +335,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $createDocumentResponse = [
             '_id' => $documentId,
             '_source' => $documentContent,
+            '_meta' => $documentMeta,
             '_version' => 1
         ];
         $httpResponse = [
@@ -363,6 +379,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $documentContent = [
             'foo' => 'bar'
         ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
@@ -375,13 +394,15 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
-                '_id' => $documentId
+                '_id' => $documentId,
+                'meta' => $documentMeta
             ],
             'query_parameters' => []
         ];
         $createDocumentResponse = [
             '_id' => $documentId,
             '_source' => $documentContent,
+            '_meta' => $documentMeta,
             '_version' => 1
         ];
         $httpResponse = [
@@ -406,13 +427,14 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $documentObject = new \Kuzzle\Document($dataCollection, $documentId, $documentContent);
+        $documentObject = new \Kuzzle\Document($dataCollection, $documentId, $documentContent, $documentMeta);
 
         $document = $dataCollection->createDocument($documentObject, '', ['ifExist' => 'replace', 'requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $document);
         $this->assertAttributeEquals($documentId, 'id', $document);
         $this->assertAttributeEquals($documentContent, 'content', $document);
+        $this->assertAttributeEquals($documentMeta, 'meta', $document);
         $this->assertAttributeEquals(1, 'version', $document);
     }
 
@@ -519,7 +541,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
-                'body' => (object)$filters
+                'body' => ['query' => (object)$filters]
             ],
             'query_parameters' => []
         ];
@@ -616,6 +638,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $documentContent = [
             'foo' => 'bar'
         ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection . '/' . $documentId,
@@ -634,6 +659,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $fetchDocumentResponse = [
             '_id' => $documentId,
             '_source' => $documentContent,
+            '_meta' => $documentMeta,
             '_version' => 1
         ];
         $httpResponse = [
@@ -712,6 +738,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test',
                     '_source' => [
                         'foo' => 'bar'
+                    ],
+                    '_meta' => [
+                        'author' => 'foo'
                     ]
                 ]
             ],
@@ -724,6 +753,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar'
+                    ],
+                    '_meta' => [
+                        'author' => 'bar'
                     ]
                 ]
             ],
@@ -819,6 +851,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test',
                     '_source' => [
                         'foo' => 'bar'
+                    ],
+                    '_meta' => [
+                        'author' => 'foo'
                     ]
                 ]
             ],
@@ -830,6 +865,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar'
+                    ],
+                    '_meta' => [
+                        'author' => 'bar'
                     ]
                 ]
             ],
@@ -1300,8 +1338,11 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $collection = 'collection';
 
         $documentId = uniqid();
-        $document = [
+        $documentContent = [
             'foo' => 'bar'
+        ];
+        $documentMeta = [
+            'author' => 'foo'
         ];
 
         $httpRequest = [
@@ -1311,11 +1352,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'volatile' => [],
                 'controller' => 'realtime',
                 'action' => 'publish',
-                'body' => $document,
+                'body' => $documentContent,
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
-                '_id' => $documentId
+                '_id' => $documentId,
+                'meta' => $documentMeta
             ],
             'query_parameters' => []
         ];
@@ -1344,7 +1386,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $documentObject = new \Kuzzle\Document($dataCollection, $documentId, $document);
+        $documentObject = new \Kuzzle\Document($dataCollection, $documentId, $documentContent, $documentMeta);
 
         $result = $dataCollection->publishMessage($documentObject, ['requestId' => $requestId]);
 
@@ -1361,6 +1403,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $documentId = uniqid();
         $documentContent = [
             'foo' => 'bar'
+        ];
+        $documentMeta = [
+            'author' => 'foo'
         ];
 
         $httpRequest = [
@@ -1381,6 +1426,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $createDocumentResponse = [
             '_id' => $documentId,
             '_source' => $documentContent,
+            '_meta' => $documentMeta,
             '_version' => 1
         ];
         $httpResponse = [
@@ -1410,6 +1456,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Kuzzle\Document', $document);
         $this->assertAttributeEquals($documentId, 'id', $document);
         $this->assertAttributeEquals($documentContent, 'content', $document);
+        $this->assertAttributeEquals($documentMeta, 'meta', $document);
         $this->assertAttributeEquals(1, 'version', $document);
     }
 
@@ -1476,6 +1523,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $documentContent = [
             'foo' => 'bar'
         ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -1527,6 +1577,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $getResponse = [
             '_id' => $documentId,
             '_source' => $documentContent,
+            '_meta' => $documentMeta,
             '_version' => 2
         ];
         $httpGetResponse = [
@@ -1556,6 +1607,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Kuzzle\Document', $document);
         $this->assertAttributeEquals($documentId, 'id', $document);
         $this->assertAttributeEquals($documentContent, 'content', $document);
+        $this->assertAttributeEquals($documentMeta, 'meta', $document);
         $this->assertAttributeEquals(2, 'version', $document);
     }
 }
