@@ -23,6 +23,69 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($user->getProfiles(), []);
     }
 
+    function testGetProfiles()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $stubSecurity = $this
+            ->getMockBuilder('Kuzzle\Security\Security')
+            ->setConstructorArgs([$kuzzle])
+            ->getMock();
+        $stubSecurity->method('fetchProfile')->willReturn(new Profile($stubSecurity, 'foo', []));
+
+        $user = new User($stubSecurity, 'foobar', [
+            'profileIds' => ['foo', 'bar', 'baz']
+        ]);
+
+        $profiles = $user->getProfiles();
+        $this->assertEquals(3, count($profiles));
+
+        foreach($profiles as $profile) {
+            $this->assertInstanceOf('Kuzzle\Security\Profile', $profile);
+            $this->assertEquals('foo', $profile->getId());
+        }
+    }
+
+    function testEmptyGetProfileIds()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $security = new Security($kuzzle);
+        $user = new User($security, '', []);
+
+        $this->assertEquals($user->getProfileIds(), []);
+    }
+
+    function testGetProfileIds()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $security = new Security($kuzzle);
+        $user = new User($security, 'foobar', [
+            'profileIds' => ['foo', 'bar', 'baz']
+        ]);
+
+        $this->assertEquals($user->getProfileIds(), ['foo', 'bar', 'baz']);
+    }
+
     function testAddProfile()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;

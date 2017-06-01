@@ -1,11 +1,9 @@
 Official Kuzzle PHP SDK
 ======
 
-This SDK version is compatible with Kuzzle 1.0.0-RC9.5 and higher
-
 ## About Kuzzle
 
-For UI and linked objects developers, Kuzzle is an open-source solution that handles all the data management (CRUD, real-time storage, search, high-level features, etc).
+A backend software, self-hostable and ready to use to power modern apps.
 
 You can access the Kuzzle repository on [Github](https://github.com/kuzzleio/kuzzle)
 
@@ -17,7 +15,7 @@ You can access the Kuzzle repository on [Github](https://github.com/kuzzleio/kuz
 
 ## SDK Documentation
 
-The complete SDK documentation is available [here](http://kuzzle.io/sdk-documentation/?php)
+The complete SDK documentation is available [here](http://docs.kuzzle.io/sdk-reference/)
 
 ## Report an issue
 

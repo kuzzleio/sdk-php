@@ -38,9 +38,9 @@ class User extends Document
     }
 
     /**
-     * Returns this user associated profile.
+     * Returns this user associated profiles.
      *
-     * @return Profile[]|false
+     * @return Profile[]
      */
     public function getProfiles()
     {
@@ -55,6 +55,19 @@ class User extends Document
         }
 
         return $profiles;
+    }
+
+    /**
+     * Returns this user associated profile identifiers
+     * @return  string[]
+     */
+    public function getProfileIds()
+    {
+        if (!array_key_exists('profileIds', $this->content)) {
+            return [];
+        }
+
+        return $this->content['profileIds'];
     }
 
     /**
