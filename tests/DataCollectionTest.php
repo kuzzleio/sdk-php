@@ -877,7 +877,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals('test1', 'id', $documents[1]);
     }
 
-    function testMCreate()
+    function testMCreateDocument()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -933,12 +933,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $result = $dataCollection->mCreate($documents['documents'], ['requestId' => $requestId]);
+        $result = $dataCollection->mCreateDocument($documents['documents'], ['requestId' => $requestId]);
 
         $this->assertEquals($httpResponse['result'], $result);
     }
 
-    function testMCreateOrReplace()
+    function testMCreateOrReplaceDocument()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -994,12 +994,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $result = $dataCollection->mCreateOrReplace($documents['documents'], ['requestId' => $requestId]);
+        $result = $dataCollection->mCreateOrReplaceDocument($documents['documents'], ['requestId' => $requestId]);
 
         $this->assertEquals($httpResponse['result'], $result);
     }
 
-    function testMDelete()
+    function testMDeleteDocument()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -1052,12 +1052,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $result = $dataCollection->mDelete($documentIds['ids'], ['requestId' => $requestId]);
+        $result = $dataCollection->mDeleteDocument($documentIds['ids'], ['requestId' => $requestId]);
 
         $this->assertEquals($httpResponse['result'], $result);
     }
 
-    function testMGet()
+    function testMGetDocument()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -1110,12 +1110,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $result = $dataCollection->mGet($documentIds['ids'], ['requestId' => $requestId]);
+        $result = $dataCollection->mGetDocument($documentIds['ids'], ['requestId' => $requestId]);
 
         $this->assertEquals($httpResponse['result'], $result);
     }
 
-    function testMReplace()
+    function testMReplaceDocument()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -1171,12 +1171,12 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $result = $dataCollection->mReplace($documents['documents'], ['requestId' => $requestId]);
+        $result = $dataCollection->mReplaceDocument($documents['documents'], ['requestId' => $requestId]);
 
         $this->assertEquals($httpResponse['result'], $result);
     }
 
-    function testMUpdate()
+    function testMUpdateDocument()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -1232,7 +1232,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $result = $dataCollection->mUpdate($documents['documents'], ['requestId' => $requestId]);
+        $result = $dataCollection->mUpdateDocument($documents['documents'], ['requestId' => $requestId]);
 
         $this->assertEquals($httpResponse['result'], $result);
     }

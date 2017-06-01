@@ -368,10 +368,10 @@ class Collection
      * @param array $options Optional parameters
      * @return mixed
      */
-    public function mCreate($documents, array $options = [])
+    public function mCreateDocument($documents, array $options = [])
     {
         if (!is_array($documents)) {
-            throw new InvalidArgumentException('Collection.mCreate: documents parameter format is invalid (should be an array of documents)');
+            throw new InvalidArgumentException('Collection.mCreateDocument: documents parameter format is invalid (should be an array of documents)');
         }
 
         $documents = array_map(function ($document) {
@@ -396,10 +396,10 @@ class Collection
      * @param array $options Optional parameters
      * @return mixed
      */
-    public function mCreateOrReplace($documents, array $options = [])
+    public function mCreateOrReplaceDocument($documents, array $options = [])
     {
         if (!is_array($documents)) {
-            throw new InvalidArgumentException('Collection.mCreateOrReplace: documents parameter format is invalid (should be an array of documents)');
+            throw new InvalidArgumentException('Collection.mCreateOrReplaceDocument: documents parameter format is invalid (should be an array of documents)');
         }
 
         $documents = array_map(function ($document) {
@@ -424,10 +424,10 @@ class Collection
      * @param array $options Optional parameters
      * @return mixed
      */
-    public function mDelete($documentIds, array $options = [])
+    public function mDeleteDocument($documentIds, array $options = [])
     {
         if (!is_array($documentIds)) {
-            throw new InvalidArgumentException('Collection.mDelete: documents parameter format is invalid (should be an array of document IDs)');
+            throw new InvalidArgumentException('Collection.mDeleteDocument: documents parameter format is invalid (should be an array of document IDs)');
         }
 
         $data = ['body' => ['ids' => $documentIds]];
@@ -448,10 +448,10 @@ class Collection
      * @param array $options Optional parameters
      * @return mixed
      */
-    public function mGet($documentIds, array $options = [])
+    public function mGetDocument($documentIds, array $options = [])
     {
         if (!is_array($documentIds)) {
-            throw new InvalidArgumentException('Collection.mGet: documents parameter format is invalid (should be an array of document IDs)');
+            throw new InvalidArgumentException('Collection.mGetDocument: documents parameter format is invalid (should be an array of document IDs)');
         }
 
         $data = ['body' => ['ids' => $documentIds]];
@@ -471,10 +471,10 @@ class Collection
      * @param array $documents Array of documents to replace
      * @param array $options Optional parameters
      */
-    public function mReplace($documents, array $options = [])
+    public function mReplaceDocument($documents, array $options = [])
     {
         if (!is_array($documents)) {
-            throw new InvalidArgumentException('Collection.mReplace: documents parameter format is invalid (should be an array of documents)');
+            throw new InvalidArgumentException('Collection.mReplaceDocument: documents parameter format is invalid (should be an array of documents)');
         }
 
         $documents = array_map(function ($document) {
@@ -498,10 +498,10 @@ class Collection
      * @param array $documents Array of documents to update
      * @param array $options Optional parameters
      */
-    public function mUpdate($documents, array $options = [])
+    public function mUpdateDocument($documents, array $options = [])
     {
         if (!is_array($documents)) {
-            throw new InvalidArgumentException('Collection.mUpdate: documents parameter format is invalid (should be an array of documents)');
+            throw new InvalidArgumentException('Collection.mUpdateDocument: documents parameter format is invalid (should be an array of documents)');
         }
 
         $documents = array_map(function ($document) {
