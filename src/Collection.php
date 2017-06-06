@@ -318,42 +318,6 @@ class Collection
     }
 
     /**
-     * Retrieves all documents stored in this data collection.
-     *
-     * @param array $options Optional parameters
-     * @return Document[] containing all documents objects
-     */
-    public function fetchAllDocuments(array $options = [])
-    {
-        $documents = [];
-        $filters = [];
-
-        if (!array_key_exists('from', $options)) {
-            $options['from'] = 0;
-        }
-
-        if (!array_key_exists('size', $options)) {
-            $options['size'] = 1000;
-        }
-
-
-        $searchResult = $this->search($filters, $options);
-
-        if ($searchResult->getTotal() > 10000) {
-            trigger_error('Usage of Kuzzle\\Collection::fetchAllDocuments will fetch more than 10 000 document. To avoid performance issues, please use Kuzzle\\Collection::search and Kuzzle\\Collection::scroll requests', E_USER_WARNING);
-        }
-
-        while ($searchResult) {
-            foreach ($searchResult->getDocuments() as $document) {
-                $documents[] = $document;
-            }
-            $searchResult = $searchResult->fetchNext();
-        }
-
-        return $documents;
-    }
-
-    /**
      * Retrieves the current mapping of this collection.
      *
      * @param array $options Optional parameters
