@@ -11,13 +11,10 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $requestId = uniqid();
 
         $profileId = uniqid();
-        $profileContent = [
-            'policies' => [
-                [
-                    'roleId' => 'default',
-                    'restrictedTo' => [],
-                    'allowInternalIndex'=> true
-                ]
+        $policies = [
+            [
+                'roleId' => 'default',
+                'restrictedTo' => []
             ]
         ];
 
@@ -30,13 +27,13 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'createProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-                'body' => $profileContent
+                'body' => [ 'policies' => $policies]
             ],
             'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
-            '_source' => $profileContent,
+            '_source' => [ 'policies' => $policies ],
             '_version' => 1
         ];
         $httpResponse = [
@@ -61,11 +58,11 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->createProfile($profileId, $profileContent, ['requestId' => $requestId]);
+        $result = $security->createProfile($profileId, $policies, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
         $this->assertAttributeEquals($profileId, 'id', $result);
-        $this->assertAttributeEquals($profileContent, 'content', $result);
+        $this->assertAttributeEquals(['policies' => $policies], 'content', $result);
     }
 
     function testCreateOrReplaceProfile()
@@ -74,13 +71,10 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $requestId = uniqid();
 
         $profileId = uniqid();
-        $profileContent = [
-            'policies' => [
-                [
-                    'roleId' => 'default',
-                    'restrictedTo' => [],
-                    'allowInternalIndex'=> true
-                ]
+        $policies = [
+            [
+                'roleId' => 'default',
+                'restrictedTo' => []
             ]
         ];
 
@@ -93,13 +87,13 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'createOrReplaceProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-                'body' => $profileContent
+                'body' => [ 'policies' => $policies]
             ],
             'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
-            '_source' => $profileContent,
+            '_source' => [ 'policies' => $policies ],
             '_version' => 1
         ];
         $httpResponse = [
@@ -124,14 +118,14 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->createProfile($profileId, $profileContent, [
+        $result = $security->createProfile($profileId, $policies, [
             'replaceIfExist' => true,
             'requestId' => $requestId
         ]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
         $this->assertAttributeEquals($profileId, 'id', $result);
-        $this->assertAttributeEquals($profileContent, 'content', $result);
+        $this->assertAttributeEquals([ 'policies' => $policies ], 'content', $result);
     }
 
     function testCreateRole()
@@ -1337,25 +1331,20 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $requestId = uniqid();
 
         $profileId = uniqid();
-        $profileBaseContent = [
-            'policies' => [
-                [
-                    'roleId' => 'anonymous',
-                    'restrictedTo' => [
-                        ['index' => 'my-second-index', 'collection' => ['my-collection']]
-                    ]
+        $policiesBase = [
+            [
+                'roleId' => 'anonymous',
+                'restrictedTo' => [
+                    ['index' => 'my-second-index', 'collection' => ['my-collection']]
                 ]
             ]
         ];
-        $profileContent = [
-            'policies' => [
-                [
-                    'roleId' => 'default',
-                    'restrictedTo' => [
-                        ['index' => 'my-index'],
-                        ['index' => 'my-second-index', 'collection' => ['my-collection']]
-                    ],
-                    'allowInternalIndex'=> false
+        $policies = [
+            [
+                'roleId' => 'default',
+                'restrictedTo' => [
+                    ['index' => 'my-index'],
+                    ['index' => 'my-second-index', 'collection' => ['my-collection']]
                 ]
             ]
         ];
@@ -1369,13 +1358,13 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'updateProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-                'body' => $profileContent
+                'body' => [ 'policies' => $policies ]
             ],
             'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $profileId,
-            '_source' => array_merge($profileBaseContent, $profileContent),
+            '_source' => [ 'policies' => array_merge($policiesBase, $policies) ],
             '_version' => 1
         ];
         $httpResponse = [
@@ -1400,11 +1389,11 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
          */
         $security = new Security($kuzzle);
 
-        $result = $security->updateProfile($profileId, $profileContent, ['requestId' => $requestId]);
+        $result = $security->updateProfile($profileId, $policies, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
         $this->assertAttributeEquals($profileId, 'id', $result);
-        $this->assertAttributeEquals(array_merge($profileBaseContent, $profileContent), 'content', $result);
+        $this->assertAttributeEquals(['policies' => array_merge($policiesBase, $policies)], 'content', $result);
     }
 
     function testUpdateRole()

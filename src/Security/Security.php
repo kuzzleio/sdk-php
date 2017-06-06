@@ -53,16 +53,16 @@ class Security
      * Create a new profile in Kuzzle.
      *
      * @param integer $id Unique profile identifier
-     * @param array $content Data representing the profile
+     * @param array $policies List of policies to apply to this profile
      * @param array $options Optional arguments
      * @return Profile
      */
-    public function createProfile($id, array $content, array $options = [])
+    public function createProfile($id, array $policies, array $options = [])
     {
         $action = 'createProfile';
         $data = [
             '_id' => $id,
-            'body' => $content
+            'body' => [ 'policies' => $policies ]
         ];
 
         if (array_key_exists('replaceIfExist', $options)) {
@@ -594,15 +594,15 @@ class Security
      * Performs a partial update on an existing profile.
      *
      * @param string $id Unique profile identifier
-     * @param array $content Data representing the profile
+     * @param array $policies List of policies to apply to this profile
      * @param array $options Optional arguments
      * @return Profile
      */
-    public function updateProfile($id, array $content, array $options = [])
+    public function updateProfile($id, array $policies, array $options = [])
     {
         $data = [
             '_id' => $id,
-            'body' => $content
+            'body' => [ 'policies' => $policies ]
         ];
 
         $response = $this->kuzzle->query(
