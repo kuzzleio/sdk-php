@@ -585,7 +585,7 @@ class MemoryStorageTest extends TestCase
         $this->options['match'] = 'foo*';
 
         $result = $this->memoryStorage->hscan('key', 0, $this->options);
-        $this->assertEquals($result, [18, ['foo', 'bar', 'baz', 'qux']]);
+        $this->assertEquals($result, ['cursor' => 18, 'values' => ['foo', 'bar', 'baz', 'qux']]);
     }
 
     public function testHset() {
@@ -1152,7 +1152,7 @@ class MemoryStorageTest extends TestCase
         $this->options['match'] = 'foo*';
 
         $result = $this->memoryStorage->scan(0, $this->options);
-        $this->assertEquals($result, [18, ['foo', 'bar', 'baz', 'qux']]);
+        $this->assertEquals($result, ['cursor' => 18, 'values' => ['foo', 'bar', 'baz', 'qux']]);
     }
 
     public function testScard() {
@@ -1412,7 +1412,7 @@ class MemoryStorageTest extends TestCase
         $this->options['match'] = 'foo*';
 
         $result = $this->memoryStorage->sscan('key', 0, $this->options);
-        $this->assertEquals($result, [18, ['foo', 'bar', 'baz', 'qux']]);
+        $this->assertEquals($result, ['cursor' => 18, 'values' => ['foo', 'bar', 'baz', 'qux']]);
     }
 
     public function testStrlen() {
@@ -1834,7 +1834,7 @@ class MemoryStorageTest extends TestCase
         $this->options['match'] = 'foo*';
 
         $result = $this->memoryStorage->zscan('key', 0, $this->options);
-        $this->assertEquals($result, [18, ['foo', 'bar', 'baz', 'qux']]);
+        $this->assertEquals($result, ['cursor' => 18, 'values' => ['foo', 'bar', 'baz', 'qux']]);
     }
 
     public function testZscore() {

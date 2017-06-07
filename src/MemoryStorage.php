@@ -176,7 +176,7 @@ class MemoryStorage
         'hlen' => ['getter' => true, 'required' => ['_id']],
         'hmget' => ['getter' => true, 'required' => ['_id', 'fields']],
         'hmset' => ['required' => ['_id', 'entries']],
-        'hscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count']],
+        'hscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count'], 'mapResults' => 'mapScanResults'],
         'hset' => ['required' => ['_id', 'field', 'value']],
         'hsetnx' => ['required' => ['_id', 'field', 'value']],
         'hstrlen' => ['getter' => true, 'required' => ['_id', ':field']],
@@ -216,7 +216,7 @@ class MemoryStorage
         'rpush' => ['required' => ['_id', 'values']],
         'rpushx' => ['required' => ['_id', 'value']],
         'sadd' => ['required' => ['_id', 'members']],
-        'scan' => ['getter' => true, 'required' => ['cursor'], 'opts' => ['match', 'count']],
+        'scan' => ['getter' => true, 'required' => ['cursor'], 'opts' => ['match', 'count'], 'mapResults' => 'mapScanResults'],
         'scard' => ['getter' => true, 'required' => ['_id']],
         'sdiff' => ['getter' => true, 'required' => ['_id', 'keys']],
         'sdiffstore' => ['required' => ['_id', 'keys', 'destination']],
@@ -232,7 +232,7 @@ class MemoryStorage
         'spop' => ['required' => ['_id'], 'opts' => ['count'], 'mapResults' => 'mapStringToArray'],
         'srandmember' => ['getter' => true, 'required' => ['_id'], 'opts' => ['count'], 'mapResults' => 'mapStringToArray'],
         'srem' => ['required' => ['_id', 'members']],
-        'sscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count']],
+        'sscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count'], 'mapResults' => 'mapScanResults'],
         'strlen' => ['getter' => true, 'required' => ['_id']],
         'sunion' => ['getter' => true, 'required' => ['keys']],
         'sunionstore' => ['required' => ['destination', 'keys']],
@@ -278,7 +278,7 @@ class MemoryStorage
             'mapResults' => 'mapZrangeResults'
         ],
         'zrevrank' => ['getter' => true, 'required' => ['_id', ':member']],
-        'zscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count']],
+        'zscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count'], 'mapResults' => 'mapScanResults'],
         'zscore' => ['getter' => true, 'required' => ['_id', ':member'], 'mapResults' => 'mapStringToFloat'],
         'zunionstore' => ['required' => ['_id', 'keys'], 'opts' => ['weights', 'aggregate']]
     ];
@@ -613,5 +613,34 @@ class MemoryStorage
     private function mapStringToFloat($results)
     {
         return floatval($results);
+    }
+
+    /**
+     * Map *scan calls results, from:
+     * [
+     *   "<cursor>",
+     *   [
+     *     "value1",
+     *     "value2",
+     *     "..."
+     *   ]
+     * ]
+     *
+     * To:
+     * {
+     *   cursor: <cursor>,
+     *   values: [
+     *     "value1",
+     *     "value2",
+     *     "..."
+     *   ]
+     * }
+     *
+     * @param $results
+     * @return array
+     */
+    private function mapScanResults($results)
+    {
+        return ['cursor' => $results[0], 'values' => $results[1]];
     }
 }
