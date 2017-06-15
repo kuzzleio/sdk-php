@@ -599,7 +599,9 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $httpResponse = [
             'error' => null,
-            'result' => true
+            'result' => [
+                'acknowledged' => true
+            ]
         ];
 
         $kuzzle = $this
@@ -621,7 +623,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $result = $dataCollection->deleteSpecifications(['requestId' => $requestId]);
 
-        $this->assertEquals($result, true);
+        $this->assertEquals($result, ['acknowledged' => true]);
     }
 
     function testDocumentExists()
