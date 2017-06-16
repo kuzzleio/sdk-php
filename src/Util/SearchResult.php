@@ -55,18 +55,18 @@ class SearchResult
      * @param Document[] $documents
      * @param array $aggregations
      * @param array $options
-     * @param array $fiters
+     * @param array $filters
      * @param SearchResult $previous
      * @internal param array $searchArgs
      */
-    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $options = [], array $fiters = [], SearchResult $previous = null)
+    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $options = [], array $filters = [], SearchResult $previous = null)
     {
         $this->collection = $collection;
         $this->total = $total;
         $this->documents = $documents;
         $this->aggregations = $aggregations;
         $this->options = $options;
-        $this->filters = $fiters;
+        $this->filters = $filters;
         $this->fetchedDocuments = count($documents) + ($previous instanceof SearchResult ? $previous->fetchedDocuments : 0);
 
         return $this;
@@ -135,7 +135,21 @@ class SearchResult
     {
         $searchResult = null;
 
-        if (array_key_exists('scrollId', $this->options)) {
+        if (array_key_exists('size', $this->options)
+            && array_key_exists('sort', $this->filters)
+            && !array_key_exists('from', $this->options)) {
+            // retrieve next results using ES's search_after
+            if ($this->fetchedDocuments >= $this->getTotal()) {
+                return null;
+            }
+
+            $filters = $this->filters;
+            $filters['search_after'] = array_map(function ($sortRule) {
+                return end($this->documents)->getContent()[key($sortRule)];
+            }, $this->filters['sort']);
+
+            $searchResult = $this->collection->search($filters, $this->options);
+        } else if (array_key_exists('scrollId', $this->options)) {
             // retrieve next results with scroll if original search use it
             if ($this->fetchedDocuments >= $this->getTotal()) {
                 return null;
