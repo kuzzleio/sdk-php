@@ -79,6 +79,11 @@
       "route": "/:index/:collection/_specifications",
       "method": "get"
     },
+    "scrollSpecifications": {
+      "name": "scrollSpecifications",
+      "route": "/validations/_scroll/:scrollId",
+      "method": "get"
+    },
     "searchSpecifications": {
       "name": "searchSpecifications",
       "route": "/validations/_search",
