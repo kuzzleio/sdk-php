@@ -251,7 +251,7 @@ class SearchResultTestTest extends \PHPUnit_Framework_TestCase
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
-                'body' => ['sort' => [['age' => 'desc']]]
+                'body' => (object)[]
             ],
             'query_parameters' => ['from' => 1, 'size' => 1]
         ];
@@ -278,7 +278,7 @@ class SearchResultTestTest extends \PHPUnit_Framework_TestCase
             ->willReturn($httpResponse);
 
         $options = ['from' => 0, 'size' => 1, 'requestId' => $requestId];
-        $filters = ['sort' => [['age' => 'desc']]];
+        $filters = [];
 
         $initialSearchResult = new SearchResult($dataCollection, 42, $documents, [], $options, $filters);
 
