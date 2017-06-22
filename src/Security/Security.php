@@ -3,6 +3,7 @@
 namespace Kuzzle\Security;
 
 use ErrorException;
+use InvalidArgumentException;
 use Kuzzle\Kuzzle;
 use Kuzzle\Util\ProfilesSearchResult;
 use Kuzzle\Util\RolesSearchResult;
@@ -52,16 +53,16 @@ class Security
      * Create a new profile in Kuzzle.
      *
      * @param integer $id Unique profile identifier
-     * @param array $content Data representing the profile
+     * @param array $policies List of policies to apply to this profile
      * @param array $options Optional arguments
      * @return Profile
      */
-    public function createProfile($id, array $content, array $options = [])
+    public function createProfile($id, array $policies, array $options = [])
     {
         $action = 'createProfile';
         $data = [
             '_id' => $id,
-            'body' => $content
+            'body' => [ 'policies' => $policies ]
         ];
 
         if (array_key_exists('replaceIfExist', $options)) {
@@ -122,10 +123,6 @@ class Security
             'body' => $content
         ];
 
-        if (array_key_exists('replaceIfExist', $options)) {
-            $action = 'createOrReplaceUser';
-        }
-
         $response = $this->kuzzle->query(
             $this->buildQueryArgs($action),
             $data,
@@ -161,6 +158,31 @@ class Security
     }
 
     /**
+     * Replaces an existing user in Kuzzle.
+     *
+     * @param integer $id Unique user identifier, will be used as username
+     * @param array $content Data representing the user
+     * @param array $options Optional arguments
+     * @return User
+     */
+    public function replaceUser($id, array $content, array $options = [])
+    {
+        $action = 'replaceUser';
+        $data = [
+            '_id' => $id,
+            'body' => $content
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs($action),
+            $data,
+            $options
+        );
+
+        return new User($this, $response['result']['_id'], $response['result']['_source']);
+    }
+
+    /**
      * Delete profile.
      *
      * @param integer $id Unique profile identifier to delete
@@ -180,6 +202,45 @@ class Security
         );
 
         return $response['result']['_id'];
+    }
+
+    /**
+     * Returns the next profiles result set with scroll query.
+     *
+     * @param string $scrollId
+     * @param array $options (optional) arguments
+     * @return ProfilesSearchResult
+     * @throws \Exception
+     */
+    public function scrollProfiles($scrollId, array $options = [])
+    {
+        $options['httpParams'] = [':scrollId' => $scrollId];
+
+        $data = [];
+
+        if (!$scrollId) {
+            throw new InvalidArgumentException('Security.scrollProfiles: scrollId is required');
+        }
+
+        if (isset($options['scroll'])) {
+            $data['scroll'] = $options['scroll'];
+        }
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('security', 'scrollProfiles'),
+            $data,
+            $options
+        );
+
+        $response['result']['hits'] = array_map(function ($document) {
+            return new Profile($this, $document['_id'], $document['_source']);
+        }, $response['result']['hits']);
+
+        return new ProfilesSearchResult(
+            $response['result']['total'],
+            $response['result']['hits'],
+            $scrollId
+        );
     }
 
     /**
@@ -224,6 +285,45 @@ class Security
         );
 
         return $response['result']['_id'];
+    }
+
+    /**
+     * Returns the next users result set with scroll query.
+     *
+     * @param string $scrollId
+     * @param array $options (optional) arguments
+     * @return UsersSearchResult
+     * @throws \Exception
+     */
+    public function scrollUsers($scrollId, array $options = [])
+    {
+        $options['httpParams'] = [':scrollId' => $scrollId];
+
+        $data = [];
+
+        if (!$scrollId) {
+            throw new InvalidArgumentException('Security.scrollUsers: scrollId is required');
+        }
+
+        if (isset($options['scroll'])) {
+            $data['scroll'] = $options['scroll'];
+        }
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('security', 'scrollUsers'),
+            $data,
+            $options
+        );
+
+        $response['result']['hits'] = array_map(function ($document) {
+            return new User($this, $document['_id'], $document['_source']);
+        }, $response['result']['hits']);
+
+        return new UsersSearchResult(
+            $response['result']['total'],
+            $response['result']['hits'],
+            $scrollId
+        );
     }
 
     /**
@@ -413,6 +513,8 @@ class Security
             'body' => $filters
         ];
 
+        $scrollId = null;
+
         $response = $this->kuzzle->query(
             $this->buildQueryArgs('searchProfiles'),
             $data,
@@ -423,7 +525,11 @@ class Security
             return new Profile($this, $profile['_id'], $profile['_source']);
         }, $response['result']['hits']);
 
-        return new ProfilesSearchResult($response['result']['total'], $response['result']['hits']);
+        if (isset($response['result']['scrollId'])) {
+            $scrollId = $response['result']['scrollId'];
+        }
+
+        return new ProfilesSearchResult($response['result']['total'], $response['result']['hits'], $scrollId);
     }
 
     /**
@@ -465,6 +571,8 @@ class Security
             'body' => $filters
         ];
 
+        $scrollId = null;
+
         $response = $this->kuzzle->query(
             $this->buildQueryArgs('searchUsers'),
             $data,
@@ -475,22 +583,26 @@ class Security
             return new User($this, $user['_id'], $user['_source']);
         }, $response['result']['hits']);
 
-        return new UsersSearchResult($response['result']['total'], $response['result']['hits']);
+        if (isset($response['result']['scrollId'])) {
+            $scrollId = $response['result']['scrollId'];
+        }
+
+        return new UsersSearchResult($response['result']['total'], $response['result']['hits'], $scrollId);
     }
 
     /**
      * Performs a partial update on an existing profile.
      *
      * @param string $id Unique profile identifier
-     * @param array $content Data representing the profile
+     * @param array $policies List of policies to apply to this profile
      * @param array $options Optional arguments
      * @return Profile
      */
-    public function updateProfile($id, array $content, array $options = [])
+    public function updateProfile($id, array $policies, array $options = [])
     {
         $data = [
             '_id' => $id,
-            'body' => $content
+            'body' => [ 'policies' => $policies ]
         ];
 
         $response = $this->kuzzle->query(
@@ -565,5 +677,147 @@ class Security
     public function buildQueryArgs($action)
     {
         return $this->kuzzle->buildQueryArgs('security', $action);
+    }
+
+    /**
+     * Create credentials of the specified <strategy> for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function createCredentials($strategy, $kuid, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+
+        return $this->kuzzle->query($this->buildQueryArgs('createCredentials'), ['body' => $credentials], $options)['result'];
+    }
+
+    /**
+     * Delete credentials of the specified <strategy> for the user <kuid> .
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param array $options
+     * @return mixed
+     */
+    public function deleteCredentials($strategy, $kuid, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+
+        return $this->kuzzle->query($this->buildQueryArgs('deleteCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Retrieve a list of accepted fields per authentication strategy.
+     *
+     * @param array $options
+     * @return mixed
+     */
+    public function getAllCredentialFields(array $options = [])
+    {
+        return $this->kuzzle->query($this->buildQueryArgs('getAllCredentialFields'), [], $options)['result'];
+    }
+
+    /**
+     * Retrieve the list of accepted field names by the specified <strategy>.
+     *
+     * @param $strategy
+     * @param array $options
+     * @return mixed
+     */
+    public function getCredentialFields($strategy, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+
+        return $this->kuzzle->query($this->buildQueryArgs('getCredentialFields'), [], $options)['result'];
+    }
+
+    /**
+     * Get credential information of the specified <strategy> for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param array $options
+     * @return mixed
+     */
+    public function getCredentials($strategy, $kuid, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('getCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Get credential information of the specified <strategyId> (storage key of the strategy) of the user.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param array $options
+     * @return mixed
+     */
+    public function getCredentialsById($strategy, $kuid, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('getCredentialsById'), [], $options)['result'];
+    }
+
+    /**
+     * Check the existence of the specified <strategy>'s credentials for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param array $options
+     * @return mixed
+     */
+    public function hasCredentials($strategy, $kuid, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('hasCredentials'), [], $options)['result'];
+    }
+
+    /**
+     * Updates credentials of the specified <strategy> for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function updateCredentials($strategy, $kuid, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('updateCredentials'), ["body" => $credentials], $options)['result'];
+    }
+
+    /**
+     * Validate credentials of the specified <strategy> for the user <kuid>.
+     *
+     * @param $strategy
+     * @param $kuid
+     * @param $credentials
+     * @param array $options
+     * @return mixed
+     */
+    public function validateCredentials($strategy, $kuid, $credentials, array $options = [])
+    {
+        $options['httpParams'][':strategy'] = $strategy;
+        $options['httpParams'][':kuid'] = $kuid;
+
+        return $this->kuzzle->query($this->buildQueryArgs('validateCredentials'), ["body" => $credentials], $options)['result'];
     }
 }

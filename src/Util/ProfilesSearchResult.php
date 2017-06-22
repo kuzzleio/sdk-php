@@ -4,6 +4,10 @@ namespace Kuzzle\Util;
 
 use Kuzzle\Security\Profile;
 
+/**
+ * Class ProfilesSearchResult
+ * @package Kuzzle\Util
+ */
 class ProfilesSearchResult
 {
     /**
@@ -21,11 +25,13 @@ class ProfilesSearchResult
      *
      * @param integer $total
      * @param Profile[] $profiles
+     * @param string|null $scrollId
      */
-    public function __construct($total, array $profiles)
+    public function __construct($total, array $profiles, $scrollId = null)
     {
         $this->total = $total;
         $this->profiles = $profiles;
+        $this->scrollId = $scrollId;
 
         return $this;
     }
@@ -44,5 +50,13 @@ class ProfilesSearchResult
     public function getProfiles()
     {
         return $this->profiles;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getScrollId()
+    {
+        return $this->scrollId;
     }
 }

@@ -27,7 +27,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/' . $roleId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createOrReplaceRole',
                 'requestId' => $requestId,
@@ -96,7 +96,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/' . $roleId . '/_update',
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'updateRole',
                 'requestId' => $requestId,
@@ -152,7 +152,7 @@ class RoleTest extends \PHPUnit_Framework_TestCase
             'route' => '/roles/' . $roleId,
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'deleteRole',
                 'requestId' => $requestId,

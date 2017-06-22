@@ -3,6 +3,7 @@
 namespace Kuzzle;
 
 use Kuzzle\Util\SearchResult;
+use InvalidArgumentException;
 
 /**
  * Class Collection
@@ -66,7 +67,7 @@ class Collection
         );
 
         $response['result']['hits'] = array_map(function ($document) {
-            return new Document($this, $document['_id'], $document['_source']);
+            return new Document($this, $document['_id'], $document['_source'], $document['_meta']);
         }, $response['result']['hits']);
 
 
@@ -79,7 +80,9 @@ class Collection
             $response['result']['total'],
             $response['result']['hits'],
             array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
-            ['filters' => $filters, 'options' => $options]
+            $options,
+            $filters,
+            array_key_exists('previous', $options) ? $options['previous'] : null
         );
     }
 
@@ -90,12 +93,17 @@ class Collection
      * @param array $options (optional) arguments
      * @param array $filters (optional) original filters
      * @return SearchResult
+     * @throws \Exception
      */
     public function scroll($scrollId, array $options = [], array $filters = [])
     {
         $options['httpParams'] = [':scrollId' => $scrollId];
 
         $data = [];
+
+        if (!$scrollId) {
+            throw new \Exception('Collection.scroll: scrollId is required');
+        }
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('document', 'scroll'),
@@ -104,7 +112,7 @@ class Collection
         );
 
         $response['result']['hits'] = array_map(function ($document) {
-            return new Document($this, $document['_id'], $document['_source']);
+            return new Document($this, $document['_id'], $document['_source'], $document['_meta']);
         }, $response['result']['hits']);
 
 
@@ -117,7 +125,9 @@ class Collection
             $response['result']['total'],
             $response['result']['hits'],
             array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
-            ['filters' => $filters, 'options' => $options]
+            $options,
+            $filters,
+            array_key_exists('previous', $options) ? $options['previous'] : null
         );
     }
 
@@ -169,14 +179,19 @@ class Collection
      * @param array $options Optional parameters
      *
      * @return Document
+     * @throws InvalidArgumentException
      */
     public function createDocument($document, $id = '', array $options = [])
     {
         $action = 'create';
         $data = [];
 
-        if (array_key_exists('updateIfExist', $options)) {
-            $action = $options['updateIfExist'] ? 'createOrReplace' : 'create';
+        if (array_key_exists('ifExist', $options)) {
+            if ($options['ifExist'] == 'replace') {
+                $action = 'createOrReplace';
+            } elseif ($options['ifExist'] != 'error') {
+                throw new InvalidArgumentException('Invalid "ifExist" option value: ' . $options['ifExist']);
+            }
         }
 
         if ($document instanceof Document) {
@@ -196,9 +211,10 @@ class Collection
         );
 
         $content = $response['result']['_source'];
+        $meta = $response['result']['_meta'];
         $content['_version'] = $response['result']['_version'];
 
-        return new Document($this, $response['result']['_id'], $content);
+        return new Document($this, $response['result']['_id'], $content, $meta);
     }
 
     /**
@@ -227,7 +243,7 @@ class Collection
             $data['_id'] = $filters;
             $action = 'delete';
         } else {
-            $data['body'] = $filters;
+            $data['body'] = ['query' => (object)$filters];
             $action = 'deleteByQuery';
         }
 
@@ -241,15 +257,60 @@ class Collection
     }
 
     /**
+     * Deletes the current specifications of this collection
+     *
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function deleteSpecifications(array $options = [])
+    {
+        $data = [
+            'index' => $this->index,
+            'collection' => $this->collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('collection', 'deleteSpecifications'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
      * Creates a new KuzzleDocument object, using its constructor.
      *
      * @param string $id Optional document unique ID
      * @param array $content Optional document content
+     * @param array $meta Document metadata
      * @return Document the newly created Kuzzle\Document object
      */
-    public function document($id = '', array $content = [])
+    public function document($id = '', array $content = [], array $meta = [])
     {
-        return new Document($this, $id, $content);
+        return new Document($this, $id, $content, $meta);
+    }
+
+    /**
+     * Returns a boolean indicating whether or not a document with provided ID exists.
+     *
+     * @param string $documentId
+     * @param array $options
+     * @return boolean
+     */
+    public function documentExists($documentId, array $options = [])
+    {
+        $data = [
+            '_id' => $documentId
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'exists'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
@@ -273,43 +334,9 @@ class Collection
 
         $content = $response['result']['_source'];
         $content['_version'] = $response['result']['_version'];
+        $meta = $response['result']['_meta'];
 
-        return new Document($this, $response['result']['_id'], $content);
-    }
-
-    /**
-     * Retrieves all documents stored in this data collection.
-     *
-     * @param array $options Optional parameters
-     * @return Document[] containing all documents objects
-     */
-    public function fetchAllDocuments(array $options = [])
-    {
-        $documents = [];
-        $filters = [];
-
-        if (!array_key_exists('from', $options)) {
-            $options['from'] = 0;
-        }
-
-        if (!array_key_exists('size', $options)) {
-            $options['size'] = 1000;
-        }
-
-        $searchResult = $this->search($filters, $options);
-
-        if ($searchResult->getTotal() > 10000) {
-            trigger_error('Usage of Kuzzle\\Collection::fetchAllDocuments will fetch more than 10 000 document. To avoid performance issues, please use Kuzzle\\Collection::search and Kuzzle\\Collection::scroll requests', E_USER_WARNING);
-        }
-
-        while ($searchResult) {
-            foreach ($searchResult->getDocuments() as $document) {
-                $documents[] = $document;
-            }
-            $searchResult = $searchResult->getNext();
-        }
-
-        return $documents;
+        return new Document($this, $response['result']['_id'], $content, $meta);
     }
 
     /**
@@ -321,6 +348,186 @@ class Collection
     public function getMapping(array $options = [])
     {
         return $this->collectionMapping()->refresh($options);
+    }
+
+    /**
+     * Retrieves the current specifications of this collection
+     *
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function getSpecifications(array $options = [])
+    {
+        $data = [
+            'index' => $this->index,
+            'collection' => $this->collection
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('collection', 'getSpecifications'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Create the provided documents
+     *
+     * @param array $documents Array of documents to create
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function mCreateDocument($documents, array $options = [])
+    {
+        if (!is_array($documents)) {
+            throw new InvalidArgumentException('Collection.mCreateDocument: documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $documents = array_map(function ($document) {
+            return $document instanceof Document ? $document->serialize() : $document;
+        }, $documents);
+
+        $data = ['body' => ['documents' => $documents]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mCreate'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Create or replace the provided documents
+     *
+     * @param array $documents Array of documents to create or replace
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function mCreateOrReplaceDocument($documents, array $options = [])
+    {
+        if (!is_array($documents)) {
+            throw new InvalidArgumentException('Collection.mCreateOrReplaceDocument: documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $documents = array_map(function ($document) {
+            return $document instanceof Document ? $document->serialize() : $document;
+        }, $documents);
+
+        $data = ['body' => ['documents' => $documents]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mCreateOrReplace'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Delete specific documents according to given IDs
+     *
+     * @param array $documentIds IDs of the documents to delete
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function mDeleteDocument($documentIds, array $options = [])
+    {
+        if (!is_array($documentIds)) {
+            throw new InvalidArgumentException('Collection.mDeleteDocument: documents parameter format is invalid (should be an array of document IDs)');
+        }
+
+        $data = ['body' => ['ids' => $documentIds]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mDelete'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Get specific documents according to given IDs
+     *
+     * @param array $documentIds IDs of the documents to retrieve
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function mGetDocument($documentIds, array $options = [])
+    {
+        if (!is_array($documentIds)) {
+            throw new InvalidArgumentException('Collection.mGetDocument: documents parameter format is invalid (should be an array of document IDs)');
+        }
+
+        $data = ['body' => ['ids' => $documentIds]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mGet'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Replace the provided documents
+     *
+     * @param array $documents Array of documents to replace
+     * @param array $options Optional parameters
+     */
+    public function mReplaceDocument($documents, array $options = [])
+    {
+        if (!is_array($documents)) {
+            throw new InvalidArgumentException('Collection.mReplaceDocument: documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $documents = array_map(function ($document) {
+            return $document instanceof Document ? $document->serialize() : $document;
+        }, $documents);
+
+        $data = ['body' => ['documents' => $documents]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mReplace'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Update the provided documents
+     *
+     * @param array $documents Array of documents to update
+     * @param array $options Optional parameters
+     */
+    public function mUpdateDocument($documents, array $options = [])
+    {
+        if (!is_array($documents)) {
+            throw new InvalidArgumentException('Collection.mUpdateDocument: documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $documents = array_map(function ($document) {
+            return $document instanceof Document ? $document->serialize() : $document;
+        }, $documents);
+
+        $data = ['body' => ['documents' => $documents]];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('document', 'mUpdate'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
@@ -373,8 +580,58 @@ class Collection
 
         $content = $response['result']['_source'];
         $content['_version'] = $response['result']['_version'];
+        $meta = $response['result']['_meta'];
 
-        return new Document($this, $response['result']['_id'], $content);
+        return new Document($this, $response['result']['_id'], $content, $meta);
+    }
+
+    /**
+     * Scrolls through specifications using the provided scrollId
+     *
+     * @param string $scrollId
+     * @param array $options Optional parameters
+     * @return mixed
+     * @throws \Exception
+     */
+    public function scrollSpecifications($scrollId, array $options = [])
+    {
+        if (!$scrollId) {
+            throw new \Exception('Collection.scrollSpecifications: scrollId is required');
+        }
+
+        $options['httpParams'] = [':scrollId' => $scrollId];
+
+        $data = [];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('collection', 'scrollSpecifications'),
+            $data,
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Searches specifications across indexes/collections according to the provided filters
+     *
+     * @param array $filters Optional filters in ElasticSearch Query DSL format
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function searchSpecifications(array $filters = [], array $options = [])
+    {
+        $data = [
+            'body' => ['query' => $filters]
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('collection', 'searchSpecifications'),
+            $data,
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
@@ -435,13 +692,72 @@ class Collection
         $queryArgs['route'] = '/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
         $queryArgs['method'] = 'put';
 
+        if (isset($options['retryOnConflict'])) {
+            $options['query_parameters']['retryOnConflict'] = $options['retryOnConflict'];
+            unset($options['retryOnConflict']);
+        }
+
         $response = $this->kuzzle->query(
             $queryArgs,
             $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 
+        unset($options['query_parameters']['retryOnConflict']);
+
         return (new Document($this, $response['result']['_id']))->refresh($options);
+    }
+
+    /**
+     * Updates the current specifications of this collection
+     *
+     * @param array $specifications Specifications content
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function updateSpecifications($specifications, array $options = [])
+    {
+        $data = [
+            'body' => [
+                $this->index => [
+                    $this->collection => $specifications
+                ]
+            ]
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('collection', 'updateSpecifications'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Validates the provided specifications
+     *
+     * @param array $specifications Specifications content
+     * @param array $options Optional parameters
+     * @return bool
+     */
+    public function validateSpecifications($specifications, array $options = [])
+    {
+        $data = [
+            'body' => [
+                $this->index => [
+                    $this->collection => $specifications
+                ]
+            ]
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('collection', 'validateSpecifications'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result']['valid'];
     }
 
     /**
