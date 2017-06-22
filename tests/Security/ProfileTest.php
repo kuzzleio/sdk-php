@@ -37,7 +37,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/' . $profileId,
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'createOrReplaceProfile',
                 'requestId' => $requestId,
@@ -120,7 +120,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/' . $profileId . '/_update',
             'method' => 'PUT',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'updateProfile',
                 'requestId' => $requestId,
@@ -175,7 +175,7 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
             'route' => '/profiles/' . $profileId,
             'method' => 'DELETE',
             'request' => [
-                'metadata' => [],
+                'volatile' => [],
                 'controller' => 'security',
                 'action' => 'deleteProfile',
                 'requestId' => $requestId,

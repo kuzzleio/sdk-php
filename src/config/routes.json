@@ -3,7 +3,7 @@
     "logout": {
       "name": "logout",
       "route": "/_logout",
-      "method": "get"
+      "method": "post"
     },
     "login": {
       "name": "login",
@@ -29,6 +29,31 @@
       "name": "updateSelf",
       "route": "/_updateSelf",
       "method": "put"
+    },
+    "createMyCredentials": {
+      "name": "createMyCredentials",
+      "route": "/credentials/:strategy/_me/_create",
+      "method": "post"
+    },
+    "deleteMyCredentials": {
+      "name": "deleteMyCredentials",
+      "route": "/credentials/:strategy/_me",
+      "method": "delete"
+    },
+    "getMyCredentials": {
+      "name": "getMyCredentials",
+      "route": "/credentials/:strategy/_me",
+      "method": "get"
+    },
+    "updateMyCredentials": {
+      "name": "updateMyCredentials",
+      "route": "/credentials/:strategy/_me/_update",
+      "method": "put"
+    },
+    "validateMyCredentials": {
+      "name": "validateMyCredentials",
+      "route": "/credentials/:strategy/_me/_validate",
+      "method": "post"
     }
   },
   "bulk": {
@@ -52,6 +77,11 @@
     "getSpecifications": {
       "name": "getSpecifications",
       "route": "/:index/:collection/_specifications",
+      "method": "get"
+    },
+    "scrollSpecifications": {
+      "name": "scrollSpecifications",
+      "route": "/validations/_scroll/:scrollId",
       "method": "get"
     },
     "searchSpecifications": {
@@ -93,6 +123,36 @@
       "name": "create",
       "route": "/:index/:collection",
       "method": "put"
+    },
+    "mCreate": {
+      "name": "mCreate",
+      "route": "/:index/:collection/_mCreate",
+      "method": "post"
+    },
+    "mCreateOrReplace": {
+      "name": "mCreateOrReplace",
+      "route": "/:index/:collection/_mCreateOrReplace",
+      "method": "put"
+    },
+    "mDelete": {
+      "name": "mDelete",
+      "route": "/:index/:collection/_mDelete",
+      "method": "delete"
+    },
+    "mGet": {
+      "name": "mGet",
+      "route": "/:index/:collection/_mGet",
+      "method": "post"
+    },
+    "mReplace": {
+      "name": "mReplace",
+      "route": "/:index/:collection/_mReplace",
+      "method": "put"
+    },
+    "mUpdate": {
+      "name": "mUpdate",
+      "route": "/:index/:collection/_mUpdate",
+      "method": "put"
     }
   },
   "document": {
@@ -104,6 +164,11 @@
     "scroll": {
       "name": "scroll",
       "route": "/_scroll/:scrollId",
+      "method": "get"
+    },
+    "exists": {
+      "name": "exists",
+      "route": "/:index/:collection/:_id/_exists",
       "method": "get"
     },
     "get": {
@@ -235,65 +300,25 @@
       "route": "/ms/_append/:_id",
       "method": "post"
     },
-    "asking": {
-      "name": "asking"
-    },
-    "auth": {
-      "name": "auth"
-    },
-    "bgrewriteaof": {
-      "name": "bgrewriteaof",
-      "route": "/ms/_bgrewriteaof",
-      "method": "post"
-    },
-    "bgsave": {
-      "name": "bgsave",
-      "route": "/ms/_bgsave",
-      "method": "post"
-    },
     "bitcount": {
-      "name": "bitcount"
-    },
-    "bitfield": {
-      "name": "bitfield"
+      "name": "bitcount",
+      "route": "/ms/_bitcount/:_id",
+      "method": "get"
     },
     "bitop": {
       "name": "bitop",
-      "route": "/ms/_bitop/:operation/:destkey",
+      "route": "/ms/_bitop/:_id",
       "method": "post"
     },
     "bitpos": {
       "name": "bitpos",
-      "route": "/ms/_bitpos/:_id/:bit",
+      "route": "/ms/_bitpos/:_id",
       "method": "get"
-    },
-    "blpop": {
-      "name": "blpop",
-      "route": "/ms/_blpop/:_id",
-      "method": "post"
-    },
-    "brpop": {
-      "name": "brpop",
-      "route": "/ms/_brpop/:_id",
-      "method": "post"
-    },
-    "brpoplpush": {
-      "name": "brpoplpush",
-      "route": "/ms/_brpoplpush",
-      "method": "post"
-    },
-    "command": {
-      "name": "command"
     },
     "dbsize": {
       "name": "dbsize",
       "route": "/ms/_dbsize",
       "method": "get"
-    },
-    "decr": {
-      "name": "decr",
-      "route": "/ms/_decr/:_id",
-      "method": "post"
     },
     "decrby": {
       "name": "decrby",
@@ -304,26 +329,6 @@
       "name": "del",
       "route": "/ms",
       "method": "delete"
-    },
-    "discard": {
-      "name": "discard",
-      "route": "/ms/_discard",
-      "method": "post"
-    },
-    "dump": {
-      "name": "dump",
-      "route": "/ms/_dump/:_id",
-      "method": "get"
-    },
-    "exec": {
-      "name": "exec",
-      "route": "/ms/_exec",
-      "method": "post"
-    },
-    "exists": {
-      "name": "exists",
-      "route": "/ms/_exists/:_id",
-      "method": "get"
     },
     "expire": {
       "name": "expire",
@@ -352,12 +357,7 @@
     },
     "geohash": {
       "name": "geohash",
-      "route": "/ms/_geohash/:_id/:member",
-      "method": "get"
-    },
-    "geopos": {
-      "name": "geopos",
-      "route": "/ms/_geopos/:_id/:member",
+      "route": "/ms/_geohash/:_id",
       "method": "get"
     },
     "georadius": {
@@ -370,42 +370,29 @@
       "route": "/ms/_georadiusbymember/:_id",
       "method": "get"
     },
-    "get": {
-      "name": "get",
-      "route": "/ms/:_id",
-      "method": "get"
-    },
     "getbit": {
       "name": "getbit",
-      "route": "/ms/_getbit/:_id/:offset",
+      "route": "/ms/_getbit/:_id",
       "method": "get"
     },
     "getrange": {
       "name": "getrange",
-      "route": "/ms/_getrange/:_id/:start/:end",
+      "route": "/ms/_getrange/:_id",
       "method": "get"
-    },
-    "getset": {
-      "name": "getset",
-      "route": "/ms/_getset/:_id",
-      "method": "post"
     },
     "hdel": {
       "name": "hdel",
       "route": "/ms/_hdel/:_id",
       "method": "delete"
     },
-    "hexists": {
-      "name": "hexists"
-    },
-    "hget": {
-      "name": "hget",
-      "route": "/ms/_hget/:_id/:field",
+    "hmget": {
+      "name": "hmget",
+      "route": "/ms/_hmget/:_id",
       "method": "get"
     },
-    "hgetall": {
-      "name": "hgetall",
-      "route": "/ms/_hgetall/:_id",
+    "hexists": {
+      "name": "hexists",
+      "route": "/ms/_hexists/:_id/:field",
       "method": "get"
     },
     "hincrby": {
@@ -413,42 +400,14 @@
       "route": "/ms/_hincrby/:_id",
       "method": "post"
     },
-    "hincrbyfloat": {
-      "name": "hincrbyfloat",
-      "route": "/ms/_hincrbyfloat/:_id",
-      "method": "post"
-    },
-    "hkeys": {
-      "name": "hkeys",
-      "route": "/ms/_hkeys/:_id",
-      "method": "get"
-    },
-    "hlen": {
-      "name": "hlen",
-      "route": "/ms/_hlen/:_id",
-      "method": "get"
-    },
-    "hmget": {
-      "name": "hmget",
-      "route": "/ms/_hmget/:_id/:field",
-      "method": "get"
-    },
     "hmset": {
       "name": "hmset",
       "route": "/ms/_hmset/:_id",
       "method": "post"
     },
-    "host:": {
-      "name": "host:"
-    },
     "hset": {
       "name": "hset",
       "route": "/ms/_hset/:_id",
-      "method": "post"
-    },
-    "hsetnx": {
-      "name": "hsetnx",
-      "route": "/ms/_hsetnx/:_id",
       "method": "post"
     },
     "hstrlen": {
@@ -456,47 +415,14 @@
       "route": "/ms/_hstrlen/:_id/:field",
       "method": "get"
     },
-    "hvals": {
-      "name": "hvals",
-      "route": "/ms/_hvals/:_id",
-      "method": "get"
-    },
-    "incr": {
-      "name": "incr",
-      "route": "/ms/_incr/:_id",
-      "method": "post"
-    },
-    "incrby": {
-      "name": "incrby",
-      "route": "/ms/_incrby/:_id",
-      "method": "post"
-    },
-    "incrbyfloat": {
-      "name": "incrbyfloat",
-      "route": "/ms/_incrbyfloat/:_id",
-      "method": "post"
-    },
-    "info": {
-      "name": "info",
-      "route": "/ms/_info",
-      "method": "get"
-    },
     "keys": {
       "name": "keys",
       "route": "/ms/_keys/:pattern",
       "method": "get"
     },
-    "lastsave": {
-      "name": "lastsave",
-      "route": "/ms/_lastsave",
-      "method": "get"
-    },
-    "latency": {
-      "name": "latency"
-    },
     "lindex": {
       "name": "lindex",
-      "route": "/ms/_lindex/:_id/:idx",
+      "route": "/ms/_lindex/:_id/:index",
       "method": "get"
     },
     "linsert": {
@@ -504,29 +430,14 @@
       "route": "/ms/_linsert/:_id",
       "method": "post"
     },
-    "llen": {
-      "name": "llen",
-      "route": "/ms/_llen/:_id",
-      "method": "get"
-    },
-    "lpop": {
-      "name": "lpop",
-      "route": "/ms/_lpop/:_id",
-      "method": "post"
-    },
     "lpush": {
       "name": "lpush",
       "route": "/ms/_lpush/:_id",
       "method": "post"
     },
-    "lpushx": {
-      "name": "lpushx",
-      "route": "/ms/_lpushx/:_id",
-      "method": "post"
-    },
     "lrange": {
       "name": "lrange",
-      "route": "/ms/_lrange/:_id/:start/:stop",
+      "route": "/ms/_lrange/:_id",
       "method": "get"
     },
     "lrem": {
@@ -544,41 +455,20 @@
       "route": "/ms/_ltrim/:_id",
       "method": "post"
     },
-    "memory": {
-      "name": "memory"
-    },
     "mget": {
       "name": "mget",
       "route": "/ms/_mget",
       "method": "get"
-    },
-    "module": {
-      "name": "module"
     },
     "mset": {
       "name": "mset",
       "route": "/ms/_mset",
       "method": "post"
     },
-    "msetnx": {
-      "name": "msetnx",
-      "route": "/ms/_msetnx",
-      "method": "post"
-    },
-    "multi": {
-      "name": "multi",
-      "route": "/ms/_multi",
-      "method": "post"
-    },
     "object": {
       "name": "object",
-      "route": "/ms/_object",
+      "route": "/ms/_object/:_id",
       "method": "get"
-    },
-    "persist": {
-      "name": "persist",
-      "route": "/ms/_persist/:_id",
-      "method": "post"
     },
     "pexpire": {
       "name": "pexpire",
@@ -595,46 +485,19 @@
       "route": "/ms/_pfadd/:_id",
       "method": "post"
     },
-    "pfcount": {
-      "name": "pfcount",
-      "route": "/ms/_pfcount",
-      "method": "get"
-    },
-    "pfdebug": {
-      "name": "pfdebug"
-    },
     "pfmerge": {
       "name": "pfmerge",
-      "route": "/ms/_pfmerge",
+      "route": "/ms/_pfmerge/:_id",
       "method": "post"
-    },
-    "pfselftest": {
-      "name": "pfselftest"
     },
     "ping": {
       "name": "ping",
       "route": "/ms/_ping",
       "method": "get"
     },
-    "post": {
-      "name": "post"
-    },
     "psetex": {
       "name": "psetex",
-      "route": "/ms/_psetex",
-      "method": "post"
-    },
-    "psync": {
-      "name": "psync"
-    },
-    "pttl": {
-      "name": "pttl",
-      "route": "/ms/_pttl/:_id",
-      "method": "get"
-    },
-    "publish": {
-      "name": "publish",
-      "route": "/ms/_publish/:channel",
+      "route": "/ms/_psetex/:_id",
       "method": "post"
     },
     "randomkey": {
@@ -652,35 +515,9 @@
       "route": "/ms/_renamenx/:_id",
       "method": "post"
     },
-    "replconf": {
-      "name": "replconf"
-    },
-    "restore": {
-      "name": "restore",
-      "route": "/ms/_restore/:_id",
-      "method": "post"
-    },
-    "restore-asking": {
-      "name": "restore-asking"
-    },
-    "rpop": {
-      "name": "rpop",
-      "route": "/ms/_rpop/:_id",
-      "method": "post"
-    },
     "rpoplpush": {
       "name": "rpoplpush",
       "route": "/ms/_rpoplpush",
-      "method": "post"
-    },
-    "rpush": {
-      "name": "rpush",
-      "route": "/ms/_rpush/:_id",
-      "method": "post"
-    },
-    "rpushx": {
-      "name": "rpushx",
-      "route": "/ms/_rpushx/:_id",
       "method": "post"
     },
     "sadd": {
@@ -688,14 +525,9 @@
       "route": "/ms/_sadd/:_id",
       "method": "post"
     },
-    "save": {
-      "name": "save",
-      "route": "/ms/_save",
-      "method": "post"
-    },
-    "scard": {
-      "name": "scard",
-      "route": "/ms/_scard/:_id",
+    "scan": {
+      "name": "scan",
+      "route": "/ms/_scan",
       "method": "get"
     },
     "sdiff": {
@@ -705,17 +537,12 @@
     },
     "sdiffstore": {
       "name": "sdiffstore",
-      "route": "/ms/_sdiffstore",
+      "route": "/ms/_sdiffstore/:_id",
       "method": "post"
     },
     "set": {
       "name": "set",
-      "route": "/ms/:_id",
-      "method": "post"
-    },
-    "setbit": {
-      "name": "setbit",
-      "route": "/ms/_setbit/:_id",
+      "route": "/ms/_set/:_id",
       "method": "post"
     },
     "setex": {
@@ -728,19 +555,9 @@
       "route": "/ms/_setnx/:_id",
       "method": "post"
     },
-    "setrange": {
-      "name": "setrange",
-      "route": "/ms/_setrange/:_id",
-      "method": "post"
-    },
-    "sinter": {
-      "name": "sinter",
-      "route": "/ms/_sinter/:_id",
-      "method": "get"
-    },
     "sinterstore": {
       "name": "sinterstore",
-      "route": "/ms/_sinterstore/:_id",
+      "route": "/ms/_sinterstore",
       "method": "post"
     },
     "sismember": {
@@ -748,14 +565,9 @@
       "route": "/ms/_sismember/:_id/:member",
       "method": "get"
     },
-    "smembers": {
-      "name": "smembers",
-      "route": "/ms/_smembers/:_id",
-      "method": "get"
-    },
     "smove": {
       "name": "smove",
-      "route": "/ms/_smove",
+      "route": "/ms/_smove/:_id",
       "method": "post"
     },
     "sort": {
@@ -778,26 +590,20 @@
       "route": "/ms/_srem/:_id",
       "method": "delete"
     },
-    "strlen": {
-      "name": "strlen",
-      "route": "/ms/_strlen/:_id",
+    "sscan": {
+      "name": "sscan",
+      "route": "/ms/_sscan/:_id",
       "method": "get"
-    },
-    "substr": {
-      "name": "substr"
     },
     "sunion": {
       "name": "sunion",
-      "route": "/ms/_sunion/:_id",
-      "method": "post"
+      "route": "/ms/_sunion",
+      "method": "get"
     },
     "sunionstore": {
       "name": "sunionstore",
-      "route": "/ms/_sunionstore/:_id",
+      "route": "/ms/_sunionstore",
       "method": "post"
-    },
-    "swapdb": {
-      "name": "swapdb"
     },
     "time": {
       "name": "time",
@@ -805,43 +611,18 @@
       "method": "get"
     },
     "touch": {
-      "name": "touch"
-    },
-    "ttl": {
-      "name": "ttl",
-      "route": "/ms/_ttl/:_id",
-      "method": "get"
-    },
-    "type": {
-      "name": "type",
-      "route": "/ms/_type/:_id",
-      "method": "get"
-    },
-    "unlink": {
-      "name": "unlink"
-    },
-    "unwatch": {
-      "name": "unwatch"
-    },
-    "wait": {
-      "name": "wait"
-    },
-    "watch": {
-      "name": "watch"
+      "name": "touch",
+      "route": "/ms/_touch",
+      "method": "post"
     },
     "zadd": {
       "name": "zadd",
       "route": "/ms/_zadd/:_id",
       "method": "post"
     },
-    "zcard": {
-      "name": "zcard",
-      "route": "/ms/_zcard/:_id",
-      "method": "get"
-    },
     "zcount": {
       "name": "zcount",
-      "route": "/ms/_zcount/:_id/:min/:max",
+      "route": "/ms/_zcount/:_id",
       "method": "get"
     },
     "zincrby": {
@@ -851,32 +632,27 @@
     },
     "zinterstore": {
       "name": "zinterstore",
-      "route": "/ms/_zinterstore",
+      "route": "/ms/_zinterstore/:_id",
       "method": "post"
     },
     "zlexcount": {
       "name": "zlexcount",
-      "route": "/ms/_zlexcount/:_id/:min/:max",
+      "route": "/ms/_zlexcount/:_id",
       "method": "get"
     },
     "zrange": {
       "name": "zrange",
-      "route": "/ms/_zrange/:_id/:start/:stop",
+      "route": "/ms/_zrange/:_id",
       "method": "get"
     },
     "zrangebylex": {
       "name": "zrangebylex",
-      "route": "/ms/_zrangebylex/:_id/:min/:max",
+      "route": "/ms/_zrangebylex/:_id",
       "method": "get"
     },
     "zrangebyscore": {
       "name": "zrangebyscore",
-      "route": "/ms/_zrangebyscore/:_id/:min/:max",
-      "method": "get"
-    },
-    "zrank": {
-      "name": "zrank",
-      "route": "/ms/_zrank/:_id/:member",
+      "route": "/ms/_zrangebyscore/:_id",
       "method": "get"
     },
     "zrem": {
@@ -890,26 +666,23 @@
       "method": "delete"
     },
     "zremrangebyrank": {
-      "name": "zremrangebyrank"
+      "name": "zremrangebyrank",
+      "route": "/ms/_zremrangebyrank/:_id",
+      "method": "delete"
     },
     "zremrangebyscore": {
       "name": "zremrangebyscore",
       "route": "/ms/_zremrangebyscore/:_id",
       "method": "delete"
     },
-    "zrevrange": {
-      "name": "zrevrange",
-      "route": "/ms/_zrevrange/:_id/:start/:stop",
-      "method": "get"
-    },
     "zrevrangebylex": {
       "name": "zrevrangebylex",
-      "route": "/ms/_zrevrangebylex/:_id/:min/:max",
+      "route": "/ms/_zrevrangebylex/:_id",
       "method": "get"
     },
     "zrevrangebyscore": {
       "name": "zrevrangebyscore",
-      "route": "/ms/_zrevrangebyscore/:_id/:max/:min",
+      "route": "/ms/_zrevrangebyscore/:_id",
       "method": "get"
     },
     "zrevrank": {
@@ -917,18 +690,195 @@
       "route": "/ms/_zrevrank/:_id/:member",
       "method": "get"
     },
+    "zunionstore": {
+      "name": "zunionstore",
+      "route": "/ms/_zunionstore/:_id",
+      "method": "post"
+    },
+    "zcard": {
+      "name": "zcard",
+      "route": "/ms/_zcard/:_id",
+      "method": "get"
+    },
+    "type": {
+      "name": "type",
+      "route": "/ms/_type/:_id",
+      "method": "get"
+    },
+    "ttl": {
+      "name": "ttl",
+      "route": "/ms/_ttl/:_id",
+      "method": "get"
+    },
+    "strlen": {
+      "name": "strlen",
+      "route": "/ms/_strlen/:_id",
+      "method": "get"
+    },
+    "smembers": {
+      "name": "smembers",
+      "route": "/ms/_smembers/:_id",
+      "method": "get"
+    },
+    "scard": {
+      "name": "scard",
+      "route": "/ms/_scard/:_id",
+      "method": "get"
+    },
+    "rpop": {
+      "name": "rpop",
+      "route": "/ms/_rpop/:_id",
+      "method": "post"
+    },
+    "pttl": {
+      "name": "pttl",
+      "route": "/ms/_pttl/:_id",
+      "method": "get"
+    },
+    "persist": {
+      "name": "persist",
+      "route": "/ms/_persist/:_id",
+      "method": "post"
+    },
+    "lpop": {
+      "name": "lpop",
+      "route": "/ms/_lpop/:_id",
+      "method": "post"
+    },
+    "llen": {
+      "name": "llen",
+      "route": "/ms/_llen/:_id",
+      "method": "get"
+    },
+    "incr": {
+      "name": "incr",
+      "route": "/ms/_incr/:_id",
+      "method": "post"
+    },
+    "hvals": {
+      "name": "hvals",
+      "route": "/ms/_hvals/:_id",
+      "method": "get"
+    },
+    "hlen": {
+      "name": "hlen",
+      "route": "/ms/_hlen/:_id",
+      "method": "get"
+    },
+    "hkeys": {
+      "name": "hkeys",
+      "route": "/ms/_hkeys/:_id",
+      "method": "get"
+    },
+    "hgetall": {
+      "name": "hgetall",
+      "route": "/ms/_hgetall/:_id",
+      "method": "get"
+    },
+    "get": {
+      "name": "get",
+      "route": "/ms/:_id",
+      "method": "get"
+    },
+    "decr": {
+      "name": "decr",
+      "route": "/ms/_decr/:_id",
+      "method": "post"
+    },
+    "rpushx": {
+      "name": "rpushx",
+      "route": "/ms/_rpushx/:_id",
+      "method": "post"
+    },
+    "lpushx": {
+      "name": "lpushx",
+      "route": "/ms/_lpushx/:_id",
+      "method": "post"
+    },
+    "getset": {
+      "name": "getset",
+      "route": "/ms/_getset/:_id",
+      "method": "post"
+    },
+    "sinter": {
+      "name": "sinter",
+      "route": "/ms/_sinter",
+      "method": "get"
+    },
+    "pfcount": {
+      "name": "pfcount",
+      "route": "/ms/_pfcount",
+      "method": "get"
+    },
+    "incrbyfloat": {
+      "name": "incrbyfloat",
+      "route": "/ms/_incrbyfloat/:_id",
+      "method": "post"
+    },
+    "incrby": {
+      "name": "incrby",
+      "route": "/ms/_incrby/:_id",
+      "method": "post"
+    },
+    "geopos": {
+      "name": "geopos",
+      "route": "/ms/_geopos/:_id",
+      "method": "get"
+    },
+    "hget": {
+      "name": "hget",
+      "route": "/ms/_hget/:_id/:field",
+      "method": "get"
+    },
+    "hsetnx": {
+      "name": "hsetnx",
+      "route": "/ms/_hsetnx/:_id",
+      "method": "post"
+    },
+    "msetnx": {
+      "name": "msetnx",
+      "route": "/ms/_msetnx",
+      "method": "post"
+    },
+    "rpush": {
+      "name": "rpush",
+      "route": "/ms/_rpush/:_id",
+      "method": "post"
+    },
+    "hincrbyfloat": {
+      "name": "hincrbyfloat",
+      "route": "/ms/_hincrbyfloat/:_id",
+      "method": "post"
+    },
+    "zrevrange": {
+      "name": "zrevrange",
+      "route": "/ms/_zrevrange/:_id",
+      "method": "get"
+    },
+    "zrank": {
+      "name": "zrank",
+      "route": "/ms/_zrank/:_id/:member",
+      "method": "get"
+    },
     "zscore": {
       "name": "zscore",
       "route": "/ms/_zscore/:_id/:member",
       "method": "get"
     },
-    "zunionstore": {
-      "name": "zunionstore",
-      "route": "/ms/_zunionstore",
-      "method": "post"
+    "zscan": {
+      "name": "zscan",
+      "route": "/ms/_zscan/:_id",
+      "method": "get"
     },
-    "sentinel": {
-      "name": "sentinel"
+    "hscan": {
+      "name": "hscan",
+      "route": "/ms/_hscan/:_id",
+      "method": "get"
+    },
+    "exists": {
+      "name": "exists",
+      "route": "/ms/_exists",
+      "method": "get"
     }
   },
   "memoryStorage": {
@@ -937,65 +887,25 @@
       "route": "/ms/_append/:_id",
       "method": "post"
     },
-    "asking": {
-      "name": "asking"
-    },
-    "auth": {
-      "name": "auth"
-    },
-    "bgrewriteaof": {
-      "name": "bgrewriteaof",
-      "route": "/ms/_bgrewriteaof",
-      "method": "post"
-    },
-    "bgsave": {
-      "name": "bgsave",
-      "route": "/ms/_bgsave",
-      "method": "post"
-    },
     "bitcount": {
-      "name": "bitcount"
-    },
-    "bitfield": {
-      "name": "bitfield"
+      "name": "bitcount",
+      "route": "/ms/_bitcount/:_id",
+      "method": "get"
     },
     "bitop": {
       "name": "bitop",
-      "route": "/ms/_bitop/:operation/:destkey",
+      "route": "/ms/_bitop/:_id",
       "method": "post"
     },
     "bitpos": {
       "name": "bitpos",
-      "route": "/ms/_bitpos/:_id/:bit",
+      "route": "/ms/_bitpos/:_id",
       "method": "get"
-    },
-    "blpop": {
-      "name": "blpop",
-      "route": "/ms/_blpop/:_id",
-      "method": "post"
-    },
-    "brpop": {
-      "name": "brpop",
-      "route": "/ms/_brpop/:_id",
-      "method": "post"
-    },
-    "brpoplpush": {
-      "name": "brpoplpush",
-      "route": "/ms/_brpoplpush",
-      "method": "post"
-    },
-    "command": {
-      "name": "command"
     },
     "dbsize": {
       "name": "dbsize",
       "route": "/ms/_dbsize",
       "method": "get"
-    },
-    "decr": {
-      "name": "decr",
-      "route": "/ms/_decr/:_id",
-      "method": "post"
     },
     "decrby": {
       "name": "decrby",
@@ -1006,26 +916,6 @@
       "name": "del",
       "route": "/ms",
       "method": "delete"
-    },
-    "discard": {
-      "name": "discard",
-      "route": "/ms/_discard",
-      "method": "post"
-    },
-    "dump": {
-      "name": "dump",
-      "route": "/ms/_dump/:_id",
-      "method": "get"
-    },
-    "exec": {
-      "name": "exec",
-      "route": "/ms/_exec",
-      "method": "post"
-    },
-    "exists": {
-      "name": "exists",
-      "route": "/ms/_exists/:_id",
-      "method": "get"
     },
     "expire": {
       "name": "expire",
@@ -1054,12 +944,7 @@
     },
     "geohash": {
       "name": "geohash",
-      "route": "/ms/_geohash/:_id/:member",
-      "method": "get"
-    },
-    "geopos": {
-      "name": "geopos",
-      "route": "/ms/_geopos/:_id/:member",
+      "route": "/ms/_geohash/:_id",
       "method": "get"
     },
     "georadius": {
@@ -1072,42 +957,29 @@
       "route": "/ms/_georadiusbymember/:_id",
       "method": "get"
     },
-    "get": {
-      "name": "get",
-      "route": "/ms/:_id",
-      "method": "get"
-    },
     "getbit": {
       "name": "getbit",
-      "route": "/ms/_getbit/:_id/:offset",
+      "route": "/ms/_getbit/:_id",
       "method": "get"
     },
     "getrange": {
       "name": "getrange",
-      "route": "/ms/_getrange/:_id/:start/:end",
+      "route": "/ms/_getrange/:_id",
       "method": "get"
-    },
-    "getset": {
-      "name": "getset",
-      "route": "/ms/_getset/:_id",
-      "method": "post"
     },
     "hdel": {
       "name": "hdel",
       "route": "/ms/_hdel/:_id",
       "method": "delete"
     },
-    "hexists": {
-      "name": "hexists"
-    },
-    "hget": {
-      "name": "hget",
-      "route": "/ms/_hget/:_id/:field",
+    "hmget": {
+      "name": "hmget",
+      "route": "/ms/_hmget/:_id",
       "method": "get"
     },
-    "hgetall": {
-      "name": "hgetall",
-      "route": "/ms/_hgetall/:_id",
+    "hexists": {
+      "name": "hexists",
+      "route": "/ms/_hexists/:_id/:field",
       "method": "get"
     },
     "hincrby": {
@@ -1115,42 +987,14 @@
       "route": "/ms/_hincrby/:_id",
       "method": "post"
     },
-    "hincrbyfloat": {
-      "name": "hincrbyfloat",
-      "route": "/ms/_hincrbyfloat/:_id",
-      "method": "post"
-    },
-    "hkeys": {
-      "name": "hkeys",
-      "route": "/ms/_hkeys/:_id",
-      "method": "get"
-    },
-    "hlen": {
-      "name": "hlen",
-      "route": "/ms/_hlen/:_id",
-      "method": "get"
-    },
-    "hmget": {
-      "name": "hmget",
-      "route": "/ms/_hmget/:_id/:field",
-      "method": "get"
-    },
     "hmset": {
       "name": "hmset",
       "route": "/ms/_hmset/:_id",
       "method": "post"
     },
-    "host:": {
-      "name": "host:"
-    },
     "hset": {
       "name": "hset",
       "route": "/ms/_hset/:_id",
-      "method": "post"
-    },
-    "hsetnx": {
-      "name": "hsetnx",
-      "route": "/ms/_hsetnx/:_id",
       "method": "post"
     },
     "hstrlen": {
@@ -1158,47 +1002,14 @@
       "route": "/ms/_hstrlen/:_id/:field",
       "method": "get"
     },
-    "hvals": {
-      "name": "hvals",
-      "route": "/ms/_hvals/:_id",
-      "method": "get"
-    },
-    "incr": {
-      "name": "incr",
-      "route": "/ms/_incr/:_id",
-      "method": "post"
-    },
-    "incrby": {
-      "name": "incrby",
-      "route": "/ms/_incrby/:_id",
-      "method": "post"
-    },
-    "incrbyfloat": {
-      "name": "incrbyfloat",
-      "route": "/ms/_incrbyfloat/:_id",
-      "method": "post"
-    },
-    "info": {
-      "name": "info",
-      "route": "/ms/_info",
-      "method": "get"
-    },
     "keys": {
       "name": "keys",
       "route": "/ms/_keys/:pattern",
       "method": "get"
     },
-    "lastsave": {
-      "name": "lastsave",
-      "route": "/ms/_lastsave",
-      "method": "get"
-    },
-    "latency": {
-      "name": "latency"
-    },
     "lindex": {
       "name": "lindex",
-      "route": "/ms/_lindex/:_id/:idx",
+      "route": "/ms/_lindex/:_id/:index",
       "method": "get"
     },
     "linsert": {
@@ -1206,29 +1017,14 @@
       "route": "/ms/_linsert/:_id",
       "method": "post"
     },
-    "llen": {
-      "name": "llen",
-      "route": "/ms/_llen/:_id",
-      "method": "get"
-    },
-    "lpop": {
-      "name": "lpop",
-      "route": "/ms/_lpop/:_id",
-      "method": "post"
-    },
     "lpush": {
       "name": "lpush",
       "route": "/ms/_lpush/:_id",
       "method": "post"
     },
-    "lpushx": {
-      "name": "lpushx",
-      "route": "/ms/_lpushx/:_id",
-      "method": "post"
-    },
     "lrange": {
       "name": "lrange",
-      "route": "/ms/_lrange/:_id/:start/:stop",
+      "route": "/ms/_lrange/:_id",
       "method": "get"
     },
     "lrem": {
@@ -1246,41 +1042,20 @@
       "route": "/ms/_ltrim/:_id",
       "method": "post"
     },
-    "memory": {
-      "name": "memory"
-    },
     "mget": {
       "name": "mget",
       "route": "/ms/_mget",
       "method": "get"
-    },
-    "module": {
-      "name": "module"
     },
     "mset": {
       "name": "mset",
       "route": "/ms/_mset",
       "method": "post"
     },
-    "msetnx": {
-      "name": "msetnx",
-      "route": "/ms/_msetnx",
-      "method": "post"
-    },
-    "multi": {
-      "name": "multi",
-      "route": "/ms/_multi",
-      "method": "post"
-    },
     "object": {
       "name": "object",
-      "route": "/ms/_object",
+      "route": "/ms/_object/:_id",
       "method": "get"
-    },
-    "persist": {
-      "name": "persist",
-      "route": "/ms/_persist/:_id",
-      "method": "post"
     },
     "pexpire": {
       "name": "pexpire",
@@ -1297,46 +1072,19 @@
       "route": "/ms/_pfadd/:_id",
       "method": "post"
     },
-    "pfcount": {
-      "name": "pfcount",
-      "route": "/ms/_pfcount",
-      "method": "get"
-    },
-    "pfdebug": {
-      "name": "pfdebug"
-    },
     "pfmerge": {
       "name": "pfmerge",
-      "route": "/ms/_pfmerge",
+      "route": "/ms/_pfmerge/:_id",
       "method": "post"
-    },
-    "pfselftest": {
-      "name": "pfselftest"
     },
     "ping": {
       "name": "ping",
       "route": "/ms/_ping",
       "method": "get"
     },
-    "post": {
-      "name": "post"
-    },
     "psetex": {
       "name": "psetex",
-      "route": "/ms/_psetex",
-      "method": "post"
-    },
-    "psync": {
-      "name": "psync"
-    },
-    "pttl": {
-      "name": "pttl",
-      "route": "/ms/_pttl/:_id",
-      "method": "get"
-    },
-    "publish": {
-      "name": "publish",
-      "route": "/ms/_publish/:channel",
+      "route": "/ms/_psetex/:_id",
       "method": "post"
     },
     "randomkey": {
@@ -1354,35 +1102,9 @@
       "route": "/ms/_renamenx/:_id",
       "method": "post"
     },
-    "replconf": {
-      "name": "replconf"
-    },
-    "restore": {
-      "name": "restore",
-      "route": "/ms/_restore/:_id",
-      "method": "post"
-    },
-    "restore-asking": {
-      "name": "restore-asking"
-    },
-    "rpop": {
-      "name": "rpop",
-      "route": "/ms/_rpop/:_id",
-      "method": "post"
-    },
     "rpoplpush": {
       "name": "rpoplpush",
       "route": "/ms/_rpoplpush",
-      "method": "post"
-    },
-    "rpush": {
-      "name": "rpush",
-      "route": "/ms/_rpush/:_id",
-      "method": "post"
-    },
-    "rpushx": {
-      "name": "rpushx",
-      "route": "/ms/_rpushx/:_id",
       "method": "post"
     },
     "sadd": {
@@ -1390,14 +1112,9 @@
       "route": "/ms/_sadd/:_id",
       "method": "post"
     },
-    "save": {
-      "name": "save",
-      "route": "/ms/_save",
-      "method": "post"
-    },
-    "scard": {
-      "name": "scard",
-      "route": "/ms/_scard/:_id",
+    "scan": {
+      "name": "scan",
+      "route": "/ms/_scan",
       "method": "get"
     },
     "sdiff": {
@@ -1407,17 +1124,12 @@
     },
     "sdiffstore": {
       "name": "sdiffstore",
-      "route": "/ms/_sdiffstore",
+      "route": "/ms/_sdiffstore/:_id",
       "method": "post"
     },
     "set": {
       "name": "set",
-      "route": "/ms/:_id",
-      "method": "post"
-    },
-    "setbit": {
-      "name": "setbit",
-      "route": "/ms/_setbit/:_id",
+      "route": "/ms/_set/:_id",
       "method": "post"
     },
     "setex": {
@@ -1430,19 +1142,9 @@
       "route": "/ms/_setnx/:_id",
       "method": "post"
     },
-    "setrange": {
-      "name": "setrange",
-      "route": "/ms/_setrange/:_id",
-      "method": "post"
-    },
-    "sinter": {
-      "name": "sinter",
-      "route": "/ms/_sinter/:_id",
-      "method": "get"
-    },
     "sinterstore": {
       "name": "sinterstore",
-      "route": "/ms/_sinterstore/:_id",
+      "route": "/ms/_sinterstore",
       "method": "post"
     },
     "sismember": {
@@ -1450,14 +1152,9 @@
       "route": "/ms/_sismember/:_id/:member",
       "method": "get"
     },
-    "smembers": {
-      "name": "smembers",
-      "route": "/ms/_smembers/:_id",
-      "method": "get"
-    },
     "smove": {
       "name": "smove",
-      "route": "/ms/_smove",
+      "route": "/ms/_smove/:_id",
       "method": "post"
     },
     "sort": {
@@ -1480,26 +1177,20 @@
       "route": "/ms/_srem/:_id",
       "method": "delete"
     },
-    "strlen": {
-      "name": "strlen",
-      "route": "/ms/_strlen/:_id",
+    "sscan": {
+      "name": "sscan",
+      "route": "/ms/_sscan/:_id",
       "method": "get"
-    },
-    "substr": {
-      "name": "substr"
     },
     "sunion": {
       "name": "sunion",
-      "route": "/ms/_sunion/:_id",
-      "method": "post"
+      "route": "/ms/_sunion",
+      "method": "get"
     },
     "sunionstore": {
       "name": "sunionstore",
-      "route": "/ms/_sunionstore/:_id",
+      "route": "/ms/_sunionstore",
       "method": "post"
-    },
-    "swapdb": {
-      "name": "swapdb"
     },
     "time": {
       "name": "time",
@@ -1507,43 +1198,18 @@
       "method": "get"
     },
     "touch": {
-      "name": "touch"
-    },
-    "ttl": {
-      "name": "ttl",
-      "route": "/ms/_ttl/:_id",
-      "method": "get"
-    },
-    "type": {
-      "name": "type",
-      "route": "/ms/_type/:_id",
-      "method": "get"
-    },
-    "unlink": {
-      "name": "unlink"
-    },
-    "unwatch": {
-      "name": "unwatch"
-    },
-    "wait": {
-      "name": "wait"
-    },
-    "watch": {
-      "name": "watch"
+      "name": "touch",
+      "route": "/ms/_touch",
+      "method": "post"
     },
     "zadd": {
       "name": "zadd",
       "route": "/ms/_zadd/:_id",
       "method": "post"
     },
-    "zcard": {
-      "name": "zcard",
-      "route": "/ms/_zcard/:_id",
-      "method": "get"
-    },
     "zcount": {
       "name": "zcount",
-      "route": "/ms/_zcount/:_id/:min/:max",
+      "route": "/ms/_zcount/:_id",
       "method": "get"
     },
     "zincrby": {
@@ -1553,32 +1219,27 @@
     },
     "zinterstore": {
       "name": "zinterstore",
-      "route": "/ms/_zinterstore",
+      "route": "/ms/_zinterstore/:_id",
       "method": "post"
     },
     "zlexcount": {
       "name": "zlexcount",
-      "route": "/ms/_zlexcount/:_id/:min/:max",
+      "route": "/ms/_zlexcount/:_id",
       "method": "get"
     },
     "zrange": {
       "name": "zrange",
-      "route": "/ms/_zrange/:_id/:start/:stop",
+      "route": "/ms/_zrange/:_id",
       "method": "get"
     },
     "zrangebylex": {
       "name": "zrangebylex",
-      "route": "/ms/_zrangebylex/:_id/:min/:max",
+      "route": "/ms/_zrangebylex/:_id",
       "method": "get"
     },
     "zrangebyscore": {
       "name": "zrangebyscore",
-      "route": "/ms/_zrangebyscore/:_id/:min/:max",
-      "method": "get"
-    },
-    "zrank": {
-      "name": "zrank",
-      "route": "/ms/_zrank/:_id/:member",
+      "route": "/ms/_zrangebyscore/:_id",
       "method": "get"
     },
     "zrem": {
@@ -1592,26 +1253,23 @@
       "method": "delete"
     },
     "zremrangebyrank": {
-      "name": "zremrangebyrank"
+      "name": "zremrangebyrank",
+      "route": "/ms/_zremrangebyrank/:_id",
+      "method": "delete"
     },
     "zremrangebyscore": {
       "name": "zremrangebyscore",
       "route": "/ms/_zremrangebyscore/:_id",
       "method": "delete"
     },
-    "zrevrange": {
-      "name": "zrevrange",
-      "route": "/ms/_zrevrange/:_id/:start/:stop",
-      "method": "get"
-    },
     "zrevrangebylex": {
       "name": "zrevrangebylex",
-      "route": "/ms/_zrevrangebylex/:_id/:min/:max",
+      "route": "/ms/_zrevrangebylex/:_id",
       "method": "get"
     },
     "zrevrangebyscore": {
       "name": "zrevrangebyscore",
-      "route": "/ms/_zrevrangebyscore/:_id/:max/:min",
+      "route": "/ms/_zrevrangebyscore/:_id",
       "method": "get"
     },
     "zrevrank": {
@@ -1619,18 +1277,195 @@
       "route": "/ms/_zrevrank/:_id/:member",
       "method": "get"
     },
+    "zunionstore": {
+      "name": "zunionstore",
+      "route": "/ms/_zunionstore/:_id",
+      "method": "post"
+    },
+    "zcard": {
+      "name": "zcard",
+      "route": "/ms/_zcard/:_id",
+      "method": "get"
+    },
+    "type": {
+      "name": "type",
+      "route": "/ms/_type/:_id",
+      "method": "get"
+    },
+    "ttl": {
+      "name": "ttl",
+      "route": "/ms/_ttl/:_id",
+      "method": "get"
+    },
+    "strlen": {
+      "name": "strlen",
+      "route": "/ms/_strlen/:_id",
+      "method": "get"
+    },
+    "smembers": {
+      "name": "smembers",
+      "route": "/ms/_smembers/:_id",
+      "method": "get"
+    },
+    "scard": {
+      "name": "scard",
+      "route": "/ms/_scard/:_id",
+      "method": "get"
+    },
+    "rpop": {
+      "name": "rpop",
+      "route": "/ms/_rpop/:_id",
+      "method": "post"
+    },
+    "pttl": {
+      "name": "pttl",
+      "route": "/ms/_pttl/:_id",
+      "method": "get"
+    },
+    "persist": {
+      "name": "persist",
+      "route": "/ms/_persist/:_id",
+      "method": "post"
+    },
+    "lpop": {
+      "name": "lpop",
+      "route": "/ms/_lpop/:_id",
+      "method": "post"
+    },
+    "llen": {
+      "name": "llen",
+      "route": "/ms/_llen/:_id",
+      "method": "get"
+    },
+    "incr": {
+      "name": "incr",
+      "route": "/ms/_incr/:_id",
+      "method": "post"
+    },
+    "hvals": {
+      "name": "hvals",
+      "route": "/ms/_hvals/:_id",
+      "method": "get"
+    },
+    "hlen": {
+      "name": "hlen",
+      "route": "/ms/_hlen/:_id",
+      "method": "get"
+    },
+    "hkeys": {
+      "name": "hkeys",
+      "route": "/ms/_hkeys/:_id",
+      "method": "get"
+    },
+    "hgetall": {
+      "name": "hgetall",
+      "route": "/ms/_hgetall/:_id",
+      "method": "get"
+    },
+    "get": {
+      "name": "get",
+      "route": "/ms/:_id",
+      "method": "get"
+    },
+    "decr": {
+      "name": "decr",
+      "route": "/ms/_decr/:_id",
+      "method": "post"
+    },
+    "rpushx": {
+      "name": "rpushx",
+      "route": "/ms/_rpushx/:_id",
+      "method": "post"
+    },
+    "lpushx": {
+      "name": "lpushx",
+      "route": "/ms/_lpushx/:_id",
+      "method": "post"
+    },
+    "getset": {
+      "name": "getset",
+      "route": "/ms/_getset/:_id",
+      "method": "post"
+    },
+    "sinter": {
+      "name": "sinter",
+      "route": "/ms/_sinter",
+      "method": "get"
+    },
+    "pfcount": {
+      "name": "pfcount",
+      "route": "/ms/_pfcount",
+      "method": "get"
+    },
+    "incrbyfloat": {
+      "name": "incrbyfloat",
+      "route": "/ms/_incrbyfloat/:_id",
+      "method": "post"
+    },
+    "incrby": {
+      "name": "incrby",
+      "route": "/ms/_incrby/:_id",
+      "method": "post"
+    },
+    "geopos": {
+      "name": "geopos",
+      "route": "/ms/_geopos/:_id",
+      "method": "get"
+    },
+    "hget": {
+      "name": "hget",
+      "route": "/ms/_hget/:_id/:field",
+      "method": "get"
+    },
+    "hsetnx": {
+      "name": "hsetnx",
+      "route": "/ms/_hsetnx/:_id",
+      "method": "post"
+    },
+    "msetnx": {
+      "name": "msetnx",
+      "route": "/ms/_msetnx",
+      "method": "post"
+    },
+    "rpush": {
+      "name": "rpush",
+      "route": "/ms/_rpush/:_id",
+      "method": "post"
+    },
+    "hincrbyfloat": {
+      "name": "hincrbyfloat",
+      "route": "/ms/_hincrbyfloat/:_id",
+      "method": "post"
+    },
+    "zrevrange": {
+      "name": "zrevrange",
+      "route": "/ms/_zrevrange/:_id",
+      "method": "get"
+    },
+    "zrank": {
+      "name": "zrank",
+      "route": "/ms/_zrank/:_id/:member",
+      "method": "get"
+    },
     "zscore": {
       "name": "zscore",
       "route": "/ms/_zscore/:_id/:member",
       "method": "get"
     },
-    "zunionstore": {
-      "name": "zunionstore",
-      "route": "/ms/_zunionstore",
-      "method": "post"
+    "zscan": {
+      "name": "zscan",
+      "route": "/ms/_zscan/:_id",
+      "method": "get"
     },
-    "sentinel": {
-      "name": "sentinel"
+    "hscan": {
+      "name": "hscan",
+      "route": "/ms/_hscan/:_id",
+      "method": "get"
+    },
+    "exists": {
+      "name": "exists",
+      "route": "/ms/_exists",
+      "method": "get"
     }
   },
   "realtime": {
@@ -1746,6 +1581,11 @@
       "route": "/profiles/:_id",
       "method": "delete"
     },
+    "scrollProfiles": {
+      "name": "scrollProfiles",
+      "route": "/profiles/_scroll/:scrollId",
+      "method": "get"
+    },
     "searchProfiles": {
       "name": "searchProfiles",
       "route": "/profiles/_search",
@@ -1776,6 +1616,11 @@
       "route": "/users/:_id",
       "method": "delete"
     },
+    "scrollUsers": {
+      "name": "scrollUsers",
+      "route": "/users/_scroll/:scrollId",
+      "method": "get"
+    },
     "createUser": {
       "name": "createUser",
       "route": "/users/:_id/_create",
@@ -1785,6 +1630,11 @@
       "name": "createRestrictedUser",
       "route": "/users/:_id/_createRestricted",
       "method": "post"
+    },
+    "replaceUser": {
+      "name": "replaceUser",
+      "route": "/users/:_id/_replace",
+      "method": "put"
     },
     "updateUser": {
       "name": "updateUser",
@@ -1824,6 +1674,51 @@
     "mDeleteUsers": {
       "name": "mDeleteUsers",
       "route": "/users/_mDelete",
+      "method": "post"
+    },
+    "createCredentials": {
+      "name": "createCredentials",
+      "route": "/credentials/:strategy/:kuid/_create",
+      "method": "post"
+    },
+    "deleteCredentials": {
+      "name": "deleteCredentials",
+      "route": "/credentials/:strategy/:kuid",
+      "method": "delete"
+    },
+    "getAllCredentialFields": {
+      "name": "getAllCredentialFields",
+      "route": "/credentials/_fields",
+      "method": "get"
+    },
+    "getCredentialFields": {
+      "name": "getCredentialFields",
+      "route": "/credentials/:strategy/_fields",
+      "method": "get"
+    },
+    "getCredentials": {
+      "name": "getCredentials",
+      "route": "/credentials/:strategy/:kuid",
+      "method": "get"
+    },
+    "getCredentialsById": {
+      "name": "getCredentialsById",
+      "route": "/credentials/:strategy/:kuid/_byId",
+      "method": "get"
+    },
+    "hasCredentials": {
+      "name": "hasCredentials",
+      "route": "/credentials/:strategy/:kuid/_exists",
+      "method": "get"
+    },
+    "updateCredentials": {
+      "name": "updateCredentials",
+      "route": "/credentials/:strategy/:kuid/_update",
+      "method": "put"
+    },
+    "validateCredentials": {
+      "name": "validateCredentials",
+      "route": "/credentials/:strategy/:kuid/_validate",
       "method": "post"
     }
   },

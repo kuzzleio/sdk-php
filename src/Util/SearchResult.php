@@ -9,8 +9,6 @@ use Kuzzle\Document;
 /**
  * Class SearchResult
  * @package Kuzzle\Util
- *
- * @todo: Implement Iterator interface
  */
 class SearchResult
 {
@@ -37,17 +35,17 @@ class SearchResult
     /**
      * @var array
      */
-    private $searchArgs = [];
+    private $options = [];
 
     /**
-     * @var SearchResult
+     * @var array
      */
-    private $previous = null;
+    private $filters = [];
 
     /**
-     * @var SearchResult
+     * @var int
      */
-    private $next = null;
+    private $fetchedDocuments = 0;
 
     /**
      * SearchResult constructor.
@@ -56,21 +54,20 @@ class SearchResult
      * @param integer $total
      * @param Document[] $documents
      * @param array $aggregations
-     * @param array $searchArgs
+     * @param array $options
+     * @param array $fiters
      * @param SearchResult $previous
+     * @internal param array $searchArgs
      */
-    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $searchArgs = [], SearchResult $previous = null)
+    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $options = [], array $fiters = [], SearchResult $previous = null)
     {
         $this->collection = $collection;
         $this->total = $total;
         $this->documents = $documents;
         $this->aggregations = $aggregations;
-        $this->searchArgs = $searchArgs;
-        $this->previous = $previous;
-
-        if ($this->previous instanceof SearchResult) {
-            $this->previous->setNext($this);
-        }
+        $this->options = $options;
+        $this->filters = $fiters;
+        $this->fetchedDocuments = count($documents) + ($previous instanceof SearchResult ? $previous->fetchedDocuments : 0);
 
         return $this;
     }
@@ -92,6 +89,14 @@ class SearchResult
     }
 
     /**
+     * @return Collection
+     */
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+
+    /**
      * @return array
      */
     public function getAggregations()
@@ -100,92 +105,78 @@ class SearchResult
     }
 
     /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilters()
+    {
+        return $this->filters;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFetchedDocuments()
+    {
+        return $this->fetchedDocuments;
+    }
+
+    /**
      * @return SearchResult
      */
-    public function getNext()
+    public function fetchNext()
     {
-        if (!$this->next) {
-            if (array_key_exists('scrollId', $this->searchArgs['options'])) {
-                // retrieve next results with scroll if original search use it
-                $options = $this->searchArgs['options'];
+        $searchResult = null;
 
-                if (array_key_exists('scroll', $this->searchArgs['filters'])) {
-                    $options['scroll'] = $this->searchArgs['filters']['scroll'];
-                }
-
-                // check if we need to scroll again to fetch all matching documents
-                $fetchedDocuments = count($this->documents);
-                $previous = $this;
-
-                while ($previous = $previous->getPrevious()) {
-                    $fetchedDocuments += count($previous->getDocuments());
-                }
-
-                if ($fetchedDocuments >= $this->getTotal()) {
-                    return null;
-                }
-
-                $searchResult = $this->collection->scroll(
-                    $options['scrollId'],
-                    $options,
-                    $this->searchArgs['filters']
-                );
-                $searchResult->setPrevious($this);
-
-                $this->next = $searchResult;
-            } else if (array_key_exists('from', $this->searchArgs['options']) && array_key_exists('size', $this->searchArgs['options'])) {
-                // retrieve next results with  from/size if original search use it
-                $filters = $this->searchArgs['filters'];
-                $this->searchArgs['options']['from'] += $this->searchArgs['options']['size'];
-
-                // check if we need to do next request to fetch all matching documents
-                if ($this->searchArgs['options']['from'] >= $this->getTotal()) {
-                    return null;
-                }
-
-                $searchResult = $this->collection->search($filters, $this->searchArgs['options']);
-                $searchResult->setPrevious($this);
-
-                $this->next = $searchResult;
+        if (array_key_exists('scrollId', $this->options)) {
+            // retrieve next results with scroll if original search use it
+            if ($this->fetchedDocuments >= $this->getTotal()) {
+                return null;
             }
+
+            $options = $this->options;
+            $options['previous'] = $this;
+
+            if (array_key_exists('from', $options)) {
+                unset($options['from']);
+            }
+
+            if (array_key_exists('size', $options)) {
+                unset($options['size']);
+            }
+
+            $searchResult = $this->collection->scroll(
+                $options['scrollId'],
+                $options,
+                $this->filters
+            );
+        } else if (array_key_exists('from', $this->options) && array_key_exists('size', $this->options)) {
+            // retrieve next results with  from/size if original search use it
+            $filters = $this->filters;
+            $options = $this->options;
+            $options['previous'] = $this;
+
+            $options['from'] += $options['size'];
+
+            // check if we need to do next request to fetch all matching documents
+            if ($options['from'] >= $this->getTotal()) {
+                return null;
+            }
+
+            $searchResult = $this->collection->search($filters, $options);
         }
 
-        if ($this->next instanceof SearchResult) {
-            return $this->next;
+        if ($searchResult && $searchResult instanceof SearchResult) {
+            return $searchResult;
         }
 
         throw new InvalidArgumentException('Unable to retrieve next results from search: missing scrollId or from/size options');
-    }
-
-    /**
-     * @return SearchResult
-     */
-    public function getPrevious()
-    {
-        return $this->previous;
-    }
-
-    /**
-     * @param SearchResult $previous
-     *
-     * @return $this
-     */
-    public function setPrevious(SearchResult $previous)
-    {
-        $this->previous = $previous;
-
-        return $this;
-    }
-
-    /**
-     * @param SearchResult $next
-     *
-     * @return $this
-     */
-    public function setNext(SearchResult $next)
-    {
-        $this->next = $next;
-
-        return $this;
     }
 }
