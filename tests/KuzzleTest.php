@@ -1279,7 +1279,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             '_source' => [
                 'profileIds' => ['admin'],
                 'foo' => 'bar'
-            ]
+            ],
+            '_meta' => []
         ];
         $httpResponse = [
             'error' => null,

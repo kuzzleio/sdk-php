@@ -854,7 +854,7 @@ class Kuzzle
             $options
         );
 
-        return new User($this->security(), $response['result']['_id'], $response['result']['_source']);
+        return new User($this->security(), $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**

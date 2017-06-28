@@ -30,18 +30,25 @@ abstract class Document
     protected $content;
 
     /**
+     * @var array The metadata of the document
+     */
+    protected $meta;
+
+    /**
      * Document constructor.
      *
      * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
      * @param string $id Unique document identifier
      * @param array $content Document content
-     * @return Document
+     * @param array $meta Document metadata
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [])
+    public function
+    __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
     {
         $this->security = $kuzzleSecurity;
         $this->id = $id;
         $this->content = $content;
+        $this->meta = $meta;
 
         return $this;
     }
@@ -67,6 +74,16 @@ abstract class Document
     public function getContent()
     {
         return $this->content;
+    }
+
+    /**
+     * Return the metadata of the SecurityDocument
+     *
+     * @return array
+     */
+    public function getMeta()
+    {
+        return $this->meta;
     }
 
     /**

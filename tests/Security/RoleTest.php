@@ -191,4 +191,25 @@ class RoleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($roleId, $result);
     }
+
+    function testGetMeta()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $metas = [
+            'createdAt' => '0123456789',
+            'author' => '-1'
+        ];
+
+        $security = new Security($kuzzle);
+        $role = new Role($security, 'foobar', [], $metas);
+
+        $this->assertEquals($role->getMeta(), $metas);
+    }
 }

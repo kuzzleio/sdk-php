@@ -34,6 +34,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $saveResponse = [
             '_id' => $profileId,
             '_source' => [ 'policies' => $policies ],
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -94,6 +95,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $saveResponse = [
             '_id' => $profileId,
             '_source' => [ 'policies' => $policies ],
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -161,6 +163,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $saveResponse = [
             '_id' => $roleId,
             '_source' => $roleContent,
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -225,6 +228,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $saveResponse = [
             '_id' => $roleId,
             '_source' => $roleContent,
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -288,6 +292,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $saveResponse = [
             '_id' => $userId,
             '_source' => $userContent,
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -345,6 +350,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $saveResponse = [
             '_id' => $userId,
             '_source' => $userContent,
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -403,6 +409,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $replaceResponse = [
             '_id' => $userId,
             '_source' => $userContent,
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -522,7 +529,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test',
                     '_source' => [
                         'foo' => 'bar'
-                    ]
+                    ],
+                    '_meta' => []
                 ]
             ],
             'scrollId' => $scrollId,
@@ -534,7 +542,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar'
-                    ]
+                    ],
+                    '_meta' => []
                 ]
             ],
             'total' => 2
@@ -676,7 +685,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test',
                     '_source' => [
                         'foo' => 'bar'
-                    ]
+                    ],
+                    '_meta' => []
                 ]
             ],
             'scrollId' => $scrollId,
@@ -688,7 +698,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar'
-                    ]
+                    ],
+                    '_meta' => []
                 ]
             ],
             'total' => 2
@@ -820,7 +831,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
         $getResponse = [
             '_id' => $profileId,
-            '_source' => $profileContent
+            '_source' => $profileContent,
+            '_meta' => []
         ];
         $httpResponse = [
             'error' => null,
@@ -882,7 +894,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
         $getResponse = [
             '_id' => $roleId,
-            '_source' => $roleContent
+            '_source' => $roleContent,
+            '_meta' => []
         ];
         $httpResponse = [
             'error' => null,
@@ -937,7 +950,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
         $getResponse = [
             '_id' => $userId,
-            '_source' => $userContent
+            '_source' => $userContent,
+            '_meta' => []
         ];
         $httpResponse = [
             'error' => null,
@@ -1100,7 +1114,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                                 'allowInternalIndex'=> true
                             ]
                         ]
-                    ]
+                    ],
+                    '_meta' => []
                 ],
                 1 => [
                     '_id' => 'test1',
@@ -1113,7 +1128,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                                 'allowInternalIndex'=> true
                             ]
                         ]
-                    ]
+                    ],
+                    '_meta' => []
                 ]
             ],
             'total' => 2
@@ -1192,7 +1208,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                                 ]
                             ]
                         ]
-                    ]
+                    ],
+                    '_meta' => []
                 ],
                 1 => [
                     '_id' => 'test1',
@@ -1206,7 +1223,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                                 ]
                             ]
                         ]
-                    ]
+                    ],
+                    '_meta' => []
                 ]
             ],
             'total' => 2
@@ -1278,14 +1296,16 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                     '_source' => [
                         'foo' => 'bar',
                         'profile' => 'default'
-                    ]
+                    ],
+                    '_meta' => [],
                 ],
                 1 => [
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar',
                         'profile' => 'default'
-                    ]
+                    ],
+                    '_meta' => [],
                 ]
             ],
             'total' => 2
@@ -1365,6 +1385,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $updateResponse = [
             '_id' => $profileId,
             '_source' => [ 'policies' => array_merge($policiesBase, $policies) ],
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -1432,6 +1453,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $updateResponse = [
             '_id' => $roleId,
             '_source' => array_merge($roleContent, $roleUpdateContent),
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
@@ -1463,7 +1485,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals(array_merge($roleContent, $roleUpdateContent), 'content', $result);
     }
 
-    function testUpdate()
+    function testUpdateUser()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -1493,6 +1515,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $updateResponse = [
             '_id' => $userId,
             '_source' => array_merge($userBaseContent, $userContent),
+            '_meta' => [],
             '_version' => 1
         ];
         $httpResponse = [
