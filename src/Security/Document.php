@@ -42,8 +42,7 @@ abstract class Document
      * @param array $content Document content
      * @param array $meta Document metadata
      */
-    public function
-    __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
+    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
     {
         $this->security = $kuzzleSecurity;
         $this->id = $id;
