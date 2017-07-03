@@ -20,11 +20,11 @@ class Role extends Document
      * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
      * @param string $id Unique role identifier
      * @param array $content Role content
-     * @return Role
+     * @param array $meta Role metadata
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [])
+    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
     {
-        parent::__construct($kuzzleSecurity, $id, $content);
+        parent::__construct($kuzzleSecurity, $id, $content, $meta);
 
         return $this;
     }

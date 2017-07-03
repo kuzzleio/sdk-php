@@ -52,7 +52,7 @@ class Security
     /**
      * Create a new profile in Kuzzle.
      *
-     * @param integer $id Unique profile identifier
+     * @param string $id Unique profile identifier
      * @param array $policies List of policies to apply to this profile
      * @param array $options Optional arguments
      * @return Profile
@@ -75,7 +75,7 @@ class Security
             $options
         );
 
-        return new Profile($this, $response['result']['_id'], $response['result']['_source']);
+        return new Profile($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -104,7 +104,7 @@ class Security
             $options
         );
 
-        return new Role($this, $response['result']['_id'], $response['result']['_source']);
+        return new Role($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -129,7 +129,7 @@ class Security
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source']);
+        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -154,7 +154,7 @@ class Security
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source']);
+        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -179,7 +179,7 @@ class Security
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source']);
+        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -233,7 +233,7 @@ class Security
         );
 
         $response['result']['hits'] = array_map(function ($document) {
-            return new Profile($this, $document['_id'], $document['_source']);
+            return new Profile($this, $document['_id'], $document['_source'], $document['_meta']);
         }, $response['result']['hits']);
 
         return new ProfilesSearchResult(
@@ -316,7 +316,7 @@ class Security
         );
 
         $response['result']['hits'] = array_map(function ($document) {
-            return new User($this, $document['_id'], $document['_source']);
+            return new User($this, $document['_id'], $document['_source'], $document['_meta']);
         }, $response['result']['hits']);
 
         return new UsersSearchResult(
@@ -345,7 +345,7 @@ class Security
             $options
         );
 
-        return new Profile($this, $response['result']['_id'], $response['result']['_source']);
+        return new Profile($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -367,7 +367,7 @@ class Security
             $options
         );
 
-        return new Role($this, $response['result']['_id'], $response['result']['_source']);
+        return new Role($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -389,7 +389,7 @@ class Security
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source']);
+        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -469,11 +469,12 @@ class Security
      *
      * @param string $id Unique profile identifier
      * @param array $content Profile content
+     * @param array $meta Profile metadata
      * @return Profile
      */
-    public function profile($id, array $content)
+    public function profile($id, array $content, array $meta = [])
     {
-        return new Profile($this, $id, $content);
+        return new Profile($this, $id, $content, $meta);
     }
 
     /**
@@ -481,11 +482,12 @@ class Security
      *
      * @param string $id Unique role identifier
      * @param array $content Role content
+     * @param array $meta Role metadata
      * @return Role
      */
-    public function role($id, array $content)
+    public function role($id, array $content, array $meta = [])
     {
-        return new Role($this, $id, $content);
+        return new Role($this, $id, $content, $meta);
     }
 
     /**
@@ -493,11 +495,12 @@ class Security
      *
      * @param string $id Unique user identifier
      * @param array $content User content
+     * @param array $meta User metadata
      * @return User
      */
-    public function user($id, array $content)
+    public function user($id, array $content, array $meta = [])
     {
-        return new User($this, $id, $content);
+        return new User($this, $id, $content, $meta);
     }
 
     /**
@@ -522,7 +525,7 @@ class Security
         );
 
         $response['result']['hits'] = array_map(function ($profile) {
-            return new Profile($this, $profile['_id'], $profile['_source']);
+            return new Profile($this, $profile['_id'], $profile['_source'], $profile['_meta']);
         }, $response['result']['hits']);
 
         if (isset($response['result']['scrollId'])) {
@@ -552,7 +555,7 @@ class Security
         );
 
         $response['result']['hits'] = array_map(function ($role) {
-            return new Role($this, $role['_id'], $role['_source']);
+            return new Role($this, $role['_id'], $role['_source'], $role['_meta']);
         }, $response['result']['hits']);
 
         return new RolesSearchResult($response['result']['total'], $response['result']['hits']);
@@ -580,7 +583,7 @@ class Security
         );
 
         $response['result']['hits'] = array_map(function ($user) {
-            return new User($this, $user['_id'], $user['_source']);
+            return new User($this, $user['_id'], $user['_source'], $user['_meta']);
         }, $response['result']['hits']);
 
         if (isset($response['result']['scrollId'])) {
@@ -611,7 +614,7 @@ class Security
             $options
         );
 
-        return new Profile($this, $id, $response['result']['_source']);
+        return new Profile($this, $id, $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -635,7 +638,7 @@ class Security
             $options
         );
 
-        return new Role($this, $id, $response['result']['_source']);
+        return new Role($this, $id, $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -659,7 +662,7 @@ class Security
             $options
         );
 
-        return new User($this, $id, $response['result']['_source']);
+        return new User($this, $id, $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**

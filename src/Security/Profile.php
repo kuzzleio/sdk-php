@@ -26,11 +26,11 @@ class Profile extends Document
      * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
      * @param string $id Unique profile identifier
      * @param array $content Profile content
-     * @return Profile
+     * @param array $meta Profile metadata
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [])
+    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
     {
-        parent::__construct($kuzzleSecurity, $id, $content);
+        parent::__construct($kuzzleSecurity, $id, $content, $meta);
 
         $this->syncPolicies();
 
