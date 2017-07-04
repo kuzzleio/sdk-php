@@ -424,16 +424,16 @@ class Kuzzle
             throw new InvalidArgumentException('Unable to login: no strategy specified');
         }
 
-        if (!empty($expiresIn)) {
-            $body['expiresIn'] = $expiresIn;
-        }
-
         if (!array_key_exists('httpParams', $options)) {
             $options['httpParams'] = [];
         }
 
         if (!array_key_exists(':strategy', $options['httpParams'])) {
             $options['httpParams'][':strategy'] = $strategy;
+        }
+
+        if (!empty($expiresIn)) {
+            $options['query_parameters']['expiresIn'] = $expiresIn;
         }
 
         $response = $this->query(
