@@ -812,12 +812,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'body' => [
                     'username' => $credentials['username'],
                     'password' => $credentials['password'],
-                    'expiresIn' => $expiresIn,
                 ],
                 'requestId' => $options['requestId']
             ],
             'method' => 'POST',
-            'query_parameters' => []
+            'query_parameters' => [
+              'expiresIn' => $expiresIn
+            ]
         ];
 
         // mock response
@@ -1327,7 +1328,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             ],
             'route' => '/foo/bar',
             'method' => 'POST',
-            'query_parameters' => []
+            'query_parameters' => ['foo' => 'bar']
         ];
 
         $body = json_encode($httpRequest['request']['body'], JSON_FORCE_OBJECT);
@@ -1341,7 +1342,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'Content-length: ' . strlen($body)
             ],
             'body' => $body,
-            'query_parameters' => []
+            'query_parameters' => ['foo' => 'bar']
         ];
 
         $reflection = new \ReflectionClass(get_class($kuzzle));
@@ -1505,7 +1506,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'body' => ['foo' => 'bar']
         ];
         $httpParams = [
-            ':custom' => 'custom-param'
+            ':custom' => 'custom-param',
+            'query_parameters' => ['foo' => 'bar']
         ];
 
         $expectedHttpRequest = [
@@ -1518,7 +1520,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'index' => $request['index'],
                 '_id' => $request['_id'],
                 'body' => $request['body']
-            ]
+            ],
+            'query_parameters' => ['foo' => 'bar']
         ];
 
         $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_HOST);
@@ -1527,14 +1530,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $convertRestRequest = $reflection->getMethod('convertRestRequest');
         $convertRestRequest->setAccessible(true);
 
-        try {
-            $httpRequest = $convertRestRequest->invokeArgs($kuzzle, [$request, $httpParams]);
+        $httpRequest = $convertRestRequest->invokeArgs($kuzzle, [$request, $httpParams]);
 
-            $this->assertEquals($expectedHttpRequest, $httpRequest);
-        }
-        catch (Exception $e) {
-            $this->fail("KuzzleTest::testConvertRestRequest => Should not raise an exception");
-        }
+        $this->assertEquals($expectedHttpRequest, $httpRequest);
     }
 
     public function testConvertRestRequestWithBadController()
