@@ -402,10 +402,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
     public function testGetServerInfo()
     {
-        /**
-         * @todo: missing server info http route in kuzzle
-         */
-        /*$url = self::FAKE_KUZZLE_HOST;
+        $url = self::FAKE_KUZZLE_HOST;
 
         $kuzzle = $this
             ->getMockBuilder('\Kuzzle\Kuzzle')
@@ -426,7 +423,8 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'volatile' => [],
                 'requestId' => $options['requestId']
             ],
-            'method' => 'GET'
+            'method' => 'GET',
+            'query_parameters' => []
         ];
 
         // mock response
@@ -444,7 +442,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         $response = $kuzzle->getServerInfo($options);
 
-        $this->assertEquals($getServerInfoResponse['serverInfo'], $response);*/
+        $this->assertEquals($getServerInfoResponse['serverInfo'], $response);
     }
 
     public function testGetLastStatistics()
@@ -1321,10 +1319,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_HOST, ['requestHandler' => $curlRequestHandler]);
 
+        $volatile = ['sdkVersion' => $kuzzle->getSdkVersion()];
+
         $httpRequest = [
             'request' => [
                 'headers' => ['authorization' => 'Bearer ' . uniqid()],
-                'body' => ['foo' => 'bar']
+                'body' => ['foo' => 'bar'],
+                'volatile' => $volatile
             ],
             'route' => '/foo/bar',
             'method' => 'POST',
@@ -1339,6 +1340,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'headers' => [
                 'Content-type: application/json',
                 'Authorization: ' . $httpRequest['request']['headers']['authorization'],
+                'X-Kuzzle-Volatile: ' . json_encode($volatile),
                 'Content-length: ' . strlen($body)
             ],
             'body' => $body,
@@ -1375,10 +1377,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
 
         $kuzzle = new \Kuzzle\Kuzzle(self::FAKE_KUZZLE_HOST, ['requestHandler' => $curlRequestHandler]);
 
+        $volatile = ['sdkVersion' => $kuzzle->getSdkVersion()];
+
         $httpRequest = [
             'request' => [
                 'headers' => ['authorization' => 'Bearer ' . uniqid()],
-                'body' => ['foo' => 'bar']
+                'body' => ['foo' => 'bar'],
+                'volatile' => $volatile
             ],
             'route' => '/foo/bar',
             'method' => 'POST',
@@ -1393,6 +1398,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'headers' => [
                 'Content-type: application/json',
                 'Authorization: ' . $httpRequest['request']['headers']['authorization'],
+                'X-Kuzzle-Volatile: ' . json_encode($volatile),
                 'Content-length: ' . strlen($body)
             ],
             'body' => $body,
@@ -1443,10 +1449,13 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $emitRestRequest = $reflection->getMethod('emitRestRequest');
         $emitRestRequest->setAccessible(true);
 
+        $volatile = ['sdkVersion' => $kuzzle->getSdkVersion()];
+
         $httpRequest = [
             'request' => [
                 'headers' => ['authorization' => 'Bearer ' . uniqid()],
-                'body' => ['foo' => 'bar']
+                'body' => ['foo' => 'bar'],
+                'volatile' => $volatile
             ],
             'route' => '/foo/bar',
             'method' => 'POST',
@@ -1461,6 +1470,7 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
             'headers' => [
                 'Content-type: application/json',
                 'Authorization: ' . $httpRequest['request']['headers']['authorization'],
+                'X-Kuzzle-Volatile: ' . json_encode($volatile),
                 'Content-length: ' . strlen($body)
             ],
             'body' => $body,
