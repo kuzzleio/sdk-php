@@ -257,6 +257,28 @@ class Collection
     }
 
     /**
+     * Deletes the current specifications of this collection
+     *
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function deleteSpecifications(array $options = [])
+    {
+        $data = [
+            'index' => $this->index,
+            'collection' => $this->collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('collection', 'deleteSpecifications'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
      * Creates a new KuzzleDocument object, using its constructor.
      *
      * @param string $id Optional document unique ID
@@ -326,6 +348,28 @@ class Collection
     public function getMapping(array $options = [])
     {
         return $this->collectionMapping()->refresh($options);
+    }
+
+    /**
+     * Retrieves the current specifications of this collection
+     *
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function getSpecifications(array $options = [])
+    {
+        $data = [
+            'index' => $this->index,
+            'collection' => $this->collection
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('collection', 'getSpecifications'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
@@ -542,6 +586,55 @@ class Collection
     }
 
     /**
+     * Scrolls through specifications using the provided scrollId
+     *
+     * @param string $scrollId
+     * @param array $options Optional parameters
+     * @return mixed
+     * @throws \Exception
+     */
+    public function scrollSpecifications($scrollId, array $options = [])
+    {
+        if (!$scrollId) {
+            throw new \Exception('Collection.scrollSpecifications: scrollId is required');
+        }
+
+        $options['httpParams'] = [':scrollId' => $scrollId];
+
+        $data = [];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('collection', 'scrollSpecifications'),
+            $data,
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Searches specifications across indexes/collections according to the provided filters
+     *
+     * @param array $filters Optional filters in ElasticSearch Query DSL format
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function searchSpecifications(array $filters = [], array $options = [])
+    {
+        $data = [
+            'body' => ['query' => $filters]
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('collection', 'searchSpecifications'),
+            $data,
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
      * This is a helper function returning itself, allowing to easily set headers while chaining calls.
      *
      * @param array $headers New content
@@ -613,6 +706,58 @@ class Collection
         unset($options['query_parameters']['retryOnConflict']);
 
         return (new Document($this, $response['result']['_id']))->refresh($options);
+    }
+
+    /**
+     * Updates the current specifications of this collection
+     *
+     * @param array $specifications Specifications content
+     * @param array $options Optional parameters
+     * @return mixed
+     */
+    public function updateSpecifications($specifications, array $options = [])
+    {
+        $data = [
+            'body' => [
+                $this->index => [
+                    $this->collection => $specifications
+                ]
+            ]
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('collection', 'updateSpecifications'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Validates the provided specifications
+     *
+     * @param array $specifications Specifications content
+     * @param array $options Optional parameters
+     * @return bool
+     */
+    public function validateSpecifications($specifications, array $options = [])
+    {
+        $data = [
+            'body' => [
+                $this->index => [
+                    $this->collection => $specifications
+                ]
+            ]
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->buildQueryArgs('collection', 'validateSpecifications'),
+            $this->kuzzle->addHeaders($data, $this->headers),
+            $options
+        );
+
+        return $response['result']['valid'];
     }
 
     /**

@@ -79,6 +79,12 @@ class Kuzzle
     protected $requestHandler;
 
     /**
+     * @var string
+     */
+    protected $sdkVersion;
+
+
+    /**
      * Kuzzle constructor.
      *
      * @param string $host Server name/IP address to the target Kuzzle instance
@@ -110,6 +116,8 @@ class Kuzzle
         $this->url = 'http://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
 
+        $this->sdkVersion = json_decode(file_get_contents('./composer.json'))->version;
+
         return $this;
     }
 
@@ -119,7 +127,8 @@ class Kuzzle
      *
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      * @param callable $listener The function to call each time one of the registered event is fired
-     * @return $this
+     *
+     * @return Kuzzle
      * @throws InvalidArgumentException
      */
     public function addListener($event, $listener)
@@ -141,7 +150,8 @@ class Kuzzle
      * Emit an event to all registered listeners
      *
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
-     * @return $this
+     *
+     * @return Kuzzle
      */
     public function emitEvent($event)
     {
@@ -152,6 +162,7 @@ class Kuzzle
                 call_user_func_array($callback, $arg_list);
             }
         }
+
         return $this;
     }
 
@@ -422,16 +433,16 @@ class Kuzzle
             throw new InvalidArgumentException('Unable to login: no strategy specified');
         }
 
-        if (!empty($expiresIn)) {
-            $body['expiresIn'] = $expiresIn;
-        }
-
         if (!array_key_exists('httpParams', $options)) {
             $options['httpParams'] = [];
         }
 
         if (!array_key_exists(':strategy', $options['httpParams'])) {
             $options['httpParams'][':strategy'] = $strategy;
+        }
+
+        if (!empty($expiresIn)) {
+            $options['query_parameters']['expiresIn'] = $expiresIn;
         }
 
         $response = $this->query(
@@ -822,6 +833,14 @@ class Kuzzle
     }
 
     /**
+     * @return string
+     */
+    public function getSdkVersion()
+    {
+        return $this->sdkVersion;
+    }
+
+    /**
      * Retrieves current user object.
      *
      * @param array $options (optional) arguments
@@ -835,7 +854,7 @@ class Kuzzle
             $options
         );
 
-        return new User($this->security(), $response['result']['_id'], $response['result']['_source']);
+        return new User($this->security(), $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -980,6 +999,7 @@ class Kuzzle
                 $headers[] = ucfirst($header) . ': ' . $value;
             }
         }
+        $headers[] = 'X-Kuzzle-Volatile: ' . json_encode(array_merge($this->getVolatile(), ['sdkVersion' => $this->getSdkVersion()]));
 
         if (array_key_exists('body', $httpRequest['request'])) {
             $body = json_encode($httpRequest['request']['body']);
