@@ -571,17 +571,10 @@ class Kuzzle
                 $httpParams['query_parameters'] = array_merge($httpParams['query_parameters'], $options['query_parameters']);
             }
 
-            if (array_key_exists('refresh', $options)) {
-                $httpParams['query_parameters']['refresh'] = $options['refresh'];
-            }
-            if (array_key_exists('from', $options)) {
-                $httpParams['query_parameters']['from'] = $options['from'];
-            }
-            if (array_key_exists('size', $options)) {
-                $httpParams['query_parameters']['size'] = $options['size'];
-            }
-            if (array_key_exists('scroll', $options)) {
-                $httpParams['query_parameters']['scroll'] = $options['scroll'];
+            foreach (['refresh', 'from', 'size', 'scroll'] as $optionParam) {
+                if (array_key_exists($optionParam, $options)) {
+                    $httpParams['query_parameters'][$optionParam] = $options[$optionParam];
+                }
             }
         }
 
@@ -613,20 +606,10 @@ class Kuzzle
             $request['headers']['authorization'] = 'Bearer ' . $this->jwtToken;
         }
 
-        if (array_key_exists('collection', $queryArgs)) {
-            $request['collection'] = $queryArgs['collection'];
-        }
-
-        if (array_key_exists('route', $queryArgs)) {
-            $request['route'] = $queryArgs['route'];
-        }
-
-        if (array_key_exists('method', $queryArgs)) {
-            $request['method'] = $queryArgs['method'];
-        }
-
-        if (array_key_exists('index', $queryArgs)) {
-            $request['index'] = $queryArgs['index'];
+        foreach (['collection', 'route', 'method', 'index'] as $queryArg) {
+            if (array_key_exists($queryArg, $queryArgs)) {
+                $request[$queryArg] = $queryArgs[$queryArg];
+            }
         }
 
         if (!array_key_exists('requestId', $request)) {
