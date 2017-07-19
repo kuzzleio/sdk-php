@@ -785,8 +785,8 @@ class Collection
     }
 
     /**
-     * @param $controller
-     * @param $action
+     * @param string $controller
+     * @param string $action
      * @return array
      */
     public function buildQueryArgs($controller, $action)

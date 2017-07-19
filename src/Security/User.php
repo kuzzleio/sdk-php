@@ -26,11 +26,12 @@ class User extends Document
      * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
      * @param string $id Unique user identifier
      * @param array $content User content
+     * @param array $meta User metadata
      * @return User
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [])
+    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
     {
-        parent::__construct($kuzzleSecurity, $id, $content);
+        parent::__construct($kuzzleSecurity, $id, $content, $meta);
 
         $this->syncProfile();
 

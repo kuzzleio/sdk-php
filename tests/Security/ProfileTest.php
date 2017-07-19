@@ -273,4 +273,25 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($roleId, 'roleId', $policies[0]);
         $this->assertAttributeEquals(array_merge($policyDescription['restrictedTo'], [['index' => 'foo-bar']]), 'restrictedTo', $policies[0]);
     }
+
+    function testGetMeta()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $metas = [
+            'createdAt' => '0123456789',
+            'author' => '-1'
+        ];
+
+        $security = new Security($kuzzle);
+        $profile = new Profile($security, 'foobar', [], $metas);
+
+        $this->assertEquals($profile->getMeta(), $metas);
+    }
 }

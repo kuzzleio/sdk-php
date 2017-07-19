@@ -86,6 +86,29 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($user->getProfileIds(), ['foo', 'bar', 'baz']);
     }
 
+    function testGetMeta()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $metas = [
+            'createdAt' => '0123456789',
+            'author' => '-1'
+        ];
+
+        $security = new Security($kuzzle);
+        $user = new User($security, 'foobar', [
+            'profileIds' => ['foo', 'bar', 'baz']
+        ], $metas);
+
+        $this->assertEquals($user->getMeta(), $metas);
+    }
+
     function testAddProfile()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;

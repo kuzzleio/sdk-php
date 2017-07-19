@@ -217,14 +217,14 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => array_merge($documentContent, ['baz' => 'baz']),
-                'meta' => array_merge($documentMeta, ['author' => 'bar']),
+                'meta' => ['author' => 'bar'],
             ],
             'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $documentId,
-            '_source' => $documentContent,
-            '_meta' => $documentMeta,
+            '_source' => array_merge($documentContent, ['baz' => 'baz']),
+            '_meta' => ['author' => 'bar'],
             '_version' => 1
         ];
         $httpResponse = [

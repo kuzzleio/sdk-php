@@ -78,6 +78,11 @@ class Kuzzle
      */
     protected $requestHandler;
 
+    /**
+     * @var string
+     */
+    protected $sdkVersion;
+
 
     /**
      * Kuzzle constructor.
@@ -108,9 +113,10 @@ class Kuzzle
             $this->port = $options['port'];
         }
 
-
         $this->url = 'http://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
+
+        $this->sdkVersion = json_decode(file_get_contents('./composer.json'))->version;
 
         return $this;
     }
@@ -122,6 +128,7 @@ class Kuzzle
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      * @param callable $listener The function to call each time one of the registered event is fired
      *
+     * @return Kuzzle
      * @throws InvalidArgumentException
      */
     public function addListener($event, $listener)
@@ -144,6 +151,7 @@ class Kuzzle
      *
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      *
+     * @return Kuzzle
      */
     public function emitEvent($event)
     {
@@ -154,6 +162,7 @@ class Kuzzle
                 call_user_func_array($callback, $arg_list);
             }
         }
+
         return $this;
     }
 
@@ -424,16 +433,16 @@ class Kuzzle
             throw new InvalidArgumentException('Unable to login: no strategy specified');
         }
 
-        if (!empty($expiresIn)) {
-            $body['expiresIn'] = $expiresIn;
-        }
-
         if (!array_key_exists('httpParams', $options)) {
             $options['httpParams'] = [];
         }
 
         if (!array_key_exists(':strategy', $options['httpParams'])) {
             $options['httpParams'][':strategy'] = $strategy;
+        }
+
+        if (!empty($expiresIn)) {
+            $options['query_parameters']['expiresIn'] = $expiresIn;
         }
 
         $response = $this->query(
@@ -562,17 +571,10 @@ class Kuzzle
                 $httpParams['query_parameters'] = array_merge($httpParams['query_parameters'], $options['query_parameters']);
             }
 
-            if (array_key_exists('refresh', $options)) {
-                $httpParams['query_parameters']['refresh'] = $options['refresh'];
-            }
-            if (array_key_exists('from', $options)) {
-                $httpParams['query_parameters']['from'] = $options['from'];
-            }
-            if (array_key_exists('size', $options)) {
-                $httpParams['query_parameters']['size'] = $options['size'];
-            }
-            if (array_key_exists('scroll', $options)) {
-                $httpParams['query_parameters']['scroll'] = $options['scroll'];
+            foreach (['refresh', 'from', 'size', 'scroll'] as $optionParam) {
+                if (array_key_exists($optionParam, $options)) {
+                    $httpParams['query_parameters'][$optionParam] = $options[$optionParam];
+                }
             }
         }
 
@@ -604,20 +606,10 @@ class Kuzzle
             $request['headers']['authorization'] = 'Bearer ' . $this->jwtToken;
         }
 
-        if (array_key_exists('collection', $queryArgs)) {
-            $request['collection'] = $queryArgs['collection'];
-        }
-
-        if (array_key_exists('route', $queryArgs)) {
-            $request['route'] = $queryArgs['route'];
-        }
-
-        if (array_key_exists('method', $queryArgs)) {
-            $request['method'] = $queryArgs['method'];
-        }
-
-        if (array_key_exists('index', $queryArgs)) {
-            $request['index'] = $queryArgs['index'];
+        foreach (['collection', 'route', 'method', 'index'] as $queryArg) {
+            if (array_key_exists($queryArg, $queryArgs)) {
+                $request[$queryArg] = $queryArgs[$queryArg];
+            }
         }
 
         if (!array_key_exists('requestId', $request)) {
@@ -841,6 +833,14 @@ class Kuzzle
     }
 
     /**
+     * @return string
+     */
+    public function getSdkVersion()
+    {
+        return $this->sdkVersion;
+    }
+
+    /**
      * Retrieves current user object.
      *
      * @param array $options (optional) arguments
@@ -854,7 +854,7 @@ class Kuzzle
             $options
         );
 
-        return new User($this->security(), $response['result']['_id'], $response['result']['_source']);
+        return new User($this->security(), $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
     }
 
     /**
@@ -999,6 +999,7 @@ class Kuzzle
                 $headers[] = ucfirst($header) . ': ' . $value;
             }
         }
+        $headers[] = 'X-Kuzzle-Volatile: ' . json_encode(array_merge($this->getVolatile(), ['sdkVersion' => $this->getSdkVersion()]));
 
         if (array_key_exists('body', $httpRequest['request'])) {
             $body = json_encode($httpRequest['request']['body']);
