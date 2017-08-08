@@ -185,7 +185,7 @@ class MemoryStorage
         'incrby' => ['required' => ['_id', 'value']],
         'incrbyfloat' => ['required' => ['_id', 'value']],
         'keys' => ['getter' => true, 'required' => [':pattern']],
-        'lindex' => ['getter' => true, 'required' => ['_id', ':index']],
+        'lindex' => ['getter' => true, 'required' => ['_id', ':idx']],
         'linsert' => ['required' => ['_id', 'position', 'pivot', 'value']],
         'llen' => ['getter' => true, 'required' => ['_id']],
         'lpop' => ['required' => ['_id']],
