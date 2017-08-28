@@ -1,14 +1,16 @@
 {
   "name": "kuzzleio/kuzzle-sdk",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "Official PHP SDK for Kuzzle",
   "homepage": "http://kuzzle.io",
   "license": "Apache-2.0",
-  "authors": [{
-    "name": "The Kuzzle Team",
-    "email": "support@kuzzle.io",
-    "homepage": "http://kuzzle.io"
-  }],
+  "authors": [
+    {
+      "name": "The Kuzzle Team",
+      "email": "support@kuzzle.io",
+      "homepage": "http://kuzzle.io"
+    }
+  ],
   "support": {
     "issues": "https://github.com/kuzzleio/sdk-php/issues"
   },
@@ -17,12 +19,12 @@
       "Kuzzle\\": "src/"
     }
   },
-  "require" : {
+  "require": {
     "php": ">=5.4",
     "ramsey/uuid": "^3.4",
     "ext-curl": "*"
   },
-  "require-dev" : {
+  "require-dev": {
     "phpunit/phpunit": "4.8.*",
     "phpdocumentor/phpdocumentor": "2.9.0",
     "squizlabs/php_codesniffer": "2.*"
