@@ -17,9 +17,9 @@ use InvalidArgumentException;
  * @method int decrby(string $key, int $value, array $options = NULL)
  * @method int del(array $keys, array $options = NULL)
  * @method int exists(array $keys, array $options = NULL)
- * @method int expire(string $key, int $seconds, array $options = NULL)
- * @method int expireat(string $key, int $timestamp, array $options = NULL)
- * @method string flushdb(array $options = NULL)
+ * @method bool expire(string $key, int $seconds, array $options = NULL)
+ * @method bool expireat(string $key, int $timestamp, array $options = NULL)
+ * @method void flushdb(array $options = NULL)
  * @method int geoadd(string $key, array $points, array $options = NULL)
  * @method float geodist(string $key, string $member1, string $member2, array $options = NULL)
  * @method array geohash(string $key, array $members, array $options = NULL)
@@ -31,7 +31,7 @@ use InvalidArgumentException;
  * @method string getrange(string $key, int $start, int $end, array $options = NULL)
  * @method string getset(string $key, string $value, array $options = NULL)
  * @method int hdel(string $key, array $fields, array $options = NULL)
- * @method int hexists(string $key, string $field, array $options = NULL)
+ * @method bool hexists(string $key, string $field, array $options = NULL)
  * @method string hget(string $key, string $field, array $options = NULL)
  * @method array hgetall(string $key, array $options = NULL)
  * @method int hincrby(string $key, string $field, int $value, array $options = NULL)
@@ -39,10 +39,10 @@ use InvalidArgumentException;
  * @method array hkeys(string $key, array $options = NULL)
  * @method int hlen(string $key, array $options = NULL)
  * @method array hmget(string $key, array $fields, array $options = NULL)
- * @method string hmset(string $key, array $entries, array $options = NULL)
+ * @method bool hmset(string $key, array $entries, array $options = NULL)
  * @method array hscan(string $key, int $cursor, array $options = NULL)
- * @method int hset(string $key, string $field, string $value, array $options = NULL)
- * @method int hsetnx(string $key, string $field, string $value, array $options = NULL)
+ * @method bool hset(string $key, string $field, string $value, array $options = NULL)
+ * @method bool hsetnx(string $key, string $field, string $value, array $options = NULL)
  * @method int hstrlen(string $key, string $field, array $options = NULL)
  * @method array hvals(string $key, array $options = NULL)
  * @method int incr(string $key, array $options = NULL)
@@ -57,24 +57,24 @@ use InvalidArgumentException;
  * @method int lpushx(string $key, string $value, array $options = NULL)
  * @method array lrange(string $key, int $start, int $stop, array $options = NULL)
  * @method int lrem(string $key, int $count, string $value, array $options = NULL)
- * @method string lset(string $key, int $index, string $value, array $options = NULL)
- * @method string ltrim(string $key, int $start, int $stop, array $options = NULL)
+ * @method void lset(string $key, int $index, string $value, array $options = NULL)
+ * @method void ltrim(string $key, int $start, int $stop, array $options = NULL)
  * @method array mget(array $keys, array $options = NULL)
- * @method string mset(array $entries, array $options = NULL)
- * @method int msetnx(array $entries, array $options = NULL)
+ * @method void mset(array $entries, array $options = NULL)
+ * @method bool msetnx(array $entries, array $options = NULL)
  * @method string object(string $key, string $subcommand, array $options = NULL)
- * @method int persist(string $key, array $options = NULL)
- * @method int pexpire(string $key, int $milliseconds, array $options = NULL)
- * @method int pexpireat(string $key, int $timestamp, array $options = NULL)
- * @method int pfadd(string $key, array $elements, array $options = NULL)
+ * @method bool persist(string $key, array $options = NULL)
+ * @method bool pexpire(string $key, int $milliseconds, array $options = NULL)
+ * @method bool pexpireat(string $key, int $timestamp, array $options = NULL)
+ * @method bool pfadd(string $key, array $elements, array $options = NULL)
  * @method int pfcount(array $keys, array $options = NULL)
- * @method string pfmerge(string $key, array $sources, array $options = NULL)
+ * @method void pfmerge(string $key, array $sources, array $options = NULL)
  * @method string ping(array $options = NULL)
- * @method string psetex(string $key, string $value, int $milliseconds, array $options = NULL)
+ * @method void psetex(string $key, string $value, int $milliseconds, array $options = NULL)
  * @method int pttl(string $key, array $options = NULL)
  * @method string randomkey(array $options = NULL)
- * @method string rename(string $key, string $newkey, array $options = NULL)
- * @method string renamenx(string $key, string $newkey, array $options = NULL)
+ * @method void rename(string $key, string $newkey, array $options = NULL)
+ * @method void renamenx(string $key, string $newkey, array $options = NULL)
  * @method string rpop(string $key, array $options = NULL)
  * @method string rpoplpush(string $source, string $destination, array $options = NULL)
  * @method int rpush(string $key, array $values, array $options = NULL)
@@ -84,14 +84,14 @@ use InvalidArgumentException;
  * @method int scard(string $key, array $options = NULL)
  * @method array sdiff(string $key, array $keys, array $options = NULL)
  * @method int sdiffstore(string $key, array $keys, string $destination, array $options = NULL)
- * @method string set(string $key, string $value, array $options = NULL)
- * @method string setex(string $key, string $value, int $ttl, array $options = NULL)
- * @method int setnx(string $key, string $value, array $options = NULL)
+ * @method void set(string $key, string $value, array $options = NULL)
+ * @method void setex(string $key, string $value, int $ttl, array $options = NULL)
+ * @method bool setnx(string $key, string $value, array $options = NULL)
  * @method array sinter(array $keys, array $options = NULL)
  * @method int sinterstore(string $destination, array $keys, array $options = NULL)
- * @method int sismember(string $key, string $member, array $options = NULL)
+ * @method bool sismember(string $key, string $member, array $options = NULL)
  * @method array smembers(string $key, array $options = NULL)
- * @method int smove(string $key, string $destination, string $member, array $options = NULL)
+ * @method bool smove(string $key, string $destination, string $member, array $options = NULL)
  * @method array sort(string $key, array $options = NULL)
  * @method array spop(string $key, array $options = NULL)
  * @method array srandmember(string $key, array $options = NULL)
@@ -138,9 +138,9 @@ class MemoryStorage
         'decrby' => ['required' => ['_id', 'value']],
         'del' => ['required' => ['keys']],
         'exists' => ['getter' => true, 'required' => ['keys']],
-        'expire' => ['required' => ['_id', 'seconds']],
-        'expireat' => ['required' => ['_id', 'timestamp']],
-        'flushdb' => [],
+        'expire' => ['required' => ['_id', 'seconds'], 'mapResults' => 'mapBooleanResult'],
+        'expireat' => ['required' => ['_id', 'timestamp'], 'mapResults' => 'mapBooleanResult'],
+        'flushdb' => ['mapResults' => 'mapEmptyResult'],
         'geoadd' => ['required' => ['_id', 'points']],
         'geodist' => [
             'getter' => true,
@@ -167,7 +167,7 @@ class MemoryStorage
         'getrange' => ['getter' => true, 'required' => ['_id', 'start', 'end']],
         'getset' => ['required' => ['_id', 'value']],
         'hdel' => ['required' => ['_id', 'fields']],
-        'hexists' => ['getter' => true, 'required' => ['_id', ':field']],
+        'hexists' => ['getter' => true, 'required' => ['_id', ':field'], 'mapResults' => 'mapBooleanResult'],
         'hget' => ['getter' => true, 'required' => ['_id', ':field']],
         'hgetall' => ['getter' => true, 'required' => ['_id']],
         'hincrby' => ['required' => ['_id', 'field', 'value']],
@@ -175,10 +175,10 @@ class MemoryStorage
         'hkeys' => ['getter' => true, 'required' => ['_id']],
         'hlen' => ['getter' => true, 'required' => ['_id']],
         'hmget' => ['getter' => true, 'required' => ['_id', 'fields']],
-        'hmset' => ['required' => ['_id', 'entries']],
+        'hmset' => ['required' => ['_id', 'entries'], 'mapResults' => 'mapEmptyResult'],
         'hscan' => ['getter' => true, 'required' => ['_id', 'cursor'], 'opts' => ['match', 'count'], 'mapResults' => 'mapScanResults'],
-        'hset' => ['required' => ['_id', 'field', 'value']],
-        'hsetnx' => ['required' => ['_id', 'field', 'value']],
+        'hset' => ['required' => ['_id', 'field', 'value'], 'mapResults' => 'mapBooleanResult'],
+        'hsetnx' => ['required' => ['_id', 'field', 'value'], 'mapResults' => 'mapBooleanResult'],
         'hstrlen' => ['getter' => true, 'required' => ['_id', ':field']],
         'hvals' => ['getter' => true, 'required' => ['_id']],
         'incr' => ['required' => ['_id']],
@@ -193,24 +193,24 @@ class MemoryStorage
         'lpushx' => ['required' => ['_id', 'value']],
         'lrange' => ['getter' => true, 'required' => ['_id', 'start', 'stop']],
         'lrem' => ['required' => ['_id', 'count', 'value']],
-        'lset' => ['required' => ['_id', 'index', 'value']],
-        'ltrim' => ['required' => ['_id', 'start', 'stop']],
+        'lset' => ['required' => ['_id', 'index', 'value'], 'mapResults' => 'mapEmptyResult'],
+        'ltrim' => ['required' => ['_id', 'start', 'stop'], 'mapResults' => 'mapEmptyResult'],
         'mget' => ['getter' => true, 'required' => ['keys']],
-        'mset' => ['required' => ['entries']],
-        'msetnx' => ['required' => ['entries']],
+        'mset' => ['required' => ['entries'], 'mapResults' => 'mapEmptyResult'],
+        'msetnx' => ['required' => ['entries'], 'mapResults' => 'mapBooleanResult'],
         'object' => ['getter' => true, 'required' => ['_id', 'subcommand']],
-        'persist' => ['required' => ['_id']],
-        'pexpire' => ['required' => ['_id', 'milliseconds']],
-        'pexpireat' => ['required' => ['_id', 'timestamp']],
-        'pfadd' => ['required' => ['_id', 'elements']],
+        'persist' => ['required' => ['_id'], 'mapResults' => 'mapBooleanResult'],
+        'pexpire' => ['required' => ['_id', 'milliseconds'], 'mapResults' => 'mapBooleanResult'],
+        'pexpireat' => ['required' => ['_id', 'timestamp'], 'mapResults' => 'mapBooleanResult'],
+        'pfadd' => ['required' => ['_id', 'elements'], 'mapResults' => 'mapBooleanResult'],
         'pfcount' => ['getter' => true, 'required' => ['keys']],
-        'pfmerge' => ['required' => ['_id', 'sources']],
+        'pfmerge' => ['required' => ['_id', 'sources'], 'mapResults' => 'mapEmptyResult'],
         'ping' => ['getter' => true],
-        'psetex' => ['required' => ['_id', 'value', 'milliseconds']],
+        'psetex' => ['required' => ['_id', 'value', 'milliseconds'], 'mapResults' => 'mapEmptyResult'],
         'pttl' => ['getter' => true, 'required' => ['_id']],
         'randomkey' => ['getter' => true],
-        'rename' => ['required' => ['_id', 'newkey']],
-        'renamenx' => ['required' => ['_id', 'newkey']],
+        'rename' => ['required' => ['_id', 'newkey'], 'mapResults' => 'mapEmptyResult'],
+        'renamenx' => ['required' => ['_id', 'newkey'], 'mapResults' => 'mapEmptyResult'],
         'rpop' => ['required' => ['_id']],
         'rpoplpush' => ['required' => ['source', 'destination']],
         'rpush' => ['required' => ['_id', 'values']],
@@ -220,14 +220,14 @@ class MemoryStorage
         'scard' => ['getter' => true, 'required' => ['_id']],
         'sdiff' => ['getter' => true, 'required' => ['_id', 'keys']],
         'sdiffstore' => ['required' => ['_id', 'keys', 'destination']],
-        'set' => ['required' => ['_id', 'value'], 'opts' => ['ex', 'px', 'nx', 'xx']],
-        'setex' => ['required' => ['_id', 'value', 'seconds']],
-        'setnx' => ['required' => ['_id', 'value']],
+        'set' => ['required' => ['_id', 'value'], 'opts' => ['ex', 'px', 'nx', 'xx'], 'mapResults' => 'mapEmptyResult'],
+        'setex' => ['required' => ['_id', 'value', 'seconds'], 'mapResults' => 'mapEmptyResult'],
+        'setnx' => ['required' => ['_id', 'value'], 'mapResults' => 'mapBooleanResult'],
         'sinter' => ['getter' => true, 'required' => ['keys']],
         'sinterstore' => ['required' => ['destination', 'keys']],
-        'sismember' => ['getter' => true, 'required' => ['_id', ':member']],
+        'sismember' => ['getter' => true, 'required' => ['_id', ':member'], 'mapResults' => 'mapBooleanResult'],
         'smembers' => ['getter' => true, 'required' => ['_id']],
-        'smove' => ['required' => ['_id', 'destination', 'member']],
+        'smove' => ['required' => ['_id', 'destination', 'member'], 'mapResults' => 'mapBooleanResult'],
         'sort' => ['required' => ['_id'], 'opts' => ['alpha', 'by', 'direction', 'get', 'limit']],
         'spop' => ['required' => ['_id'], 'opts' => ['count'], 'mapResults' => 'mapStringToArray'],
         'srandmember' => ['getter' => true, 'required' => ['_id'], 'opts' => ['count'], 'mapResults' => 'mapStringToArray'],
@@ -463,6 +463,14 @@ class MemoryStorage
             $options['query_parameters']['limit'] = implode(',', $options['limit']);
             unset($options['limit']);
         }
+    }
+
+    private function mapEmptyResult() {
+        return;
+    }
+
+    private function mapBooleanResult($result) {
+        return (bool)$result;
     }
 
     /**

@@ -217,7 +217,7 @@ class MemoryStorageTest extends TestCase
         ], [], 0);
 
         $result = $this->memoryStorage->expire('key', 42, $this->options);
-        $this->assertEquals($result, 0);
+        $this->assertEquals($result, false);
     }
 
     public function testExpireat() {
@@ -227,14 +227,14 @@ class MemoryStorageTest extends TestCase
         ], [], 1);
 
         $result = $this->memoryStorage->expireat('key', 1234567890, $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testFlushdb() {
         $this->SetupMemoryStorageCommand('flushdb', 'POST', '/ms/_flushdb' , [], [], 1);
 
         $result = $this->memoryStorage->flushdb($this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, null);
     }
 
     public function testGeoadd() {
@@ -450,7 +450,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->hexists('key', 'foobar', $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testHget() {
@@ -568,7 +568,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->hmset('key', $entries, $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testHscan() {
@@ -599,7 +599,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->hset('key', 'foo', 'bar', $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testHsetnx() {
@@ -613,7 +613,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->hsetnx('key', 'foo', 'bar', $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testHstrlen() {
@@ -830,7 +830,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->lset('key', 3, 'bar', $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testLtrim() {
@@ -844,7 +844,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->ltrim('key', 13, 42, $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testMget() {
@@ -878,7 +878,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->mset($entries, $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testMsetnx() {
@@ -894,11 +894,11 @@ class MemoryStorageTest extends TestCase
             '/ms/_msetnx',
             ['body' => ['entries' => $entries]],
             [],
-            'OK'
+            0
         );
 
         $result = $this->memoryStorage->msetnx($entries, $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, false);
     }
 
     public function testObject() {
@@ -926,7 +926,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->persist('key', $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testPexpire() {
@@ -936,7 +936,7 @@ class MemoryStorageTest extends TestCase
         ], [], 0);
 
         $result = $this->memoryStorage->pexpire('key', 42000, $this->options);
-        $this->assertEquals($result, 0);
+        $this->assertEquals($result, false);
     }
 
     public function testPexpireat() {
@@ -946,7 +946,7 @@ class MemoryStorageTest extends TestCase
         ], [], 1);
 
         $result = $this->memoryStorage->pexpireat('key', 1234567890000, $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testPfadd() {
@@ -960,7 +960,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->pfadd('key', ['foo', 'bar', 'baz'], $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testPfcount() {
@@ -988,7 +988,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->pfmerge('key', ['foo', 'bar', 'baz'], $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testPing() {
@@ -1009,7 +1009,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->psetex('key', 'foo', 42000, $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testPttl() {
@@ -1051,7 +1051,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->rename('key', 'foo', $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testRenamenx() {
@@ -1065,7 +1065,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->renamenx('key', 'foo', $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testRpop() {
@@ -1213,7 +1213,7 @@ class MemoryStorageTest extends TestCase
                 ]
             ],
             [],
-            3
+            'OK'
         );
 
         $this->options['ex'] = 42;
@@ -1222,7 +1222,7 @@ class MemoryStorageTest extends TestCase
         $this->options['xx'] = true;
 
         $result = $this->memoryStorage->set('key', 'foobar', $this->options);
-        $this->assertEquals($result, 3);
+        $this->assertEquals($result, null);
     }
 
     public function testSetex() {
@@ -1236,7 +1236,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->setex('key', 'foobar', 42, $this->options);
-        $this->assertEquals($result, 'OK');
+        $this->assertEquals($result, null);
     }
 
     public function testSetnx() {
@@ -1250,7 +1250,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->setnx('key', 'foobar', $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testSinter() {
@@ -1292,7 +1292,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->sismember('key', 'foobar', $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testSmembers() {
@@ -1320,7 +1320,7 @@ class MemoryStorageTest extends TestCase
         );
 
         $result = $this->memoryStorage->smove('key', 'foo', 'bar', $this->options);
-        $this->assertEquals($result, 1);
+        $this->assertEquals($result, true);
     }
 
     public function testSort() {
