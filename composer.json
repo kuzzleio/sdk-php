@@ -1,6 +1,6 @@
 {
   "name": "kuzzleio/kuzzle-sdk",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Official PHP SDK for Kuzzle",
   "homepage": "http://kuzzle.io",
   "license": "Apache-2.0",
