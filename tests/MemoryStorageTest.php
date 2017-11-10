@@ -1061,11 +1061,11 @@ class MemoryStorageTest extends TestCase
             '/ms/_renamenx/key',
             ['_id' => 'key', 'body' => ['newkey' => 'foo']],
             [],
-            'OK'
+            0
         );
 
         $result = $this->memoryStorage->renamenx('key', 'foo', $this->options);
-        $this->assertEquals($result, null);
+        $this->assertEquals($result, false);
     }
 
     public function testRpop() {

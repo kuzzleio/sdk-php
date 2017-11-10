@@ -74,7 +74,7 @@ use InvalidArgumentException;
  * @method int pttl(string $key, array $options = NULL)
  * @method string randomkey(array $options = NULL)
  * @method void rename(string $key, string $newkey, array $options = NULL)
- * @method void renamenx(string $key, string $newkey, array $options = NULL)
+ * @method bool renamenx(string $key, string $newkey, array $options = NULL)
  * @method string rpop(string $key, array $options = NULL)
  * @method string rpoplpush(string $source, string $destination, array $options = NULL)
  * @method int rpush(string $key, array $values, array $options = NULL)
@@ -210,7 +210,7 @@ class MemoryStorage
         'pttl' => ['getter' => true, 'required' => ['_id']],
         'randomkey' => ['getter' => true],
         'rename' => ['required' => ['_id', 'newkey'], 'mapResults' => 'mapEmptyResult'],
-        'renamenx' => ['required' => ['_id', 'newkey'], 'mapResults' => 'mapEmptyResult'],
+        'renamenx' => ['required' => ['_id', 'newkey'], 'mapResults' => 'mapBooleanResult'],
         'rpop' => ['required' => ['_id']],
         'rpoplpush' => ['required' => ['source', 'destination']],
         'rpush' => ['required' => ['_id', 'values']],
