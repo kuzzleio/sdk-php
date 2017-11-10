@@ -465,11 +465,13 @@ class MemoryStorage
         }
     }
 
-    private function mapEmptyResult() {
+    private function mapEmptyResult()
+    {
         return;
     }
 
-    private function mapBooleanResult($result) {
+    private function mapBooleanResult($result)
+    {
         return (bool)$result;
     }
 
