@@ -217,14 +217,14 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => array_merge($documentContent, ['baz' => 'baz']),
-                'meta' => ['author' => 'bar'],
+                'meta' => ['author' => 'foo'],
             ],
             'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $documentId,
             '_source' => array_merge($documentContent, ['baz' => 'baz']),
-            '_meta' => ['author' => 'bar'],
+            '_meta' => ['author' => 'foo'],
             '_version' => 1
         ];
         $httpResponse = [
@@ -251,13 +251,12 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $document = new Document($dataCollection, $documentId, $documentContent, $documentMeta);
 
         $document->setContent(['baz' => 'baz']);
-        $document->setMeta(['author' => 'bar']);
         $result = $document->save(['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $result);
         $this->assertAttributeEquals($documentId, 'id', $result);
         $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
-        $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'bar']), 'meta', $result);
+        $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'foo']), 'meta', $result);
         $this->assertAttributeEquals(1, 'version', $result);
     }
 
@@ -288,7 +287,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
                 'index' => $index,
                 '_id' => $documentId,
                 'body' => array_merge($documentContent, ['baz' => 'baz']),
-                'meta' => array_merge($documentMeta, ['author' => 'bar'])
+                'meta' => array_merge($documentMeta, ['author' => 'foo'])
             ],
             'query_parameters' => []
         ];
@@ -319,13 +318,12 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         $document = new Document($dataCollection, $documentId, $documentContent, $documentMeta);
 
         $document->setContent(['baz' => 'baz']);
-        $document->setMeta(['author' => 'bar']);
         $result = $document->publish(['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $result);
         $this->assertAttributeEquals($documentId, 'id', $result);
         $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
-        $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'bar']), 'meta', $result);
+        $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'foo']), 'meta', $result);
     }
 
     function testSerialize()

@@ -67,7 +67,7 @@ class Document
         }
 
         if (!empty($meta)) {
-            $this->setMeta($meta, true);
+            $this->meta = $meta;
         }
 
         return $this;
@@ -222,27 +222,6 @@ class Document
     public function getContent()
     {
         return $this->content;
-    }
-
-    /**
-     * Replaces the current metadata with new metadata.
-     * This is a helper function returning itself, allowing to easily chain calls.
-     *
-     * @param array $meta
-     * @param bool $replace true: replace the current metadata with the provided ones, false: merge it
-     * @return Document
-     */
-    public function setMeta(array $meta, $replace = false)
-    {
-        if ($replace) {
-            $this->meta = $meta;
-        } else {
-            foreach ($meta as $key => $value) {
-                $this->meta[$key] = $value;
-            }
-        }
-
-        return $this;
     }
 
     /**
