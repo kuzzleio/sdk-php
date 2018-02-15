@@ -151,24 +151,89 @@ class Document
     }
 
     /**
-     * Saves this document into Kuzzle.
-     *
-     * If this is a new document, this function will create it in Kuzzle and the id property will be made available.
-     * Otherwise, this method will replace the latest version of this document in Kuzzle by the current content of this object.
+     * Create a new document in Kuzzle.
      *
      * @param array $options Optional parameters
+     *
      * @return Document
+     * @throws InvalidArgumentException
      */
-    public function save(array $options = [])
+    public function create(array $options = [])
     {
+        $action = 'create';
+
+        if (array_key_exists('ifExist', $options)) {
+            if ($options['ifExist'] == 'replace') {
+                $action = 'createOrReplace';
+            } elseif ($options['ifExist'] != 'error') {
+                throw new InvalidArgumentException('Invalid "ifExist" option value: ' . $options['ifExist']);
+            }
+        }
+
+        $queryArgs = $this->collection->buildQueryArgs('document', $action);
+        $queryArgs['route'] = '/' . $this->collection->getIndexName() . '/' . $this->collection->getCollectionName() . '/' . ($this->id ? $this->id : '') . '/_create';
+        $queryArgs['method'] = 'post';
+
         $response = $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('document', 'createOrReplace'),
+            $queryArgs,
             $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
             $options
         );
 
         $this->id = $response['result']['_id'];
-        $this->version = $response['result']['_version'];
+        $content['_version'] = $response['result']['_version'];
+
+        return $this;
+    }
+
+    /**
+     * Update a new document in Kuzzle.
+     *
+     * @param array $options Optional parameters
+     *
+     * @return Document
+     * @throws InvalidArgumentException
+     */
+    public function update(array $options = [])
+    {
+        $queryArgs = $this->collection->buildQueryArgs('document', 'update');
+        $queryArgs['route'] = '/' . $this->collection->getIndexName() . '/' . $this->collection->getCollectionName() . '/' . $this->id . '/_update';
+        $queryArgs['method'] = 'put';
+
+        $response = $this->collection->getKuzzle()->query(
+            $queryArgs,
+            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+            $options
+        );
+
+        $this->id = $response['result']['_id'];
+        $content['_version'] = $response['result']['_version'];
+
+        return $this;
+    }
+
+    /**
+     * Replace a new document in Kuzzle.
+     *
+     * @param array $options Optional parameters
+     *
+     * @return Document
+     * @throws InvalidArgumentException
+     */
+    public function replace(array $options = [])
+    {
+        $queryArgs = $this->collection->buildQueryArgs('document', 'replace');
+        $queryArgs['route'] = '/' . $this->collection->getIndexName() . '/' . $this->collection->getCollectionName() . '/' . $this->id . '/_replace';
+        $queryArgs['method'] = 'put';
+
+        $response = $this->collection->getKuzzle()->query(
+            $queryArgs,
+            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+            $options
+        );
+
+        $this->id = $response['result']['_id'];
+        $content['content'] = $response['result'];
 
         return $this;
     }

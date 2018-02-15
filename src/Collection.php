@@ -172,52 +172,6 @@ class Collection
     }
 
     /**
-     * Create a new document in Kuzzle.
-     *
-     * @param array|Document $document either an instance of a KuzzleDocument object, or a document
-     * @param string $id document identifier
-     * @param array $options Optional parameters
-     *
-     * @return Document
-     * @throws InvalidArgumentException
-     */
-    public function createDocument($document, $id = '', array $options = [])
-    {
-        $action = 'create';
-        $data = [];
-
-        if (array_key_exists('ifExist', $options)) {
-            if ($options['ifExist'] == 'replace') {
-                $action = 'createOrReplace';
-            } elseif ($options['ifExist'] != 'error') {
-                throw new InvalidArgumentException('Invalid "ifExist" option value: ' . $options['ifExist']);
-            }
-        }
-
-        if ($document instanceof Document) {
-            $data = $document->serialize();
-        } else {
-            $data['body'] = $document;
-        }
-
-        if (!empty($id)) {
-            $data['_id'] = $id;
-        }
-
-        $response = $this->kuzzle->query(
-            $this->buildQueryArgs('document', $action),
-            $this->kuzzle->addHeaders($data, $this->headers),
-            $options
-        );
-
-        $content = $response['result']['_source'];
-        $meta = $response['result']['_meta'];
-        $content['_version'] = $response['result']['_version'];
-
-        return new Document($this, $response['result']['_id'], $content, $meta);
-    }
-
-    /**
      * Creates a new CollectionMapping object, using its constructor.
      *
      * @param array $mapping Optional mapping
@@ -558,34 +512,6 @@ class Collection
     }
 
     /**
-     * Replace an existing document with a new one.
-     *
-     * @param string $documentId Unique document identifier
-     * @param array $content Content of the document to create
-     * @param array $options Optional parameters
-     * @return Document
-     */
-    public function replaceDocument($documentId, array $content, array $options = [])
-    {
-        $data = [
-            '_id' => $documentId,
-            'body' => $content
-        ];
-
-        $response = $this->kuzzle->query(
-            $this->buildQueryArgs('document', 'createOrReplace'),
-            $this->kuzzle->addHeaders($data, $this->headers),
-            $options
-        );
-
-        $content = $response['result']['_source'];
-        $content['_version'] = $response['result']['_version'];
-        $meta = $response['result']['_meta'];
-
-        return new Document($this, $response['result']['_id'], $content, $meta);
-    }
-
-    /**
      * Scrolls through specifications using the provided scrollId
      *
      * @param string $scrollId
@@ -670,42 +596,6 @@ class Collection
         );
 
         return $response['result']['ids'];
-    }
-
-    /**
-     * Update parts of a document, by replacing some fields or adding new ones.
-     * Note that you cannot remove fields this way: missing fields will simply be left unchanged.
-     *
-     * @param string $documentId Unique document identifier
-     * @param array $content Content of the document to create
-     * @param array $options Optional parameters
-     * @return Document
-     */
-    public function updateDocument($documentId, array $content, array $options = [])
-    {
-        $data = [
-            '_id' => $documentId,
-            'body' => $content
-        ];
-
-        $queryArgs = $this->buildQueryArgs('document', 'update');
-        $queryArgs['route'] = '/' . $this->index . '/' . $this->collection . '/' . $documentId . '/_update';
-        $queryArgs['method'] = 'put';
-
-        if (isset($options['retryOnConflict'])) {
-            $options['query_parameters']['retryOnConflict'] = $options['retryOnConflict'];
-            unset($options['retryOnConflict']);
-        }
-
-        $response = $this->kuzzle->query(
-            $queryArgs,
-            $this->kuzzle->addHeaders($data, $this->headers),
-            $options
-        );
-
-        unset($options['query_parameters']['retryOnConflict']);
-
-        return (new Document($this, $response['result']['_id']))->refresh($options);
     }
 
     /**

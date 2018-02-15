@@ -190,7 +190,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    function testSave()
+    function testCreate()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -206,12 +206,12 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
-            'method' => 'PUT',
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_create',
+            'method' => 'POST',
             'request' => [
                 'volatile' => [],
                 'controller' => 'document',
-                'action' => 'createOrReplace',
+                'action' => 'create',
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
@@ -252,14 +252,183 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 
         $document->setContent(['baz' => 'baz']);
         $document->setMeta(['author' => 'bar']);
-        $result = $document->save(['requestId' => $requestId]);
+        $result = $document->create(['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $result);
         $this->assertAttributeEquals($documentId, 'id', $result);
         $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
         $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'bar']), 'meta', $result);
-        $this->assertAttributeEquals(1, 'version', $result);
     }
+
+    function testCreateInvalidOption() {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+        $documentContent = [
+            'foo' => 'bar'
+        ];
+
+        $kuzzle = $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        try {
+            $document = new \Kuzzle\Document($dataCollection, $documentId, $documentContent);
+            $document->create(['ifExist' => 'foobar', 'requestId' => $requestId]);
+            $this->fail('DocumentTest::testCreateInvalidOption => should have thrown');
+        }
+        catch(Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Invalid "ifExist" option value: foobar', $e->getMessage());
+        }
+    }
+
+    function testUpdate()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+        $documentContent = [
+            'foo' => 'bar'
+        ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_update',
+            'method' => 'PUT',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'update',
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index,
+                '_id' => $documentId,
+                'body' => array_merge($documentContent, ['baz' => 'baz']),
+                'meta' => ['author' => 'bar'],
+            ],
+            'query_parameters' => []
+        ];
+        $saveResponse = [
+            '_id' => $documentId,
+            '_source' => array_merge($documentContent, ['baz' => 'baz']),
+            '_meta' => ['author' => 'bar'],
+            '_version' => 1
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $saveResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+        $document = new Document($dataCollection, $documentId, $documentContent, $documentMeta);
+
+        $document->setContent(['baz' => 'baz']);
+        $document->setMeta(['author' => 'bar']);
+        $result = $document->update(['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Document', $result);
+        $this->assertAttributeEquals($documentId, 'id', $result);
+        $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
+        $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'bar']), 'meta', $result);
+    }
+
+    function testReplace()
+    {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+        $documentContent = [
+            'foo' => 'bar'
+        ];
+        $documentMeta = [
+            'author' => 'foo'
+        ];
+
+        $httpRequest = [
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_replace',
+            'method' => 'PUT',
+            'request' => [
+                'volatile' => [],
+                'controller' => 'document',
+                'action' => 'replace',
+                'requestId' => $requestId,
+                'collection' => $collection,
+                'index' => $index,
+                '_id' => $documentId,
+                'body' => array_merge($documentContent, ['baz' => 'baz']),
+                'meta' => ['author' => 'bar'],
+            ],
+            'query_parameters' => []
+        ];
+        $saveResponse = [
+            '_id' => $documentId,
+            '_source' => array_merge($documentContent, ['baz' => 'baz']),
+            '_meta' => ['author' => 'bar'],
+            '_version' => 1
+        ];
+        $httpResponse = [
+            'error' => null,
+            'result' => $saveResponse
+        ];
+
+        $kuzzle = $this
+            ->getMockBuilder('\Kuzzle\Kuzzle')
+            ->setMethods(['emitRestRequest'])
+            ->setConstructorArgs([$url])
+            ->getMock();
+
+        $kuzzle
+            ->expects($this->once())
+            ->method('emitRestRequest')
+            ->with($httpRequest)
+            ->willReturn($httpResponse);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+        $document = new Document($dataCollection, $documentId, $documentContent, $documentMeta);
+
+        $document->setContent(['baz' => 'baz']);
+        $document->setMeta(['author' => 'bar']);
+        $result = $document->replace(['requestId' => $requestId]);
+
+        $this->assertInstanceOf('Kuzzle\Document', $result);
+        $this->assertAttributeEquals($documentId, 'id', $result);
+        $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
+        $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'bar']), 'meta', $result);
+    }
+
 
     function testPublish()
     {

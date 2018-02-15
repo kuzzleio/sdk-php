@@ -25,19 +25,39 @@ try {
 // add a document
 print_r('add a document');
 print_r("\n");
-$document = $collection->createDocument(['foo' => 'bar'], 'bar');
+$document = new \Kuzzle\Document($collection);
+$document->setContent(['foo'=>'bar']);
+$document->create();
 print_r($document->serialize());
 
 // add another document
 print_r('add another document');
 print_r("\n");
-$document = $collection->createDocument(['foo' => 'baz'], 'baz');
+$document = new \Kuzzle\Document($collection);
+$document->setContent(['foo'=>'baz']);
+$document->create();
 print_r($document->serialize());
 
 // add a third document
 print_r('add a third document');
 print_r("\n");
-$document = $collection->createDocument(['foo' => 'qux'], 'qux');
+$document = new \Kuzzle\Document($collection);
+$document->setContent(['foo'=>'qux', 'oof'=>'foo']);
+$document->create();
+print_r($document->serialize());
+
+// update third document
+print_r('update third document');
+print_r("\n");
+$document->setContent(['foo'=>'updated']);
+$document->update();
+print_r($document->serialize());
+
+// replace third document
+print_r('replace third document');
+print_r("\n");
+$document->setContent(['foo'=>'replaced'], true);
+$document->replace();
 print_r($document->serialize());
 
 // get document
