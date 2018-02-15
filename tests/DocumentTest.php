@@ -190,7 +190,7 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    function testSave()
+    function testCreate()
     {
         $url = KuzzleTest::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
@@ -206,12 +206,12 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
         ];
 
         $httpRequest = [
-            'route' => '/' . $index . '/' . $collection . '/' . $documentId,
-            'method' => 'PUT',
+            'route' => '/' . $index . '/' . $collection . '/' . $documentId . '/_create',
+            'method' => 'POST',
             'request' => [
                 'volatile' => [],
                 'controller' => 'document',
-                'action' => 'createOrReplace',
+                'action' => 'create',
                 'requestId' => $requestId,
                 'collection' => $collection,
                 'index' => $index,
@@ -252,13 +252,41 @@ class DocumentTest extends \PHPUnit_Framework_TestCase
 
         $document->setContent(['baz' => 'baz']);
         $document->setMeta(['author' => 'bar']);
-        $result = $document->save(['requestId' => $requestId]);
+        $result = $document->create(['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $result);
         $this->assertAttributeEquals($documentId, 'id', $result);
         $this->assertAttributeEquals(array_merge($documentContent, ['baz' => 'baz']), 'content', $result);
         $this->assertAttributeEquals(array_merge($documentMeta, ['author' => 'bar']), 'meta', $result);
-        $this->assertAttributeEquals(1, 'version', $result);
+    }
+
+    function testCreateInvalidOption() {
+        $url = KuzzleTest::FAKE_KUZZLE_HOST;
+        $requestId = uniqid();
+        $index = 'index';
+        $collection = 'collection';
+
+        $documentId = uniqid();
+        $documentContent = [
+            'foo' => 'bar'
+        ];
+
+        $kuzzle = $kuzzle = new \Kuzzle\Kuzzle($url);
+
+        /**
+         * @var Kuzzle $kuzzle
+         */
+        $dataCollection = new Collection($kuzzle, $collection, $index);
+
+        try {
+            $document = new \Kuzzle\Document($dataCollection, $documentId, $documentContent);
+            $document->create(['ifExist' => 'foobar', 'requestId' => $requestId]);
+            $this->fail('DocumentTest::testCreateInvalidOption => should have thrown');
+        }
+        catch(Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Invalid "ifExist" option value: foobar', $e->getMessage());
+        }
     }
 
     function testPublish()
