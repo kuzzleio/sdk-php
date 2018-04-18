@@ -116,7 +116,7 @@ class Kuzzle
         $this->url = 'http://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
 
-        $this->sdkVersion = json_decode(file_get_contents('./composer.json'))->version;
+        $this->sdkVersion = json_decode(file_get_contents(__DIR__.'/../composer.json'))->version;
 
         return $this;
     }
