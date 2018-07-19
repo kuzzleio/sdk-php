@@ -42,7 +42,6 @@ class Bulk
                 'body' => [
                     'bulkData' => json_encode($data)
                 ]
-
             ],
             $options
         );

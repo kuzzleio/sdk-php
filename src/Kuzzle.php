@@ -119,6 +119,7 @@ class Kuzzle
             $this->port = $options['port'];
         }
 
+        // TODO: Find a way to handle HTTPS and HTTP
         $this->url = 'http://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
 
