@@ -22,8 +22,7 @@
   "require": {
     "php": ">=5.4",
     "ramsey/uuid": "^3.4",
-    "ext-curl": "*",
-    "kuzzleio/kuzzle-sdk": "^3.0"
+    "ext-curl": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "4.8.*",
