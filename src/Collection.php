@@ -155,16 +155,22 @@ class Collection
     }
 
     /**
-     * Create a new empty data collection, with no associated mapping.
+     * Create a new empty data collection. An optional mapping
+     * object can be provided
      *
+     * @param array $mapping Optional collection mapping description
      * @param array $options Optional parameters
      * @return boolean
      */
-    public function create(array $options = [])
+    public function create(array $mapping = [], array $options = [])
     {
+        $data = [
+            'body' => $mapping
+        ];
+
         $response = $this->kuzzle->query(
             $this->buildQueryArgs('collection', 'create'),
-            $this->kuzzle->addHeaders([], $this->headers),
+            $this->kuzzle->addHeaders($data, $this->headers),
             $options
         );
 

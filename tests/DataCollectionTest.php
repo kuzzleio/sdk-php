@@ -258,6 +258,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $requestId = uniqid();
         $index = 'index';
         $collection = 'collection';
+        $mapping = ['foo' => ['type' => 'keyword']];
 
         $httpRequest = [
             'route' => '/' . $index . '/' . $collection ,
@@ -268,7 +269,8 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'create',
                 'requestId' => $requestId,
                 'collection' => $collection,
-                'index' => $index
+                'index' => $index,
+                'body' => $mapping
             ],
             'query_parameters' => []
         ];
@@ -297,7 +299,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
          */
         $dataCollection = new Collection($kuzzle, $collection, $index);
 
-        $result = $dataCollection->create(['requestId' => $requestId]);
+        $result = $dataCollection->create(['foo' => ['type' => 'keyword']], ['requestId' => $requestId]);
 
         $this->assertEquals(true, $result);
     }
