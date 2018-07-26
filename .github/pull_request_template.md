@@ -1,6 +1,6 @@
 <!--
-  This template is not mandatory.
-  It simply serves to provide a guide to allow a better review of pull requests.
+  This template is optional.
+  It simply serves as a guide to allow a better review of pull requests.
 -->
 
 <!--
@@ -10,7 +10,7 @@
 -->
 
 
-## What does this PR do ?
+## What does this PR do?
 <!-- Please fulfill this section -->
 
 <!--

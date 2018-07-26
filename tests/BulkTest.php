@@ -25,7 +25,7 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
         // mock http request
         $httpRequest = [
-            'route' => '/bulk/import',
+            'route' => '/_bulk',
             'request' => [
                 'action' => 'import',
                 'controller' => 'bulk',

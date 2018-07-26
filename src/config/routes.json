@@ -59,7 +59,7 @@
   "bulk": {
     "import": {
       "name": "import",
-      "route": "/bulk/import",
+      "route": "/_bulk",
       "method": "post"
     }
   },
