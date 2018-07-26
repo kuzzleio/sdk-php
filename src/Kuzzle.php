@@ -13,6 +13,7 @@ use Ramsey\Uuid\Uuid;
 use Kuzzle\Util\CurlRequest;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
+use Kuzzle\Bulk;
 
 /**
  * Class Kuzzle
@@ -83,6 +84,11 @@ class Kuzzle
      */
     protected $sdkVersion;
 
+    /**
+     * @var Bulk Kuzzle's Bulk controller
+     */
+    public $bulk;
+
 
     /**
      * Kuzzle constructor.
@@ -113,10 +119,14 @@ class Kuzzle
             $this->port = $options['port'];
         }
 
+        // TODO: Find a way to handle HTTPS and HTTP
         $this->url = 'http://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
 
-        $this->sdkVersion = json_decode(file_get_contents('./composer.json'))->version;
+        $this->sdkVersion = json_decode(file_get_contents(__DIR__.'/../composer.json'))->version;
+
+        // API Controllers
+        $this->bulk = new Bulk($this);
 
         return $this;
     }

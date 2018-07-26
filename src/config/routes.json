@@ -59,7 +59,7 @@
   "bulk": {
     "import": {
       "name": "import",
-      "route": "/:index/:collection/_bulk",
+      "route": "/_bulk",
       "method": "post"
     }
   },
