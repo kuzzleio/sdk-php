@@ -3,8 +3,6 @@
 namespace Kuzzle\Util;
 
 use InvalidArgumentException;
-use Kuzzle\Collection;
-use Kuzzle\Document;
 
 /**
  * Class SearchResult
@@ -13,9 +11,9 @@ use Kuzzle\Document;
 class SearchResult
 {
     /**
-     * @var Collection
+     * @var string
      */
-    private $collection = null;
+    private $collection = '';
 
     /**
      * @var integer
@@ -23,7 +21,7 @@ class SearchResult
     private $total = 0;
 
     /**
-     * @var Document[]
+     * @var array[]
      */
     private $documents = [];
 
@@ -50,16 +48,16 @@ class SearchResult
     /**
      * SearchResult constructor.
      *
-     * @param Collection $collection
+     * @param string $collection
      * @param integer $total
-     * @param Document[] $documents
+     * @param array[] $documents
      * @param array $aggregations
      * @param array $options
      * @param array $filters
      * @param SearchResult $previous
      * @internal param array $searchArgs
      */
-    public function __construct(Collection $collection, $total, array $documents, array $aggregations = [], array $options = [], array $filters = [], SearchResult $previous = null)
+    public function __construct($collection, $total, array $documents, array $aggregations = [], array $options = [], array $filters = [], SearchResult $previous = null)
     {
         $this->collection = $collection;
         $this->total = $total;
@@ -81,7 +79,7 @@ class SearchResult
     }
 
     /**
-     * @return Document[]
+     * @return array[]
      */
     public function getDocuments()
     {
@@ -89,7 +87,7 @@ class SearchResult
     }
 
     /**
-     * @return Collection
+     * @return string
      */
     public function getCollection()
     {
@@ -126,72 +124,5 @@ class SearchResult
     public function getFetchedDocuments()
     {
         return $this->fetchedDocuments;
-    }
-
-    /**
-     * @return SearchResult
-     */
-    public function fetchNext()
-    {
-        $searchResult = null;
-
-        if (array_key_exists('scrollId', $this->options)) {
-            // retrieve next results with scroll if original search use it
-            if ($this->fetchedDocuments >= $this->getTotal()) {
-                return null;
-            }
-
-            $options = $this->options;
-            $options['previous'] = $this;
-
-            if (array_key_exists('from', $options)) {
-                unset($options['from']);
-            }
-
-            if (array_key_exists('size', $options)) {
-                unset($options['size']);
-            }
-
-            $searchResult = $this->collection->scroll(
-                $options['scrollId'],
-                $options,
-                $this->filters
-            );
-        } else if (array_key_exists('size', $this->options) && array_key_exists('sort', $this->filters)) {
-            // retrieve next results using ES's search_after
-            if ($this->fetchedDocuments >= $this->getTotal()) {
-                return null;
-            }
-
-            $options = $this->options;
-            unset($options['from']);
-
-            $filters = $this->filters;
-            $filters['search_after'] = array_map(function ($sortRule) {
-                return end($this->documents)->getContent()[key($sortRule)];
-            }, $this->filters['sort']);
-
-            $searchResult = $this->collection->search($filters, $options);
-        } else if (array_key_exists('from', $this->options) && array_key_exists('size', $this->options)) {
-            // retrieve next results with  from/size if original search use it
-            $filters = $this->filters;
-            $options = $this->options;
-            $options['previous'] = $this;
-
-            $options['from'] += $options['size'];
-
-            // check if we need to do next request to fetch all matching documents
-            if ($options['from'] >= $this->getTotal()) {
-                return null;
-            }
-
-            $searchResult = $this->collection->search($filters, $options);
-        }
-
-        if ($searchResult && $searchResult instanceof SearchResult) {
-            return $searchResult;
-        }
-
-        throw new InvalidArgumentException('Unable to retrieve next results from search: missing scrollId or from/size options');
     }
 }
