@@ -111,7 +111,7 @@
     },
     "list": {
       "name": "list",
-      "route": "/:index/_list/:type",
+      "route": "/:index/_list",
       "method": "get"
     },
     "exists": {
