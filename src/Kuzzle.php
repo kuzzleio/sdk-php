@@ -13,6 +13,7 @@ use Ramsey\Uuid\Uuid;
 use Kuzzle\Util\CurlRequest;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
+use Kuzzle\Auth;
 use Kuzzle\Bulk;
 
 /**
@@ -85,6 +86,11 @@ class Kuzzle
     protected $sdkVersion;
 
     /**
+     * @var Auth Kuzzle's Auth controller
+     */
+    public $auth;
+
+    /**
      * @var Bulk Kuzzle's Bulk controller
      */
     public $bulk;
@@ -126,6 +132,7 @@ class Kuzzle
         $this->sdkVersion = json_decode(file_get_contents(__DIR__.'/../composer.json'))->version;
 
         // API Controllers
+        $this->auth = new Auth($this);
         $this->bulk = new Bulk($this);
 
         return $this;
@@ -174,28 +181,6 @@ class Kuzzle
         }
 
         return $this;
-    }
-
-    /**
-     * Checks the validity of a JSON Web Token.
-     *
-     * @param string $token The token to check
-     * @param array $options Optional parameters
-     * @return array with a valid boolean property.
-     *         If the token is valid, a expiresAt property is set with the expiration timestamp.
-     *         If not, a state property is set explaining why the token is invalid.
-     */
-    public function checkToken($token, array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'checkToken'),
-            [
-                'body' => ['token' => $token]
-            ],
-            $options
-        );
-
-        return $response['result'];
     }
 
     /**
@@ -305,23 +290,6 @@ class Kuzzle
     }
 
     /**
-     * Gets the rights of the current user
-     *
-     * @param array $options Optional parameters
-     * @return array[]
-     */
-    public function getMyRights(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'getMyRights'),
-            [],
-            $options
-        );
-
-        return $response['result']['hits'];
-    }
-
-    /**
      * Retrieves information about Kuzzle, its plugins and active services.
      *
      * @param array $options Optional parameters
@@ -424,68 +392,6 @@ class Kuzzle
         );
 
         return $response['result']['indexes'];
-    }
-
-    /**
-     * Log a user according to a strategy and credentials
-     *
-     * @param string $strategy Authentication strategy (local, facebook, github, …)
-     * @param array $credentials Optional login credentials, depending on the strategy
-     * @param string $expiresIn Login expiration time
-     * @param array $options Optional options
-     * @return array
-     */
-    public function login($strategy, array $credentials = [], $expiresIn = '', array $options = [])
-    {
-        $body = $credentials;
-
-        if (empty($strategy)) {
-            throw new InvalidArgumentException('Unable to login: no strategy specified');
-        }
-
-        if (!array_key_exists('httpParams', $options)) {
-            $options['httpParams'] = [];
-        }
-
-        if (!array_key_exists(':strategy', $options['httpParams'])) {
-            $options['httpParams'][':strategy'] = $strategy;
-        }
-
-        if (!empty($expiresIn)) {
-            $options['query_parameters']['expiresIn'] = $expiresIn;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'login'),
-            [
-                'body' => $body
-            ],
-            $options
-        );
-
-        if ($response['result']['jwt']) {
-            $this->jwtToken = $response['result']['jwt'];
-        }
-
-        return $response['result'];
-    }
-
-    /**
-     * Logs the user out.
-     * @param array $options Optional parameters
-     * @return array
-     */
-    public function logout(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'logout'),
-            [],
-            $options
-        );
-
-        $this->jwtToken = null;
-
-        return $response['result'];
     }
 
     /**
@@ -772,26 +678,6 @@ class Kuzzle
     }
 
     /**
-     * Performs a partial update on the current user.
-     *
-     * @param array $content a plain javascript object representing the user's modification
-     * @param array $options (optional) arguments
-     * @return array
-     */
-    public function updateSelf(array $content, array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'updateSelf'),
-            [
-                'body' => $content
-            ],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
      * This is a helper function returning itself, allowing to easily chain calls.
      *
      * @param array $headers
@@ -851,23 +737,6 @@ class Kuzzle
     }
 
     /**
-     * Retrieves current user object.
-     *
-     * @param array $options (optional) arguments
-     * @return User
-     */
-    public function whoAmI(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'getCurrentUser'),
-            [],
-            $options
-        );
-
-        return new User($this->security(), $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
-    }
-
-    /**
      * @param array $query
      * @param array $headers
      * @return array
@@ -915,80 +784,7 @@ class Kuzzle
     {
         $this->requestHandler = $handler;
     }
-
-    /**
-     * Create credentials of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param $credentials
-     * @param array $options
-     * @return mixed
-     */
-    public function createMyCredentials($strategy, $credentials, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'createMyCredentials'), ['body' => $credentials], $options)['result'];
-    }
-
-    /**
-     * Delete credentials of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param array $options
-     * @return mixed
-     */
-    public function deleteMyCredentials($strategy, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'deleteMyCredentials'), [], $options)['result'];
-    }
-
-    /**
-     * Get credential information of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param array $options
-     * @return mixed
-     */
-    public function getMyCredentials($strategy, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'getMyCredentials'), [], $options)['result'];
-    }
-
-    /**
-     * Update credentials of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param $credentials
-     * @param array $options
-     * @return mixed
-     */
-    public function updateMyCredentials($strategy, $credentials, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'updateMyCredentials'), ['body' => $credentials], $options)['result'];
-    }
-
-    /**
-     * Validate credentials of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param $credentials
-     * @param array $options
-     * @return mixed
-     */
-    public function validateMyCredentials($strategy, $credentials, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'validateMyCredentials'), ['body' => $credentials], $options)['result'];
-    }
-
+    
     /**
      * @internal
      * @todo move this into RequestHandler
