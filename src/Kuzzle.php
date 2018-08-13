@@ -12,10 +12,11 @@ use Ramsey\Uuid\Uuid;
 use Kuzzle\Util\CurlRequest;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
-use Kuzzle\Auth;
-use Kuzzle\Bulk;
 use Kuzzle\Index;
+use Kuzzle\Collection;
+use Kuzzle\Auth;
 use Kuzzle\Server;
+use Kuzzle\Bulk;
 
 /**
  * Class Kuzzle
@@ -92,6 +93,11 @@ class Kuzzle
     public $auth;
 
     /**
+     * @var Collection Kuzzle's Collection controller
+     */
+    public $collection;
+
+    /**
      * @var Bulk Kuzzle's Bulk controller
      */
     public $bulk;
@@ -144,6 +150,7 @@ class Kuzzle
 
         // API Controllers
         $this->auth = new Auth($this);
+        $this->collection = new Collection($this);
         $this->bulk = new Bulk($this);
         $this->index = new Index($this);
         $this->server = new Server($this);
@@ -197,36 +204,6 @@ class Kuzzle
     }
 
     /**
-     * Instantiates a new KuzzleDataCollection object.
-     *
-     * @param string $collection The name of the data collection you want to manipulate
-     * @param string $index The name of the index containing the data collection
-     * @return Collection
-     *
-     * @throws InvalidArgumentException
-     */
-    public function collection($collection, $index = '')
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to create a new data collection object: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        if (!array_key_exists($index, $this->collections)) {
-            $this->collections[$index] = [];
-        }
-
-        if (!array_key_exists($collection, $this->collections[$index])) {
-            $this->collections[$index][$collection] = new Collection($this, $collection, $index);
-        }
-
-        return $this->collections[$index][$collection];
-    }
-
-    /**
      * @return string
      */
     public function getDefaultIndex()
@@ -258,46 +235,6 @@ class Kuzzle
     public function getVolatile()
     {
         return $this->volatile;
-    }
-
-    /**
-     * Retrieves the list of known data collections contained in a specified index.
-     *
-     * @param string $index Index containing the collections to be listed
-     * @param array $options Optional parameters
-     * @return array containing the list of stored and/or realtime collections on the provided index
-     *
-     * @throws InvalidArgumentException
-     */
-    public function listCollections($index = '', array $options = [])
-    {
-        $collectionType = 'all';
-
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to list collections: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        if (array_key_exists('type', $options)) {
-            $collectionType = $options['type'];
-        }
-
-        $options['httpParams'] = [
-            ':type' => $collectionType
-        ];
-
-        $query = [
-            'body' => [
-                'type' => $collectionType
-            ]
-        ];
-
-        $response = $this->query($this->buildQueryArgs('collection', 'list', $index), $query, $options);
-
-        return $response['result']['collections'];
     }
 
     /**
