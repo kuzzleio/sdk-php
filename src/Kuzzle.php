@@ -2,7 +2,6 @@
 
 namespace Kuzzle;
 
-use DateTime;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
@@ -15,6 +14,8 @@ use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
 use Kuzzle\Auth;
 use Kuzzle\Bulk;
+use Kuzzle\Index;
+use Kuzzle\Server;
 
 /**
  * Class Kuzzle
@@ -95,6 +96,16 @@ class Kuzzle
      */
     public $bulk;
 
+    /**
+     * @var Index Kuzzle's Index controller
+     */
+    public $index;
+
+    /**
+     * @var Server Kuzzle's Server controller
+     */
+    public $server;
+
 
     /**
      * Kuzzle constructor.
@@ -134,6 +145,8 @@ class Kuzzle
         // API Controllers
         $this->auth = new Auth($this);
         $this->bulk = new Bulk($this);
+        $this->index = new Index($this);
+        $this->server = new Server($this);
 
         return $this;
     }
@@ -184,30 +197,6 @@ class Kuzzle
     }
 
     /**
-     * Create an index
-     *
-     * @param $index
-     * @param array $options
-     * @return mixed
-     */
-    public function createIndex($index, array $options = [])
-    {
-        $options['httpParams'] = [
-            ':index' => $index
-        ];
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'create'),
-            [
-                'body' => ['index' => $index]
-            ],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
      * Instantiates a new KuzzleDataCollection object.
      *
      * @param string $collection The name of the data collection you want to manipulate
@@ -235,24 +224,6 @@ class Kuzzle
         }
 
         return $this->collections[$index][$collection];
-    }
-
-    /**
-     * Kuzzle monitors active connections, and ongoing/completed/failed requests.
-     * This method returns all available statistics from Kuzzle.
-     *
-     * @param array $options Optional parameters
-     * @return array[] each one of them being a statistic frame
-     */
-    public function getAllStatistics(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'getAllStats'),
-            [],
-            $options
-        );
-
-        return $response['result']['hits'];
     }
 
     /**
@@ -287,54 +258,6 @@ class Kuzzle
     public function getVolatile()
     {
         return $this->volatile;
-    }
-
-    /**
-     * Retrieves information about Kuzzle, its plugins and active services.
-     *
-     * @param array $options Optional parameters
-     * @return array containing server information
-     */
-    public function getServerInfo(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'info'),
-            [],
-            $options
-        );
-
-        return $response['result']['serverInfo'];
-    }
-
-    /**
-     * Kuzzle monitors active connections, and ongoing/completed/failed requests.
-     * This method allows getting either the last statistics frame,
-     * or a set of frames starting from a provided timestamp.
-     *
-     * @param string $timestamp Optional starting time from which the frames are to be retrieved
-     * @param array $options Optional parameters
-     * @return array[] containing one or more statistics frame(s)
-     */
-    public function getStatistics($timestamp = '', array $options = [])
-    {
-        $data = [];
-
-        if (empty($timestamp)) {
-            $action = 'getLastStats';
-        } else {
-            $action = 'getStats';
-            $data['body'] = [
-                'startTime' => $timestamp
-            ];
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('server', $action),
-            $data,
-            $options
-        );
-
-        return empty($timestamp) ? [$response['result']] : $response['result']['hits'];
     }
 
     /**
@@ -378,23 +301,6 @@ class Kuzzle
     }
 
     /**
-     * Retrieves the list of indexes stored in Kuzzle.
-     *
-     * @param array $options Optional parameters
-     * @return array of index names
-     */
-    public function listIndexes(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'list'),
-            [],
-            $options
-        );
-
-        return $response['result']['indexes'];
-    }
-
-    /**
      * A static Kuzzle\MemoryStorage instance
      *
      * @return MemoryStorage
@@ -408,23 +314,6 @@ class Kuzzle
         }
 
         return $memoryStorage;
-    }
-
-    /**
-     * Retrieves the current Kuzzle time.
-     *
-     * @param array $options Optional parameters
-     * @return DateTime
-     */
-    public function now(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'now'),
-            [],
-            $options
-        );
-
-        return new DateTime('@' . round($response['result']['now'] / 1000));
     }
 
     /**
@@ -537,33 +426,6 @@ class Kuzzle
     }
 
     /**
-     * Given an index, the refresh action forces a refresh, on it,
-     * making the documents visible to search immediately.
-     *
-     * @param string $index Optional. The index to refresh. If not set, defaults to Kuzzle->defaultIndex.
-     * @param array $options Optional parameters
-     * @return array structure matching the response from Elasticsearch
-     */
-    public function refreshIndex($index = '', array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to refresh index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'refresh', $index),
-            [],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      */
     public function removeAllListeners($event = '')
@@ -603,65 +465,6 @@ class Kuzzle
         }
 
         return $security;
-    }
-
-    /**
-     * The autoRefresh flag, when set to true,
-     * will make Kuzzle perform a refresh request immediately after each write request,
-     * forcing the documents to be immediately visible to search
-     *
-     * @param string $index Optional The index to set the autoRefresh for. If not set, defaults to Kuzzle->defaultIndex
-     * @param bool $autoRefresh The value to set for the autoRefresh setting.
-     * @param array $options Optional parameters
-     * @return boolean
-     */
-    public function setAutoRefresh($index = '', $autoRefresh = false, array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'setAutoRefresh', $index),
-            [
-                'body' => [
-                    'autoRefresh' => $autoRefresh
-                ]
-            ],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
-     * Returns de current autoRefresh status for the given index
-     *
-     * @param string $index Optional TThe index to get the status from. Defaults to Kuzzle->defaultIndex
-     * @param array $options Optional parameters
-     * @return boolean
-     */
-    public function getAutoRefresh($index = '', array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'getAutoRefresh', $index),
-            [],
-            $options
-        );
-
-        return $response['result'];
     }
 
     /**
@@ -784,7 +587,7 @@ class Kuzzle
     {
         $this->requestHandler = $handler;
     }
-    
+
     /**
      * @internal
      * @todo move this into RequestHandler

@@ -260,7 +260,7 @@
   "index": {
     "mDelete": {
       "name": "mDelete",
-      "route": "/_mdelete",
+      "route": "/_mDelete",
       "method": "delete"
     },
     "create": {
