@@ -50,7 +50,7 @@ class Server
      * @param array $options Optional parameters
      * @return array containing server information
      */
-    public function getInfo(array $options = [])
+    public function info(array $options = [])
     {
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('server', 'info'),

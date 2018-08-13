@@ -96,7 +96,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             ->with($httpRequest)
             ->willReturn($httpResponse);
 
-        $response = $kuzzle->server->getInfo($options);
+        $response = $kuzzle->server->info($options);
 
         $this->assertEquals($getServerInfoResponse['serverInfo'], $response);
     }
