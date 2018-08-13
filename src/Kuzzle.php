@@ -14,6 +14,7 @@ use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
 use Kuzzle\Index;
 use Kuzzle\Collection;
+use Kuzzle\Document;
 use Kuzzle\Auth;
 use Kuzzle\Server;
 use Kuzzle\Bulk;
@@ -98,6 +99,11 @@ class Kuzzle
     public $collection;
 
     /**
+     * @var Document Kuzzle's Document controller
+     */
+    public $document;
+
+    /**
      * @var Bulk Kuzzle's Bulk controller
      */
     public $bulk;
@@ -149,11 +155,12 @@ class Kuzzle
         $this->sdkVersion = json_decode(file_get_contents(__DIR__.'/../composer.json'))->version;
 
         // API Controllers
-        $this->auth = new Auth($this);
-        $this->collection = new Collection($this);
-        $this->bulk = new Bulk($this);
         $this->index = new Index($this);
+        $this->collection = new Collection($this);
+        $this->document = new Document($this);
         $this->server = new Server($this);
+        $this->auth = new Auth($this);
+        $this->bulk = new Bulk($this);
 
         return $this;
     }

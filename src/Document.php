@@ -3,6 +3,7 @@
 namespace Kuzzle;
 
 use InvalidArgumentException;
+use Kuzzle\Util\SearchResult;
 
 /**
  * Class Document
@@ -11,289 +12,637 @@ use InvalidArgumentException;
 class Document
 {
     /**
-     * @var Collection The data collection associated to this document
-     */
-    protected $collection;
+    * @var Kuzzle linked Kuzzle instance
+    */
+    protected $kuzzle;
 
     /**
-     * @var array The content of the document
-     */
-    protected $content;
-
-    /**
-     * @var array Common headers for all sent documents.
-     */
-    protected $headers = [];
-
-    /**
-     * @var array Document metadata
-     */
-    protected $meta;
-
-    /**
-     * @var string Unique document identifier
-     */
-    protected $id;
-
-    /**
-     * @var integer Current document version
-     */
-    protected $version;
-
-    /**
-     * Document constructor.
+     * Document controller constructor.
      *
-     * @param Collection $kuzzleDataCollection An instantiated KuzzleDataCollection object
-     * @param string $documentId ID of an existing document.
-     * @param array $content Initializes this document with the provided content
-     * @param array $meta Initializes this document with the provided metadata
+     * @param Kuzzle $kuzzle Kuzzle server instance
      * @return Document
      */
-    public function __construct(Collection $kuzzleDataCollection, $documentId = '', array $content = [], array $meta = [])
+    public function __construct($kuzzle)
     {
-        $this->collection = $kuzzleDataCollection;
-
-        if (!empty($documentId)) {
-            $this->id = $documentId;
-        }
-
-        if (!empty($content)) {
-            if (array_key_exists('_version', $content)) {
-                $this->version = $content['_version'];
-                unset($content['_version']);
-            }
-
-            $this->setContent($content, true);
-        }
-
-        if (!empty($meta)) {
-            $this->meta = $meta;
-        }
-
+        $this->kuzzle = $kuzzle;
         return $this;
+    }
+
+    /**
+     * Create a document in Kuzzle.
+     *
+     * This function will create it in Kuzzle. The id can be passed as argument
+     * or user can let Kuzzle generate one for him.
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param string $_id document unique ID
+     * @param array $body Document body
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function create($index, $collection, $_id, array $body, array $options = [])
+    {
+        if (empty($index) || empty($collection)|| empty($_id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Document::create: cannot create a document without an index, a collection, a document ID and a document body');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+            ':_id' => $_id
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'create'),
+            [
+              'index' => $index,
+              'collection' => $collection,
+              '_id' => $_id,
+                'body' => json_encode($body)
+            ],
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
      * Deletes this document in Kuzzle
      *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param string $_id document unique ID
      * @param array $options Optional parameters
-     * @return integer Id of document deleted
+     *
+     * @return mixed
      *
      * @throws InvalidArgumentException
      */
-    public function delete(array $options = [])
+    public function delete($index, $collection, $_id, array $options = [])
     {
-        if (!$this->id) {
-            throw new InvalidArgumentException('Kuzzle\Document::delete: cannot delete a document without a document ID');
+        if (empty($index) || empty($collection) || empty($_id)) {
+            throw new InvalidArgumentException('Kuzzle\Document::delete: cannot delete a document without an index, a collection and a document ID');
         }
 
-        $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('document', 'delete'),
-            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+            ':_id' => $_id,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'delete'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                '_id' => $_id,
+            ],
             $options
         );
 
-        return $this->id;
+        return $response['result'];
+    }
+
+    /**
+     * Deletes all matching document in Kuzzle
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param string $_id document unique ID
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function deleteByQuery($index, $collection, array $query, array $options = [])
+    {
+        if (empty($index) || empty($collection) || empty($query)) {
+            throw new InvalidArgumentException('Kuzzle\Document::deleteByQuery: cannot delete a document by query without an index, a collection and a query');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'deleteByQuery'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => ['query' => json_encode($query)],
+            ],
+            $options
+        );
+
+        return $response['result']['hits'];
     }
 
     /**
      * Checks if this document exists in Kuzzle.
      *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param string $_id document unique ID
      * @param array $options
+     *
      * @return boolean
      *
      * @throws InvalidArgumentException
      */
-    public function exists(array $options = [])
+    public function exists($index, $collection, $_id, array $options = [])
     {
-        if (!$this->id) {
-            throw new InvalidArgumentException('Kuzzle\Document::exists: cannot check if the document exists without a document ID');
+        if (empty($index) || empty($collection)|| empty($_id)) {
+            throw new InvalidArgumentException('Kuzzle\Document::exists: cannot check if a document exists without an index, a collection and a document ID');
         }
 
-        $response = $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('document', 'exists'),
-            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+            ':_id' => $_id,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'exists'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                '_id' => $_id,
+            ],
             $options
         );
 
-        return  $response['result'];
+        return $response['result'];
     }
 
     /**
-     * Creates a new KuzzleDocument object with the last version of this document stored in Kuzzle.
+     * Retrieves a single stored document using its unique document ID.
      *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param string $_id document unique ID
      * @param array $options Optional parameters
-     * @return Document
+     *
+     * @return mixed
      *
      * @throws InvalidArgumentException
      */
-    public function refresh(array $options = [])
+    public function get($index, $collection, $_id, array $options = [])
     {
-        if (!$this->id) {
-            throw new InvalidArgumentException('Kuzzle\Document::refresh: cannot retrieve a document without a document ID');
+        if (empty($index) || empty($collection)|| empty($_id)) {
+            throw new InvalidArgumentException('Kuzzle\Document::get: cannot retrieve a document without an index, a collection and a document ID');
         }
 
-        $data = [
-            '_id' => $this->id
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+            ':_id' => $_id,
         ];
 
-        $response = $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('document', 'get'),
-            $this->collection->getKuzzle()->addHeaders($data, $this->headers),
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'get'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                '_id' => $_id,
+            ],
             $options
         );
 
-        $documentContent = $response['result']['_source'];
-        $documentContent['_version'] = $response['result']['_version'];
-        $documentMeta = $response['result']['_meta'];
-
-        return new Document($this->collection, $response['result']['_id'], $documentContent, $documentMeta);
+        return $response['result'];
     }
 
     /**
-     * Saves this document into Kuzzle.
+     * Returns the number of documents matching the provided set of filters.
      *
-     * If this is a new document, this function will create it in Kuzzle and the id property will be made available.
-     * Otherwise, this method will replace the latest version of this document in Kuzzle by the current content of this object.
-     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $filters Filters in ElasticSearch Query DSL format
      * @param array $options Optional parameters
-     * @return Document
+     *
+     * @return integer the matched documents count
+     *
+     * @throws InvalidArgumentException
      */
-    public function save(array $options = [])
+    public function count($index, $collection, array $filters, array $options = [])
     {
-        $response = $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('document', 'createOrReplace'),
-            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+        if (empty($index) || !$collection) {
+            throw new InvalidArgumentException('Kuzzle\Document::count: cannot count documents without an index and a collection');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'count'),
+            [
+              'index' => $index,
+              'collection' => $collection,
+              'body' => [
+                  'filters' => json_encode($filters)
+              ]
+            ],
             $options
         );
 
-        $this->id = $response['result']['_id'];
-        $this->version = $response['result']['_version'];
-
-        return $this;
+        return $response['result']['count'];
     }
 
     /**
-     * Sends the content of this document as a realtime message.
+     * Replace an existing document with a new one.
      *
-     * Takes an optional argument object with the following properties:
-     *    - volatile (object, default: null):
-     *        Additional information passed to notifications to other users
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param string $_id document unique ID
+     * @param array $body new document body
+     * @param array $options Optional parameters
      *
-     * @param array $options
-     * @return Document
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
      */
-    public function publish(array $options = [])
+    public function replace($index, $collection, $_id, array $body, array $options = [])
     {
-        $this->collection->getKuzzle()->query(
-            $this->collection->buildQueryArgs('realtime', 'publish'),
-            $this->collection->getKuzzle()->addHeaders($this->serialize(), $this->headers),
+        if (empty($index) || empty($collection)|| empty($_id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Document::replace: cannot replace a document without an index, a collection, a document ID and a document body');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+            ':_id' => $_id
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'replace'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                '_id' => $_id,
+                'body' => json_encode($body)
+            ],
             $options
         );
 
-        return $this;
+        return $response['result'];
     }
 
-
     /**
-     * Replaces the current content with new data.
-     * This is a helper function returning itself, allowing to easily chain calls.
+     * Update parts of a document, by replacing some fields or adding new ones.
+     * Note that you cannot remove fields this way: missing fields will simply be left unchanged.
      *
-     * @param array $content
-     * @param bool $replace true: replace the current content with the provided data, false: merge it
-     * @return Document
-     */
-    public function setContent(array $content, $replace = false)
-    {
-        if ($replace) {
-            $this->content = $content;
-        } else {
-            foreach ($content as $key => $value) {
-                $this->content[$key] = $value;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
-
-    /**
-     * @return array
-     */
-    public function getMeta()
-    {
-        return $this->meta;
-    }
-
-    /**
-     * This is a helper function returning itself, allowing to easily chain calls.
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param string $_id document unique ID
+     * @param array $body new document body
+     * @param array $options Optional parameters
      *
-     * @param array $headers New content
-     * @param bool $replace true: replace the current content with the provided data, false: merge it
-     * @return Document
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
      */
-    public function setHeaders(array $headers, $replace = false)
+    public function update($index, $collection, $_id, array $body, array $options = [])
     {
-        if ($replace) {
-            $this->headers = $headers;
-        } else {
-            foreach ($headers as $key => $value) {
-                $this->headers[$key] = $value;
-            }
+        if (empty($index) || empty($collection)|| empty($_id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Document::update: cannot update a document without an index, a collection, a document ID and a document body');
         }
 
-        return $this;
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+            ':_id' => $_id
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'update'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                '_id' => $_id,
+                'body' => json_encode($body)
+            ],
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
-     * @return array
+     * Validates data against existing validation rules. If the document is valid,
+     * the result.valid value is true, if not, it is false. If the document
+     * is not valid, the result.errorMessages will contain detailed hints on what
+     * is wrong with the document.
+     *
+     * This request does not store or publish the document.
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $body new document body
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
      */
-    public function getHeaders()
+    public function validate($index, $collection, array $body, array $options = [])
     {
-        return $this->headers;
-    }
-
-    /**
-     * @return array
-     */
-    public function serialize()
-    {
-        $data = [];
-
-        if (!empty($this->id)) {
-            $data['_id'] = $this->id;
+        if (empty($index) || empty($collection) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Document::validate: cannot update a document without an index, a collection and a document body');
         }
 
-        if (!empty($this->version)) {
-            $data['_version'] = $this->version;
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'validate'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => json_encode($body)
+            ],
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Executes an advanced search on the data collection.
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $filters Filters in ElasticSearch Query DSL format
+     * @param array $options Optional parameters
+     *
+     * @return SearchResult
+     *
+     * @throws InvalidArgumentException
+     */
+    public function search($index, $collection, array $filters, array $options = [])
+    {
+        if (empty($index) || empty($collection)) {
+            throw new InvalidArgumentException('Kuzzle\Document::search: cannot search documents without an index and a collection');
         }
 
-        $data['body'] = $this->content;
-        $data['meta'] = $this->meta;
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'search'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => json_encode($filters)
+            ],
+            $options
+        );
 
-        return $data;
+        if (array_key_exists('_scroll_id', $response['result'])) {
+            $options['scrollId'] = $response['result']['_scroll_id'];
+        }
+
+        return new SearchResult(
+            $collection,
+            $response['result']['total'],
+            $response['result']['hits'],
+            array_key_exists('aggregations', $response['result']) ? $response['result']['aggregations'] : [],
+            $options,
+            $filters,
+            array_key_exists('previous', $options) ? $options['previous'] : null
+        );
     }
 
     /**
-     * @return string
+     * Create the provided documents
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $documents Array of documents to create
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
      */
-    public function getId()
+    public function mCreate($index, $collection, $documents, array $options = [])
     {
-        return $this->id;
+        if (empty($index) || empty($collection)|| empty($documents)) {
+            throw new InvalidArgumentException('Kuzzle\Document::mCreate: index and collection parameters missing or documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'mCreate'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => [
+                    'documents' => json_encode($documents)
+                ]
+            ],
+            $options
+        );
+
+        return $response['result'];
     }
 
     /**
-     * @return integer
+     * Create or replace the provided documents
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $documents Array of documents to create or replace
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
      */
-    public function getVersion()
+    public function mCreateOrReplace($index, $collection, $documents, array $options = [])
     {
-        return $this->version;
+        if (empty($index) || empty($collection)|| empty($documents)) {
+            throw new InvalidArgumentException('Kuzzle\Document::mCreateOrReplace: index and collection parameters missing or documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'mCreateOrReplace'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => [
+                    'documents' => json_encode($documents)
+                ]
+            ],
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Delete specific documents according to given IDs
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $documentIds IDs of the documents to delete
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function mDelete($index, $collection, $documentIds, array $options = [])
+    {
+        if (empty($index) || empty($collection)|| empty($documentIds)) {
+            throw new InvalidArgumentException('Kuzzle\Document::mDelete: index and collection parameters missing or documents parameter format is invalid (should be an array of document IDs)');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'mDelete'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => [
+                    'ids' => json_encode($documentIds)
+                ]
+            ],
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Get specific documents according to given IDs
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $documentIds IDs of the documents to delete
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function mGet($index, $collection, $documentIds, array $options = [])
+    {
+        if (empty($index) || empty($collection)|| empty($documentIds)) {
+            throw new InvalidArgumentException('Kuzzle\Document::mGet: index and collection parameters missing or documents parameter format is invalid (should be an array of document IDs)');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'mGet'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => [
+                    'ids' => json_encode($documentIds)
+                ]
+            ],
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Replace the provided documents
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $documents Array of documents to create or replace
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function mReplace($index, $collection, $documents, array $options = [])
+    {
+        if (empty($index) || empty($collection)|| empty($documents)) {
+            throw new InvalidArgumentException('Kuzzle\Document::mReplace: index and collection parameters missing or documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'mReplace'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => [
+                    'documents' => json_encode($documents)
+                ]
+            ],
+            $options
+        );
+
+        return $response['result'];
+    }
+
+    /**
+     * Update the provided documents
+     *
+     * @param string $index Index name
+     * @param string $collection Collection name
+     * @param array $documents Array of documents to create or replace
+     * @param array $options Optional parameters
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function mUpdate($index, $collection, $documents, array $options = [])
+    {
+        if (empty($index) || empty($collection)|| empty($documents)) {
+            throw new InvalidArgumentException('Kuzzle\Document::mUpdate: index and collection parameters missing or documents parameter format is invalid (should be an array of documents)');
+        }
+
+        $options['httpParams'] = [
+            ':index' => $index,
+            ':collection' => $collection,
+        ];
+
+        $response = $this->kuzzle->query(
+            $this->kuzzle->buildQueryArgs('document', 'mUpdate'),
+            [
+                'index' => $index,
+                'collection' => $collection,
+                'body' => [
+                    'documents' => json_encode($documents)
+                ]
+            ],
+            $options
+        );
+
+        return $response['result'];
     }
 }
