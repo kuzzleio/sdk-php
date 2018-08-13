@@ -157,7 +157,7 @@ class Index
      * @param array $options Optional parameters
      * @return array of index names
      */
-    public function listIndex(array $options = [])
+    public function listIndexes(array $options = [])
     {
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('index', 'list'),

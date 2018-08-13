@@ -204,7 +204,7 @@ class IndexTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Kuzzle\Kuzzle $kuzzle
          */
-        $response = $kuzzle->index->listIndex($options);
+        $response = $kuzzle->index->listIndexes($options);
 
         $this->assertEquals($listIndexesResponse['indexes'], $response);
     }
