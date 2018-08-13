@@ -2,7 +2,6 @@
 
 namespace Kuzzle;
 
-use DateTime;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
@@ -13,8 +12,11 @@ use Ramsey\Uuid\Uuid;
 use Kuzzle\Util\CurlRequest;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
+use Kuzzle\Index;
 use Kuzzle\Collection;
 use Kuzzle\Document;
+use Kuzzle\Auth;
+use Kuzzle\Server;
 use Kuzzle\Bulk;
 
 /**
@@ -87,6 +89,11 @@ class Kuzzle
     protected $sdkVersion;
 
     /**
+     * @var Auth Kuzzle's Auth controller
+     */
+    public $auth;
+
+    /**
      * @var Collection Kuzzle's Collection controller
      */
     public $collection;
@@ -100,6 +107,16 @@ class Kuzzle
      * @var Bulk Kuzzle's Bulk controller
      */
     public $bulk;
+
+    /**
+     * @var Index Kuzzle's Index controller
+     */
+    public $index;
+
+    /**
+     * @var Server Kuzzle's Server controller
+     */
+    public $server;
 
 
     /**
@@ -138,8 +155,11 @@ class Kuzzle
         $this->sdkVersion = json_decode(file_get_contents(__DIR__.'/../composer.json'))->version;
 
         // API Controllers
+        $this->index = new Index($this);
         $this->collection = new Collection($this);
         $this->document = new Document($this);
+        $this->server = new Server($this);
+        $this->auth = new Auth($this);
         $this->bulk = new Bulk($this);
 
         return $this;
@@ -191,70 +211,6 @@ class Kuzzle
     }
 
     /**
-     * Checks the validity of a JSON Web Token.
-     *
-     * @param string $token The token to check
-     * @param array $options Optional parameters
-     * @return array with a valid boolean property.
-     *         If the token is valid, a expiresAt property is set with the expiration timestamp.
-     *         If not, a state property is set explaining why the token is invalid.
-     */
-    public function checkToken($token, array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'checkToken'),
-            [
-                'body' => ['token' => $token]
-            ],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
-     * Create an index
-     *
-     * @param $index
-     * @param array $options
-     * @return mixed
-     */
-    public function createIndex($index, array $options = [])
-    {
-        $options['httpParams'] = [
-            ':index' => $index
-        ];
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'create'),
-            [
-                'body' => ['index' => $index]
-            ],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
-     * Kuzzle monitors active connections, and ongoing/completed/failed requests.
-     * This method returns all available statistics from Kuzzle.
-     *
-     * @param array $options Optional parameters
-     * @return array[] each one of them being a statistic frame
-     */
-    public function getAllStatistics(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'getAllStats'),
-            [],
-            $options
-        );
-
-        return $response['result']['hits'];
-    }
-
-    /**
      * @return string
      */
     public function getDefaultIndex()
@@ -289,150 +245,6 @@ class Kuzzle
     }
 
     /**
-     * Gets the rights of the current user
-     *
-     * @param array $options Optional parameters
-     * @return array[]
-     */
-    public function getMyRights(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'getMyRights'),
-            [],
-            $options
-        );
-
-        return $response['result']['hits'];
-    }
-
-    /**
-     * Retrieves information about Kuzzle, its plugins and active services.
-     *
-     * @param array $options Optional parameters
-     * @return array containing server information
-     */
-    public function getServerInfo(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'info'),
-            [],
-            $options
-        );
-
-        return $response['result']['serverInfo'];
-    }
-
-    /**
-     * Kuzzle monitors active connections, and ongoing/completed/failed requests.
-     * This method allows getting either the last statistics frame,
-     * or a set of frames starting from a provided timestamp.
-     *
-     * @param string $timestamp Optional starting time from which the frames are to be retrieved
-     * @param array $options Optional parameters
-     * @return array[] containing one or more statistics frame(s)
-     */
-    public function getStatistics($timestamp = '', array $options = [])
-    {
-        $data = [];
-
-        if (empty($timestamp)) {
-            $action = 'getLastStats';
-        } else {
-            $action = 'getStats';
-            $data['body'] = [
-                'startTime' => $timestamp
-            ];
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('server', $action),
-            $data,
-            $options
-        );
-
-        return empty($timestamp) ? [$response['result']] : $response['result']['hits'];
-    }
-
-    /**
-     * Retrieves the list of indexes stored in Kuzzle.
-     *
-     * @param array $options Optional parameters
-     * @return array of index names
-     */
-    public function listIndexes(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'list'),
-            [],
-            $options
-        );
-
-        return $response['result']['indexes'];
-    }
-
-    /**
-     * Log a user according to a strategy and credentials
-     *
-     * @param string $strategy Authentication strategy (local, facebook, github, …)
-     * @param array $credentials Optional login credentials, depending on the strategy
-     * @param string $expiresIn Login expiration time
-     * @param array $options Optional options
-     * @return array
-     */
-    public function login($strategy, array $credentials = [], $expiresIn = '', array $options = [])
-    {
-        $body = $credentials;
-
-        if (empty($strategy)) {
-            throw new InvalidArgumentException('Unable to login: no strategy specified');
-        }
-
-        if (!array_key_exists('httpParams', $options)) {
-            $options['httpParams'] = [];
-        }
-
-        if (!array_key_exists(':strategy', $options['httpParams'])) {
-            $options['httpParams'][':strategy'] = $strategy;
-        }
-
-        if (!empty($expiresIn)) {
-            $options['query_parameters']['expiresIn'] = $expiresIn;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'login'),
-            [
-                'body' => $body
-            ],
-            $options
-        );
-
-        if ($response['result']['jwt']) {
-            $this->jwtToken = $response['result']['jwt'];
-        }
-
-        return $response['result'];
-    }
-
-    /**
-     * Logs the user out.
-     * @param array $options Optional parameters
-     * @return array
-     */
-    public function logout(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'logout'),
-            [],
-            $options
-        );
-
-        $this->jwtToken = null;
-
-        return $response['result'];
-    }
-
-    /**
      * A static Kuzzle\MemoryStorage instance
      *
      * @return MemoryStorage
@@ -446,23 +258,6 @@ class Kuzzle
         }
 
         return $memoryStorage;
-    }
-
-    /**
-     * Retrieves the current Kuzzle time.
-     *
-     * @param array $options Optional parameters
-     * @return DateTime
-     */
-    public function now(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'now'),
-            [],
-            $options
-        );
-
-        return new DateTime('@' . round($response['result']['now'] / 1000));
     }
 
     /**
@@ -575,33 +370,6 @@ class Kuzzle
     }
 
     /**
-     * Given an index, the refresh action forces a refresh, on it,
-     * making the documents visible to search immediately.
-     *
-     * @param string $index Optional. The index to refresh. If not set, defaults to Kuzzle->defaultIndex.
-     * @param array $options Optional parameters
-     * @return array structure matching the response from Elasticsearch
-     */
-    public function refreshIndex($index = '', array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to refresh index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'refresh', $index),
-            [],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      */
     public function removeAllListeners($event = '')
@@ -644,65 +412,6 @@ class Kuzzle
     }
 
     /**
-     * The autoRefresh flag, when set to true,
-     * will make Kuzzle perform a refresh request immediately after each write request,
-     * forcing the documents to be immediately visible to search
-     *
-     * @param string $index Optional The index to set the autoRefresh for. If not set, defaults to Kuzzle->defaultIndex
-     * @param bool $autoRefresh The value to set for the autoRefresh setting.
-     * @param array $options Optional parameters
-     * @return boolean
-     */
-    public function setAutoRefresh($index = '', $autoRefresh = false, array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'setAutoRefresh', $index),
-            [
-                'body' => [
-                    'autoRefresh' => $autoRefresh
-                ]
-            ],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
-     * Returns de current autoRefresh status for the given index
-     *
-     * @param string $index Optional TThe index to get the status from. Defaults to Kuzzle->defaultIndex
-     * @param array $options Optional parameters
-     * @return boolean
-     */
-    public function getAutoRefresh($index = '', array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'getAutoRefresh', $index),
-            [],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
      * Set the default data index. Has the same effect than the defaultIndex constructor option.
      *
      * @param $index
@@ -713,26 +422,6 @@ class Kuzzle
         $this->defaultIndex = $index;
 
         return $this;
-    }
-
-    /**
-     * Performs a partial update on the current user.
-     *
-     * @param array $content a plain javascript object representing the user's modification
-     * @param array $options (optional) arguments
-     * @return array
-     */
-    public function updateSelf(array $content, array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'updateSelf'),
-            [
-                'body' => $content
-            ],
-            $options
-        );
-
-        return $response['result'];
     }
 
     /**
@@ -795,23 +484,6 @@ class Kuzzle
     }
 
     /**
-     * Retrieves current user object.
-     *
-     * @param array $options (optional) arguments
-     * @return User
-     */
-    public function whoAmI(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('auth', 'getCurrentUser'),
-            [],
-            $options
-        );
-
-        return new User($this->security(), $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
-    }
-
-    /**
      * @param array $query
      * @param array $headers
      * @return array
@@ -858,79 +530,6 @@ class Kuzzle
     public function setRequestHandler(RequestInterface $handler)
     {
         $this->requestHandler = $handler;
-    }
-
-    /**
-     * Create credentials of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param $credentials
-     * @param array $options
-     * @return mixed
-     */
-    public function createMyCredentials($strategy, $credentials, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'createMyCredentials'), ['body' => $credentials], $options)['result'];
-    }
-
-    /**
-     * Delete credentials of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param array $options
-     * @return mixed
-     */
-    public function deleteMyCredentials($strategy, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'deleteMyCredentials'), [], $options)['result'];
-    }
-
-    /**
-     * Get credential information of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param array $options
-     * @return mixed
-     */
-    public function getMyCredentials($strategy, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'getMyCredentials'), [], $options)['result'];
-    }
-
-    /**
-     * Update credentials of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param $credentials
-     * @param array $options
-     * @return mixed
-     */
-    public function updateMyCredentials($strategy, $credentials, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'updateMyCredentials'), ['body' => $credentials], $options)['result'];
-    }
-
-    /**
-     * Validate credentials of the specified <strategy> for the current user.
-     *
-     * @param $strategy
-     * @param $credentials
-     * @param array $options
-     * @return mixed
-     */
-    public function validateMyCredentials($strategy, $credentials, array $options = [])
-    {
-        $options['httpParams'][':strategy'] = $strategy;
-
-        return $this->query($this->buildQueryArgs('auth', 'validateMyCredentials'), ['body' => $credentials], $options)['result'];
     }
 
     /**
