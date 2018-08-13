@@ -14,6 +14,7 @@ use Kuzzle\Util\CurlRequest;
 use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
 use Kuzzle\Bulk;
+use Kuzzle\Index;
 
 /**
  * Class Kuzzle
@@ -89,6 +90,11 @@ class Kuzzle
      */
     public $bulk;
 
+    /**
+     * @var Index Kuzzle's Index controller
+     */
+    public $index;
+
 
     /**
      * Kuzzle constructor.
@@ -127,6 +133,7 @@ class Kuzzle
 
         // API Controllers
         $this->bulk = new Bulk($this);
+        $this->index = new Index($this);
 
         return $this;
     }
@@ -191,30 +198,6 @@ class Kuzzle
             $this->buildQueryArgs('auth', 'checkToken'),
             [
                 'body' => ['token' => $token]
-            ],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
-     * Create an index
-     *
-     * @param $index
-     * @param array $options
-     * @return mixed
-     */
-    public function createIndex($index, array $options = [])
-    {
-        $options['httpParams'] = [
-            ':index' => $index
-        ];
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'create'),
-            [
-                'body' => ['index' => $index]
             ],
             $options
         );
@@ -407,23 +390,6 @@ class Kuzzle
         $response = $this->query($this->buildQueryArgs('collection', 'list', $index), $query, $options);
 
         return $response['result']['collections'];
-    }
-
-    /**
-     * Retrieves the list of indexes stored in Kuzzle.
-     *
-     * @param array $options Optional parameters
-     * @return array of index names
-     */
-    public function listIndexes(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'list'),
-            [],
-            $options
-        );
-
-        return $response['result']['indexes'];
     }
 
     /**
@@ -631,33 +597,6 @@ class Kuzzle
     }
 
     /**
-     * Given an index, the refresh action forces a refresh, on it,
-     * making the documents visible to search immediately.
-     *
-     * @param string $index Optional. The index to refresh. If not set, defaults to Kuzzle->defaultIndex.
-     * @param array $options Optional parameters
-     * @return array structure matching the response from Elasticsearch
-     */
-    public function refreshIndex($index = '', array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to refresh index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'refresh', $index),
-            [],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
      * @param string $event One of the event described in the Event Handling section of the kuzzle documentation
      */
     public function removeAllListeners($event = '')
@@ -697,65 +636,6 @@ class Kuzzle
         }
 
         return $security;
-    }
-
-    /**
-     * The autoRefresh flag, when set to true,
-     * will make Kuzzle perform a refresh request immediately after each write request,
-     * forcing the documents to be immediately visible to search
-     *
-     * @param string $index Optional The index to set the autoRefresh for. If not set, defaults to Kuzzle->defaultIndex
-     * @param bool $autoRefresh The value to set for the autoRefresh setting.
-     * @param array $options Optional parameters
-     * @return boolean
-     */
-    public function setAutoRefresh($index = '', $autoRefresh = false, array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'setAutoRefresh', $index),
-            [
-                'body' => [
-                    'autoRefresh' => $autoRefresh
-                ]
-            ],
-            $options
-        );
-
-        return $response['result'];
-    }
-
-    /**
-     * Returns de current autoRefresh status for the given index
-     *
-     * @param string $index Optional TThe index to get the status from. Defaults to Kuzzle->defaultIndex
-     * @param array $options Optional parameters
-     * @return boolean
-     */
-    public function getAutoRefresh($index = '', array $options = [])
-    {
-        if (empty($index)) {
-            if (empty($this->defaultIndex)) {
-                throw new InvalidArgumentException('Unable to set auto refresh on index: no index specified');
-            }
-
-            $index = $this->defaultIndex;
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('index', 'getAutoRefresh', $index),
-            [],
-            $options
-        );
-
-        return $response['result'];
     }
 
     /**
