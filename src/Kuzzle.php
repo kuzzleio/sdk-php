@@ -2,7 +2,6 @@
 
 namespace Kuzzle;
 
-use DateTime;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
@@ -15,6 +14,7 @@ use Kuzzle\Security\Security;
 use Kuzzle\Security\User;
 use Kuzzle\Bulk;
 use Kuzzle\Index;
+use Kuzzle\Server;
 
 /**
  * Class Kuzzle
@@ -95,6 +95,11 @@ class Kuzzle
      */
     public $index;
 
+    /**
+     * @var Server Kuzzle's Server controller
+     */
+    public $server;
+
 
     /**
      * Kuzzle constructor.
@@ -134,6 +139,7 @@ class Kuzzle
         // API Controllers
         $this->bulk = new Bulk($this);
         $this->index = new Index($this);
+        $this->server = new Server($this);
 
         return $this;
     }
@@ -236,24 +242,6 @@ class Kuzzle
     }
 
     /**
-     * Kuzzle monitors active connections, and ongoing/completed/failed requests.
-     * This method returns all available statistics from Kuzzle.
-     *
-     * @param array $options Optional parameters
-     * @return array[] each one of them being a statistic frame
-     */
-    public function getAllStatistics(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'getAllStats'),
-            [],
-            $options
-        );
-
-        return $response['result']['hits'];
-    }
-
-    /**
      * @return string
      */
     public function getDefaultIndex()
@@ -302,54 +290,6 @@ class Kuzzle
         );
 
         return $response['result']['hits'];
-    }
-
-    /**
-     * Retrieves information about Kuzzle, its plugins and active services.
-     *
-     * @param array $options Optional parameters
-     * @return array containing server information
-     */
-    public function getServerInfo(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'info'),
-            [],
-            $options
-        );
-
-        return $response['result']['serverInfo'];
-    }
-
-    /**
-     * Kuzzle monitors active connections, and ongoing/completed/failed requests.
-     * This method allows getting either the last statistics frame,
-     * or a set of frames starting from a provided timestamp.
-     *
-     * @param string $timestamp Optional starting time from which the frames are to be retrieved
-     * @param array $options Optional parameters
-     * @return array[] containing one or more statistics frame(s)
-     */
-    public function getStatistics($timestamp = '', array $options = [])
-    {
-        $data = [];
-
-        if (empty($timestamp)) {
-            $action = 'getLastStats';
-        } else {
-            $action = 'getStats';
-            $data['body'] = [
-                'startTime' => $timestamp
-            ];
-        }
-
-        $response = $this->query(
-            $this->buildQueryArgs('server', $action),
-            $data,
-            $options
-        );
-
-        return empty($timestamp) ? [$response['result']] : $response['result']['hits'];
     }
 
     /**
@@ -468,23 +408,6 @@ class Kuzzle
         }
 
         return $memoryStorage;
-    }
-
-    /**
-     * Retrieves the current Kuzzle time.
-     *
-     * @param array $options Optional parameters
-     * @return DateTime
-     */
-    public function now(array $options = [])
-    {
-        $response = $this->query(
-            $this->buildQueryArgs('server', 'now'),
-            [],
-            $options
-        );
-
-        return new DateTime('@' . round($response['result']['now'] / 1000));
     }
 
     /**
