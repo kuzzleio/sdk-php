@@ -54,6 +54,16 @@
       "name": "validateMyCredentials",
       "route": "/credentials/:strategy/_me/_validate",
       "method": "post"
+    },
+    "getStrategies": {
+      "name": "getStrategies",
+      "route": "/strategies",
+      "method": "get"
+    },
+    "credentialsExist": {
+      "name": "credentialsExist",
+      "route": "/credentials/:strategy/_me/_exists",
+      "method": "get"
     }
   },
   "bulk": {
@@ -250,7 +260,7 @@
   "index": {
     "mDelete": {
       "name": "mDelete",
-      "route": "/_mdelete",
+      "route": "/_mDelete",
       "method": "delete"
     },
     "create": {
