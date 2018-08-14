@@ -57,19 +57,6 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testSetDefaultIndex()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-        $index = 'index';
-
-        $kuzzle = new \Kuzzle\Kuzzle($url);
-        $kuzzle->setDefaultIndex($index);
-
-        // Assert Properties
-        $this->assertAttributeEquals($index, 'defaultIndex', $kuzzle);
-    }
-
     public function testSetJwtToken()
     {
         // Arrange
