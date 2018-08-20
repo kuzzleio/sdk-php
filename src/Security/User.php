@@ -3,6 +3,7 @@
 namespace Kuzzle\Security;
 
 use BadMethodCallException;
+use Kuzzle\Kuzzle;
 
 /**
  * Class User
@@ -11,41 +12,49 @@ use BadMethodCallException;
 class User
 {
     /**
-     * @var Security The kuzzle security instance associated to this document
+     * @var Kuzzle The kuzzle security instance associated to this User
      */
-    public $security;
+    public $kuzzle;
 
     /**
-     * @var string Unique document identifier
+     * @var string Unique User identifier
      */
-    public $id;
+    public $_id;
 
     /**
-     * @var array The content of the document
+     * @var array The User profileIds
      */
-    public $content;
+    public $profileIds;
 
-    /**
-     * @var array The metadata of the document
-     */
-    public $meta;
 
     /**
      * User constructor.
-     *
-     * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
-     * @param string $id Unique user identifier
-     * @param array $content User content
-     * @param array $meta User metadata
+     * @param kuzzle $kuzzle An instantiated Kuzzle object
+     * @param string $_id Unique profile identifier
+     * @param array $profileIds User profileIds
      * @return User
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
+    public function __construct(Kuzzle $kuzzle, $_id = '', array $profileIds = [])
     {
-        $this->security = $kuzzleSecurity;
-        $this->id = $id;
-        $this->content = $content;
-        $this->meta = $meta;
+        $this->kuzzle = $kuzzle;
+        $this->_id = $_id;
+        $this->profileIds = $profileIds;
 
         return $this;
+    }
+
+    /**
+     * Get user associated profiles
+     *
+     * @param array $options Optional Options
+     * @return Profiles[]
+     */
+    public function getProfiles(array $options = [])
+    {
+        if (empty($this->profileIds) || !$this->profileIds) {
+            return [];
+        }
+
+        return $this->kuzzle->security->mGetProfiles($this->profileIds, $options);
     }
 }

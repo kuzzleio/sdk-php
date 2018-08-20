@@ -2,6 +2,8 @@
 
 namespace Kuzzle\Security;
 
+use Kuzzle\Kuzzle;
+
 /**
  * Class Role
  * @package kuzzleio/kuzzle-sdk
@@ -9,40 +11,33 @@ namespace Kuzzle\Security;
 class Role
 {
     /**
-     * @var Security The kuzzle security instance associated to this document
+     * @var Kuzzle The kuzzle security instance associated to this Role
      */
-    public $security;
+    private $kuzzle;
 
     /**
-     * @var string Unique document identifier
+     * @var string Unique Role identifier
      */
-    public $id;
+    public $_id;
 
     /**
-     * @var array The content of the document
+     * @var array The Role controllers
      */
-    public $content;
+    public $controllers;
 
-    /**
-     * @var array The metadata of the document
-     */
-    public $meta;
 
     /**
      * Role constructor.
-     *
-     * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
-     * @param string $id Unique role identifier
-     * @param array $content Role content
-     * @param array $meta Role metadata
+     * @param kuzzle $kuzzle An instantiated Kuzzle object
+     * @param string $_id Unique role identifier
+     * @param array $controllers Role controllers
      * @return Role
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
+    public function __construct(Kuzzle $kuzzle, $_id = '', array $controllers = [])
     {
-        $this->security = $kuzzleSecurity;
-        $this->id = $id;
-        $this->content = $content;
-        $this->meta = $meta;
+        $this->kuzzle = $kuzzle;
+        $this->_id = $_id;
+        $this->controllers = $controllers;
 
         return $this;
     }

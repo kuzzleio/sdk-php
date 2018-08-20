@@ -14,7 +14,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $profileId = uniqid();
         $policies = [
-            [
+            'policies' => [
                 'roleId' => 'default',
                 'restrictedTo' => []
             ]
@@ -29,13 +29,13 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'createProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-                'body' => json_encode([ 'policies' => $policies])
+                'body' => json_encode($policies)
             ],
             'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
-            '_source' => [ 'policies' => $policies ],
+            '_source' => $policies,
             '_meta' => [],
             '_version' => 1
         ];
@@ -59,8 +59,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->createProfile($profileId, $policies, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
-        $this->assertAttributeEquals($profileId, 'id', $result);
-        $this->assertAttributeEquals(['policies' => $policies], 'content', $result);
+        $this->assertAttributeEquals($profileId, '_id', $result);
+        $this->assertAttributeEquals($policies['policies'], 'policies', $result);
     }
 
     public function testCreateProfileWithoutId()
@@ -70,17 +70,17 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createProfile('', [['roleId' => 'default', 'restrictedTo' => []]]);
+            $kuzzle->security->createProfile('', [ 'policies' => [ 'roleId' => 'default', 'restrictedTo' => [] ] ]);
 
             $this->fail('KuzzleTest::testCreateProfileWithoutId => Should raise an exception (could not be called without profile id or policies)');
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createProfile: Unable to create profile: no id or policies specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createProfile: Unable to create profile: no id or body specified', $e->getMessage());
         }
     }
 
-    public function testCreateProfileWithoutPolicies()
+    public function testCreateProfileWithoutBody()
     {
         // Arrange
         $url = self::FAKE_KUZZLE_HOST;
@@ -93,7 +93,24 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createProfile: Unable to create profile: no id or policies specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createProfile: Unable to create profile: no id or body specified', $e->getMessage());
+        }
+    }
+
+    public function testCreateProfileWithMalformedBody()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createProfile('profile', [ 'roleId' => 'default', 'restrictedTo' => [] ]);
+
+            $this->fail('KuzzleTest::testCreateProfileWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createProfile: Unable to create given profile: body["policies"] property is required', $e->getMessage());
         }
     }
 
@@ -104,7 +121,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $profileId = uniqid();
         $policies = [
-            [
+            'policies' => [
                 'roleId' => 'default',
                 'restrictedTo' => []
             ]
@@ -119,13 +136,13 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'createOrReplaceProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-                'body' => json_encode([ 'policies' => $policies])
+                'body' => json_encode($policies)
             ],
             'query_parameters' => []
         ];
         $saveResponse = [
             '_id' => $profileId,
-            '_source' => [ 'policies' => $policies ],
+            '_source' => $policies,
             '_meta' => [],
             '_version' => 1
         ];
@@ -152,8 +169,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
-        $this->assertAttributeEquals($profileId, 'id', $result);
-        $this->assertAttributeEquals([ 'policies' => $policies ], 'content', $result);
+        $this->assertAttributeEquals($profileId, '_id', $result);
+        $this->assertAttributeEquals($policies['policies'], 'policies', $result);
     }
 
     public function testCreateOrReplaceProfileWithoutId()
@@ -163,13 +180,13 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createOrReplaceProfile('', [['roleId' => 'default', 'restrictedTo' => []]]);
+            $kuzzle->security->createOrReplaceProfile('', [ 'policies' => [ 'roleId' => 'default', 'restrictedTo' => [] ] ]);
 
             $this->fail('KuzzleTest::testCreateOrReplaceProfileWithoutId => Should raise an exception (could not be called without profile id or policies)');
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace profile: no id or policies specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace profile: no id or body specified', $e->getMessage());
         }
     }
 
@@ -186,7 +203,24 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace profile: no id or policies specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace profile: no id or body specified', $e->getMessage());
+        }
+    }
+
+    public function testCreateOrReplaceProfileWithMalformedPolicies()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createOrReplaceProfile('profile', [ 'roleId' => 'default', 'restrictedTo' => [] ]);
+
+            $this->fail('KuzzleTest::testCreateOrReplaceProfileWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace given profile: body["policies"] property is required', $e->getMessage());
         }
     }
 
@@ -197,7 +231,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $roleId = uniqid();
         $roleContent = [
-            'allowInternalIndex' => false,
             'controllers' => [
                 '*' => [
                     'actions'=> [
@@ -246,8 +279,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->createRole($roleId, $roleContent, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Role', $result);
-        $this->assertAttributeEquals($roleId, 'id', $result);
-        $this->assertAttributeEquals($roleContent, 'content', $result);
+        $this->assertAttributeEquals($roleId, '_id', $result);
+        $this->assertAttributeEquals($roleContent['controllers'], 'controllers', $result);
     }
 
     public function testCreateRoleWithoutId()
@@ -257,17 +290,17 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createRole('', [['roleId' => 'default', 'restrictedTo' => []]]);
+            $kuzzle->security->createRole('', [ 'controllers' => [ '*' => [ 'actions'=> [ ['*' => true] ] ] ] ]);
 
             $this->fail('KuzzleTest::testCreateRoleWithoutId => Should raise an exception (could not be called without profile id or policies)');
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createRole: Unable to create role: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createRole: Unable to create role: no id or body specified', $e->getMessage());
         }
     }
 
-    public function testCreateRoleWithoutContent()
+    public function testCreateRoleWithoutBody()
     {
         // Arrange
         $url = self::FAKE_KUZZLE_HOST;
@@ -280,7 +313,24 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createRole: Unable to create role: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createRole: Unable to create role: no id or body specified', $e->getMessage());
+        }
+    }
+
+    public function testCreateRoleWithMalformedBody()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createRole('profile', [ '*' => [ 'actions'=> [ ['*' => true] ] ] ]);
+
+            $this->fail('KuzzleTest::testCreateRoleWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createRole: Unable to create given role: body["controllers"] property is required', $e->getMessage());
         }
     }
 
@@ -291,7 +341,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $roleId = uniqid();
         $roleContent = [
-            'allowInternalIndex' => false,
             'controllers' => [
                 '*' => [
                     'actions'=> [
@@ -343,8 +392,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertInstanceOf('Kuzzle\Security\Role', $result);
-        $this->assertAttributeEquals($roleId, 'id', $result);
-        $this->assertAttributeEquals($roleContent, 'content', $result);
+        $this->assertAttributeEquals($roleId, '_id', $result);
+        $this->assertAttributeEquals($roleContent['controllers'], 'controllers', $result);
     }
 
     public function testCreateOrReplaceRoleWithoutId()
@@ -354,7 +403,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createOrReplaceRole('', [['roleId' => 'default', 'restrictedTo' => []]]);
+            $kuzzle->security->createOrReplaceRole('', [ 'controllers' => [ '*' => [ 'actions'=> [ ['*' => true] ] ] ] ]);
 
             $this->fail('KuzzleTest::testCreateOrReplaceRoleWithoutId => Should raise an exception (could not be called without profile id or policies)');
         }
@@ -364,7 +413,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCreateOrReplaceRoleWithoutContent()
+    public function testCreateOrReplaceRoleWithoutBody()
     {
         // Arrange
         $url = self::FAKE_KUZZLE_HOST;
@@ -378,6 +427,23 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
             $this->assertEquals('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or content specified', $e->getMessage());
+        }
+    }
+
+    public function testCreateOrReplaceRoleWithMalformedBody()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createOrReplaceRole('profile', [ '*' => [ 'actions'=> [ ['*' => true] ] ] ]);
+
+            $this->fail('KuzzleTest::testCreateOrReplaceRoleWithoutContent => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createOrReplaceRole: Unable to create or replace given role: body["controllers"] property is required', $e->getMessage());
         }
     }
 
@@ -409,7 +475,9 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
         $saveResponse = [
             '_id' => $userId,
-            '_source' => $userContent,
+            '_source' => [
+                'profileIds' => ['admin']
+            ],
             '_meta' => [],
             '_version' => 1
         ];
@@ -433,8 +501,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->createUser($userId, $userContent, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\User', $result);
-        $this->assertAttributeEquals($userId, 'id', $result);
-        $this->assertAttributeEquals($userContent, 'content', $result);
+        $this->assertAttributeEquals($userId, '_id', $result);
     }
 
     public function testCreateUserWithoutId()
@@ -444,32 +511,68 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createUser('', [['roleId' => 'default', 'restrictedTo' => []]]);
+            $kuzzle->security->createUser('', [ 'content' => [ 'profileIds' => ['admin'] ], 'credentials' => ['some' => 'credentials'] ]);
 
             $this->fail('KuzzleTest::testCreateUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createUser: Unable to create user: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createUser: Unable to create user: no id or body specified', $e->getMessage());
         }
     }
 
-    public function testCreateUserWithoutContent()
+    public function testCreateUserWithoutBody()
     {
         // Arrange
         $url = self::FAKE_KUZZLE_HOST;
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createUser('profile', []);
+            $kuzzle->security->createUser('user', []);
 
             $this->fail('KuzzleTest::testCreateUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createUser: Unable to create user: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createUser: Unable to create user: no id or body specified', $e->getMessage());
         }
     }
+
+    public function testCreateUserWithMalformedBodyCredentials()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createUser('profile', [ 'content' => [ 'profileIds' => ['admin'] ] ]);
+
+            $this->fail('KuzzleTest::testCreateUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createUser: Unable to create user: body["credentials"] is required', $e->getMessage());
+        }
+    }
+
+
+    public function testCreateUserWithMalformedBodyContent()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createUser('profile', [ 'credentials' => [ 'profileIds' => ['admin'] ] ]);
+
+            $this->fail('KuzzleTest::testCreateUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createUser: Unable to create user: body["content"] is required', $e->getMessage());
+        }
+    }
+
 
     function testCreateRestrictedUser()
     {
@@ -478,7 +581,10 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $userId = uniqid();
         $userContent = [
-            'some' => 'content'
+            'content' => [
+                'profileIds' => ['admin']
+            ],
+            'credentials' => ['some' => 'credentials']
         ];
 
         $httpRequest = [
@@ -496,7 +602,9 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
         $saveResponse = [
             '_id' => $userId,
-            '_source' => $userContent,
+            '_source' => [
+                'profileIds' => ['admin']
+            ],
             '_meta' => [],
             '_version' => 1
         ];
@@ -520,8 +628,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->createRestrictedUser($userId, $userContent, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\User', $result);
-        $this->assertAttributeEquals($userId, 'id', $result);
-        $this->assertAttributeEquals($userContent, 'content', $result);
+        $this->assertAttributeEquals($userId, '_id', $result);
     }
 
     public function testCreateRestrictedUserWithoutId()
@@ -558,14 +665,52 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testCreateRestrictedUserWithMalformedBodyCredentials()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createRestrictedUser('profile', [ 'content' => [ 'profileIds' => ['admin'] ] ]);
+
+            $this->fail('KuzzleTest::testCreateRestrictedUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["credentials"] is required', $e->getMessage());
+        }
+    }
+
+
+    public function testCreateRestrictedUserWithMalformedBodyContent()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createRestrictedUser('profile', [ 'credentials' => [ 'profileIds' => ['admin'] ] ]);
+
+            $this->fail('KuzzleTest::testCreateRestrictedUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["content"] is required', $e->getMessage());
+        }
+    }
+
     function testCreateFirstAdmin()
     {
         $url = self::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
-        $reset = true;
+        $reset = false;
         $userId = uniqid();
         $userContent = [
-            'some' => 'content'
+            'content' => [
+                'name' => "The New Admin"
+            ],
+            'credentials' => ['some' => 'credentials']
         ];
 
         $httpRequest = [
@@ -583,7 +728,9 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
         $saveResponse = [
             '_id' => $userId,
-            '_source' => $userContent,
+            '_source' => [
+                'profileIds' => ['admin']
+            ],
             '_meta' => [],
             '_version' => 1
         ];
@@ -604,27 +751,79 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             ->with($httpRequest)
             ->willReturn($httpResponse);
 
-        $result = $kuzzle->security->createFirstAdmin($reset, $userContent, ['requestId' => $requestId]);
+        $result = $kuzzle->security->createFirstAdmin($userContent, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\User', $result);
-        $this->assertAttributeEquals($userId, 'id', $result);
-        $this->assertAttributeEquals($userContent, 'content', $result);
+        $this->assertAttributeEquals($userId, '_id', $result);
+        $this->assertAttributeEquals(['admin'], 'profileIds', $result);
     }
 
-    public function testCreateFirstAdminWithoutContent()
+    public function testCreateFirstAdminWithoutBody()
     {
         // Arrange
         $url = self::FAKE_KUZZLE_HOST;
 
         try {
             $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createFirstAdmin(true, []);
+            $kuzzle->security->createFirstAdmin([]);
 
             $this->fail('KuzzleTest::testCreateFirstAdminWithoutId => Should raise an exception (could not be called without profile id or policies)');
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
             $this->assertEquals('Kuzzle\Security::createFirstAdmin: Unable to create first admin: no id or content specified', $e->getMessage());
+        }
+    }
+
+    public function testCreateFirstAdminWithMalformedBody()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createFirstAdmin([ 'content' => [ 'name' => "The New Admin" ]]);
+
+            $this->fail('KuzzleTest::testCreateFirstAdminWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["credentials"] is required', $e->getMessage());
+        }
+    }
+
+    public function testCreateFirstAdminWithMalformedBodyCredentials()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createFirstAdmin([ 'content' => [ 'profileIds' => ['admin'] ] ]);
+
+            $this->fail('KuzzleTest::testCreateFirstAdminWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["credentials"] is required', $e->getMessage());
+        }
+    }
+
+
+    public function testCreateFirstAdminWithMalformedBodyContent()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->createFirstAdmin([ 'credentials' => [ 'profileIds' => ['admin'] ] ]);
+
+            $this->fail('KuzzleTest::testCreateFirstAdminWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["content"] is required', $e->getMessage());
         }
     }
 
@@ -677,7 +876,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $result = $kuzzle->security->replaceUser($userId, $userContent, ['requestId' => $requestId]);
 
-        $this->assertEquals($userContent, $result->content);
+        $this->assertEquals($userContent['profileIds'], $result->profileIds);
     }
 
     public function testReplaceUserWithoutId()
@@ -756,7 +955,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $result = $kuzzle->security->deleteProfile($profileId, ['requestId' => $requestId]);
 
-        $this->assertEquals($profileId, $result);
+        $this->assertEquals($profileId, $result['_id']);
     }
 
     public function testDeleteProfileWithoutId()
@@ -773,129 +972,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
             $this->assertEquals('Kuzzle\Security::deleteProfile: Unable to delete profile: no id specified', $e->getMessage());
-        }
-    }
-
-    function testScrollProfiles()
-    {
-        $url = self::FAKE_KUZZLE_HOST;
-        $requestId = uniqid();
-        $scrollId = uniqid();
-
-        $httpSearchRequest = [
-            'route' => '/profiles/_search',
-            'method' => 'POST',
-            'request' => [
-                'volatile' => [],
-                'controller' => 'security',
-                'action' => 'searchProfiles',
-                'requestId' => $requestId,
-                'body' => json_encode([])
-            ],
-            'query_parameters' => [
-                'from' => 0,
-                'size' => 1,
-                'scroll' => '30s'
-            ]
-        ];
-
-        $httpScrollRequest = [
-            'route' => '/profiles/_scroll/' . $scrollId,
-            'method' => 'GET',
-            'request' => [
-                'volatile' => [],
-                'controller' => 'security',
-                'action' => 'scrollProfiles',
-                'requestId' => $requestId,
-            ],
-            'query_parameters' => []
-        ];
-        $searchResponse = [
-            'hits' => [
-                0 => [
-                    '_id' => 'test',
-                    '_source' => [
-                        'foo' => 'bar'
-                    ],
-                    '_meta' => []
-                ]
-            ],
-            'scrollId' => $scrollId,
-            'total' => 2
-        ];
-        $scrollResponse = [
-            'hits' => [
-                0 => [
-                    '_id' => 'test1',
-                    '_source' => [
-                        'foo' => 'bar'
-                    ],
-                    '_meta' => []
-                ]
-            ],
-            'total' => 2
-        ];
-        $httpSearchResponse = [
-            'error' => null,
-            'result' => $searchResponse
-        ];
-        $httpScrollResponse = [
-            'error' => null,
-            'result' => $scrollResponse
-        ];
-
-        $kuzzle = $this
-            ->getMockBuilder('\Kuzzle\Kuzzle')
-            ->setMethods(['emitRestRequest'])
-            ->setConstructorArgs([$url])
-            ->getMock();
-
-        $kuzzle
-            ->expects($this->at(0))
-            ->method('emitRestRequest')
-            ->with($httpSearchRequest)
-            ->willReturn($httpSearchResponse);
-
-        $kuzzle
-            ->expects($this->at(1))
-            ->method('emitRestRequest')
-            ->with($httpScrollRequest)
-            ->willReturn($httpScrollResponse);
-
-
-        $searchProfilesResult = $kuzzle->security->searchProfiles([], ['scroll' => '30s', 'from' => 0, 'size' => 1, 'requestId' => $requestId]);
-
-        $this->assertInstanceOf('Kuzzle\Util\ProfilesSearchResult', $searchProfilesResult);
-        $this->assertInternalType('array', $searchProfilesResult->getProfiles());
-        $this->assertEquals(1, count($searchProfilesResult->getProfiles()));
-        $this->assertInstanceOf('Kuzzle\Security\Profile', $searchProfilesResult->getProfiles()[0]);
-        $this->assertAttributeEquals('test', 'id', $searchProfilesResult->getProfiles()[0]);
-        $this->assertNotNull($searchProfilesResult->getScrollId());
-
-        $scrollProfilesResult = $kuzzle->security->scrollProfiles($searchProfilesResult->getScrollId(), ['requestId' => $requestId]);
-
-        $this->assertInstanceOf('Kuzzle\Util\ProfilesSearchResult', $scrollProfilesResult);
-        $this->assertInternalType('array', $scrollProfilesResult->getProfiles());
-        $this->assertEquals(1, count($scrollProfilesResult->getProfiles()));
-        $this->assertInstanceOf('Kuzzle\Security\Profile', $scrollProfilesResult->getProfiles()[0]);
-        $this->assertAttributeEquals('test1', 'id', $scrollProfilesResult->getProfiles()[0]);
-        $this->assertNotNull($scrollProfilesResult->getScrollId());
-    }
-
-    public function testScrollProfilesWithoutId()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->scrollProfiles('');
-
-            $this->fail('KuzzleTest::testScrollProfilesWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::scrollProfiles: scrollId is required', $e->getMessage());
         }
     }
 
@@ -941,7 +1017,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $result = $kuzzle->security->deleteUser($userId, ['requestId' => $requestId]);
 
-        $this->assertEquals($userId, $result);
+        $this->assertEquals($userId, $result['_id']);
     }
 
     public function testDeleteUserWithoutId()
@@ -958,129 +1034,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
             $this->assertEquals('Kuzzle\Security::deleteUser: id is required', $e->getMessage());
-        }
-    }
-
-    function testScrollUsers()
-    {
-        $url = self::FAKE_KUZZLE_HOST;
-        $requestId = uniqid();
-        $scrollId = uniqid();
-
-        $httpSearchRequest = [
-            'route' => '/users/_search',
-            'method' => 'POST',
-            'request' => [
-                'volatile' => [],
-                'controller' => 'security',
-                'action' => 'searchUsers',
-                'requestId' => $requestId,
-                'body' => json_encode([])
-            ],
-            'query_parameters' => [
-                'from' => 0,
-                'size' => 1,
-                'scroll' => '30s'
-            ]
-        ];
-
-        $httpScrollRequest = [
-            'route' => '/users/_scroll/' . $scrollId,
-            'method' => 'GET',
-            'request' => [
-                'volatile' => [],
-                'controller' => 'security',
-                'action' => 'scrollUsers',
-                'requestId' => $requestId,
-            ],
-            'query_parameters' => []
-        ];
-        $searchResponse = [
-            'hits' => [
-                0 => [
-                    '_id' => 'test',
-                    '_source' => [
-                        'foo' => 'bar'
-                    ],
-                    '_meta' => []
-                ]
-            ],
-            'scrollId' => $scrollId,
-            'total' => 2
-        ];
-        $scrollResponse = [
-            'hits' => [
-                0 => [
-                    '_id' => 'test1',
-                    '_source' => [
-                        'foo' => 'bar'
-                    ],
-                    '_meta' => []
-                ]
-            ],
-            'total' => 2
-        ];
-        $httpSearchResponse = [
-            'error' => null,
-            'result' => $searchResponse
-        ];
-        $httpScrollResponse = [
-            'error' => null,
-            'result' => $scrollResponse
-        ];
-
-        $kuzzle = $this
-            ->getMockBuilder('\Kuzzle\Kuzzle')
-            ->setMethods(['emitRestRequest'])
-            ->setConstructorArgs([$url])
-            ->getMock();
-
-        $kuzzle
-            ->expects($this->at(0))
-            ->method('emitRestRequest')
-            ->with($httpSearchRequest)
-            ->willReturn($httpSearchResponse);
-
-        $kuzzle
-            ->expects($this->at(1))
-            ->method('emitRestRequest')
-            ->with($httpScrollRequest)
-            ->willReturn($httpScrollResponse);
-
-
-        $searchUsersResult = $kuzzle->security->searchUsers([], ['scroll' => '30s', 'from' => 0, 'size' => 1, 'requestId' => $requestId]);
-
-        $this->assertInstanceOf('Kuzzle\Util\UsersSearchResult', $searchUsersResult);
-        $this->assertInternalType('array', $searchUsersResult->getUsers());
-        $this->assertEquals(1, count($searchUsersResult->getUsers()));
-        $this->assertInstanceOf('Kuzzle\Security\User', $searchUsersResult->getUsers()[0]);
-        $this->assertAttributeEquals('test', 'id', $searchUsersResult->getUsers()[0]);
-        $this->assertNotNull($searchUsersResult->getScrollId());
-
-        $scrollUsersResult = $kuzzle->security->scrollUsers($searchUsersResult->getScrollId(), ['requestId' => $requestId]);
-
-        $this->assertInstanceOf('Kuzzle\Util\UsersSearchResult', $scrollUsersResult);
-        $this->assertInternalType('array', $scrollUsersResult->getUsers());
-        $this->assertEquals(1, count($scrollUsersResult->getUsers()));
-        $this->assertInstanceOf('Kuzzle\Security\User', $scrollUsersResult->getUsers()[0]);
-        $this->assertAttributeEquals('test1', 'id', $scrollUsersResult->getUsers()[0]);
-        $this->assertNotNull($searchUsersResult->getScrollId());
-    }
-
-    public function testScrollUsersWithoutId()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->scrollUsers('');
-
-            $this->fail('KuzzleTest::testScrollUsersWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::scrollUsers: scrollId is required', $e->getMessage());
         }
     }
 
@@ -1126,7 +1079,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $result = $kuzzle->security->deleteRole($roleId, ['requestId' => $requestId]);
 
-        $this->assertEquals($roleId, $result);
+        $this->assertEquals($roleId, $result['_id']);
     }
 
     public function testDeleteRoleWithoutId()
@@ -1154,11 +1107,9 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $profileId = uniqid();
         $profileContent = [
             'policies' => [
-                [
-                    'roleId' => 'default',
-                    'restrictedTo' => [],
-                    'allowInternalIndex'=> true
-                ]
+                'roleId' => 'default',
+                'restrictedTo' => [],
+                'allowInternalIndex'=> true
             ]
         ];
 
@@ -1199,8 +1150,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->getProfile($profileId, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
-        $this->assertAttributeEquals($profileId, 'id', $result);
-        $this->assertAttributeEquals($profileContent, 'content', $result);
+        $this->assertAttributeEquals($profileId, '_id', $result);
+        $this->assertAttributeEquals($profileContent['policies'], 'policies', $result);
     }
 
     public function testGetProfileWithoutId()
@@ -1274,8 +1225,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->getRole($roleId, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Role', $result);
-        $this->assertAttributeEquals($roleId, 'id', $result);
-        $this->assertAttributeEquals($roleContent, 'content', $result);
+        $this->assertAttributeEquals($roleId, '_id', $result);
+        $this->assertAttributeEquals($roleContent['controllers'], 'controllers', $result);
     }
 
     public function testGetRoleWithoutId()
@@ -1342,8 +1293,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->getUser($userId, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\User', $result);
-        $this->assertAttributeEquals($userId, 'id', $result);
-        $this->assertAttributeEquals($userContent, 'content', $result);
+        $this->assertAttributeEquals($userId, '_id', $result);
+        $this->assertAttributeEquals($userContent['profileIds'], 'profileIds', $result);
     }
 
     public function testGetUserWithoutId()
@@ -1580,15 +1531,15 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             ->with($httpRequest)
             ->willReturn($httpResponse);
 
-        $searchResult = $kuzzle->security->searchProfiles($filter, ['requestId' => $requestId]);
+        $searchResult = $kuzzle->security->searchProfiles($filter, ['scrollId' => 'YesScroll', 'requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Util\ProfilesSearchResult', $searchResult);
         $this->assertEquals(2, $searchResult->getTotal());
 
         $profiles = $searchResult->getProfiles();
         $this->assertInstanceOf('Kuzzle\Security\Profile', $profiles[0]);
-        $this->assertAttributeEquals('test', 'id', $profiles[0]);
-        $this->assertAttributeEquals('test1', 'id', $profiles[1]);
+        $this->assertAttributeEquals('test', '_id', $profiles[0]);
+        $this->assertAttributeEquals('test1', '_id', $profiles[1]);
     }
 
     function testSearchRoles()
@@ -1670,15 +1621,15 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             ->with($httpRequest)
             ->willReturn($httpResponse);
 
-        $searchResult = $kuzzle->security->searchRoles($filter, ['requestId' => $requestId]);
+        $searchResult = $kuzzle->security->searchRoles($filter, ['scrollId' => 'YesScroll', 'requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Util\RolesSearchResult', $searchResult);
         $this->assertEquals(2, $searchResult->getTotal());
 
         $profiles = $searchResult->getRoles();
         $this->assertInstanceOf('Kuzzle\Security\Role', $profiles[0]);
-        $this->assertAttributeEquals('test', 'id', $profiles[0]);
-        $this->assertAttributeEquals('test1', 'id', $profiles[1]);
+        $this->assertAttributeEquals('test', '_id', $profiles[0]);
+        $this->assertAttributeEquals('test1', '_id', $profiles[1]);
     }
 
     function testSearchUsers()
@@ -1714,7 +1665,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test',
                     '_source' => [
                         'foo' => 'bar',
-                        'profile' => 'default'
+                        'profileIds' => ['default']
                     ],
                     '_meta' => [],
                 ],
@@ -1722,7 +1673,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                     '_id' => 'test1',
                     '_source' => [
                         'foo' => 'bar',
-                        'profile' => 'default'
+                        'profileIds' => ['default']
                     ],
                     '_meta' => [],
                 ]
@@ -1746,15 +1697,15 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             ->with($httpRequest)
             ->willReturn($httpResponse);
 
-        $searchResult = $kuzzle->security->searchUsers($filter, ['requestId' => $requestId]);
+        $searchResult = $kuzzle->security->searchUsers($filter, ['scrollId' => 'YesScroll', 'requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Util\UsersSearchResult', $searchResult);
         $this->assertEquals(2, $searchResult->getTotal());
 
         $profiles = $searchResult->getUsers();
         $this->assertInstanceOf('Kuzzle\Security\User', $profiles[0]);
-        $this->assertAttributeEquals('test', 'id', $profiles[0]);
-        $this->assertAttributeEquals('test1', 'id', $profiles[1]);
+        $this->assertAttributeEquals('test', '_id', $profiles[0]);
+        $this->assertAttributeEquals('test1', '_id', $profiles[1]);
     }
 
 
@@ -1766,7 +1717,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $profileId = uniqid();
         $policiesBase = [
-            [
+            'policies' => [
                 'roleId' => 'anonymous',
                 'restrictedTo' => [
                     ['index' => 'my-second-index', 'collection' => ['my-collection']]
@@ -1774,7 +1725,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             ]
         ];
         $policies = [
-            [
+            'policies' => [
                 'roleId' => 'default',
                 'restrictedTo' => [
                     ['index' => 'my-index'],
@@ -1792,15 +1743,14 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'updateProfile',
                 'requestId' => $requestId,
                 '_id' => $profileId,
-                'body' => json_encode([ 'policies' => $policies ])
+                'body' => json_encode($policies)
             ],
             'query_parameters' => []
         ];
         $updateResponse = [
             '_id' => $profileId,
-            '_source' => [ 'policies' => array_merge($policiesBase, $policies) ],
             '_meta' => [],
-            '_version' => 1
+            '_version' => 2
         ];
         $httpResponse = [
             'error' => null,
@@ -1822,8 +1772,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->updateProfile($profileId, $policies, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Profile', $result);
-        $this->assertAttributeEquals($profileId, 'id', $result);
-        $this->assertAttributeEquals(['policies' => array_merge($policiesBase, $policies)], 'content', $result);
+        $this->assertAttributeEquals($profileId, '_id', $result);
     }
 
     public function testUpdateProfileWithoutId()
@@ -1839,11 +1788,11 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::updateProfile: id and policies are required', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::updateProfile: id and body are required', $e->getMessage());
         }
     }
 
-    public function testUpdateProfileWithoutPolicies()
+    public function testUpdateProfileWithoutBody()
     {
         // Arrange
         $url = self::FAKE_KUZZLE_HOST;
@@ -1856,7 +1805,24 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::updateProfile: id and policies are required', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::updateProfile: id and body are required', $e->getMessage());
+        }
+    }
+
+    public function testUpdateProfileWithoutPoliciesInBody()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->updateProfile('profile', ['POLICIES']);
+
+            $this->fail('KuzzleTest::testUpdateProfileWithoutId => Should raise an exception (could not be called without profile id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::updateProfile: Unable to update given profile: body["policies"] property is required', $e->getMessage());
         }
     }
 
@@ -1895,9 +1861,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
         $updateResponse = [
             '_id' => $roleId,
-            '_source' => array_merge($roleContent, $roleUpdateContent),
             '_meta' => [],
-            '_version' => 1
+            '_version' => 2
         ];
         $httpResponse = [
             'error' => null,
@@ -1919,8 +1884,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->updateRole($roleId, $roleUpdateContent, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\Role', $result);
-        $this->assertAttributeEquals($roleId, 'id', $result);
-        $this->assertAttributeEquals(array_merge($roleContent, $roleUpdateContent), 'content', $result);
+        $this->assertAttributeEquals($roleId, '_id', $result);
     }
 
     public function testUpdateRoleWithoutId()
@@ -1986,9 +1950,8 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         ];
         $updateResponse = [
             '_id' => $userId,
-            '_source' => array_merge($userBaseContent, $userContent),
             '_meta' => [],
-            '_version' => 1
+            '_version' => 2
         ];
         $httpResponse = [
             'error' => null,
@@ -2010,8 +1973,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $result = $kuzzle->security->updateUser($userId, $userContent, ['requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Security\User', $result);
-        $this->assertAttributeEquals($userId, 'id', $result);
-        $this->assertAttributeEquals(array_merge($userBaseContent, $userContent), 'content', $result);
+        $this->assertAttributeEquals($userId, '_id', $result);
     }
 
     public function testUpdateUserWithoutId()
@@ -2795,8 +2757,26 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $httpResponse = [
             "result" => [
                 "hits" => [
-                    ["_id" => "foo"],
-                    ["_id" => "bar"]
+                    [
+                        "_id" => "foo",
+                        "_source" => [
+                            'policies' => [
+                                'roleId' => 'default',
+                                'restrictedTo' => [],
+                                'allowInternalIndex'=> true
+                            ]
+                        ]
+                    ],
+                    [
+                        "_id" => "bar",
+                        "_source" => [
+                            'policies' => [
+                                'roleId' => 'default',
+                                'restrictedTo' => [],
+                                'allowInternalIndex'=> true
+                            ]
+                        ]
+                    ]
                 ]
             ]
         ];
@@ -2808,7 +2788,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             ->willReturn($httpResponse);
 
         $result = $kuzzle->security->mGetProfiles(["foo", "bar"], $options);
-        $this->assertEquals($httpResponse['result']['hits'][0]['_id'], $result[0]['_id']);
+        $this->assertEquals($httpResponse['result']['hits'][0]['_id'], $result[0]->_id);
     }
 
     public function testMGetProfilesWithoutIds()
@@ -2859,8 +2839,30 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $httpResponse = [
             "result" => [
                 "hits" => [
-                    ["_id" => "foo"],
-                    ["_id" => "bar"]
+                    [
+                        "_id" => "foo",
+                        "_source" => [
+                            'controllers' => [
+                                '*' => [
+                                    'actions'=> [
+                                        ['*' => true]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        "_id" => "bar",
+                        "_source" => [
+                            'controllers' => [
+                                '*' => [
+                                    'actions'=> [
+                                        ['*' => true]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
                 ]
             ]
         ];
@@ -2872,7 +2874,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
             ->willReturn($httpResponse);
 
         $result = $kuzzle->security->mGetRoles(["foo", "bar"], $options);
-        $this->assertEquals($httpResponse['result']['hits'][0]['_id'], $result[0]['_id']);
+        $this->assertEquals($httpResponse['result']['hits'][0]['_id'], $result[0]->_id);
     }
 
     public function testMGetRolesWithoutIds()
@@ -3197,9 +3199,11 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $url = self::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $mapping = [
-            'field' => [
-                'type' => 'prank',
-                'other' => 'anotherPrank'
+            "properties" => [
+                'field' => [
+                    'type' => 'prank',
+                    'other' => 'anotherPrank'
+                ]
             ]
         ];
 
@@ -3211,7 +3215,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'security',
                 'action' => 'updateProfileMapping',
                 'requestId' => $requestId,
-                'body' => json_encode(['properties' => $mapping])
+                'body' => json_encode($mapping)
             ],
             'query_parameters' => []
         ];
@@ -3237,7 +3241,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $result = $kuzzle->security->updateProfileMapping($mapping, ['requestId' => $requestId]);
 
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result['acknowledged']);
     }
 
     public function testUpdateProfileMappingWithoutMapping()
@@ -3253,7 +3257,24 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::updateProfileMapping: mapping is required', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::updateProfileMapping: body is required', $e->getMessage());
+        }
+    }
+
+    public function testUpdateProfileMappingWithMalformedBody()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->updateProfileMapping(["malformed" => "content"]);
+
+            $this->fail('KuzzleTest::testMDeleteUsersWithMalformedBody => Should raise an exception (could not be called without users id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::updateProfileMapping: Unable to update given profile mapping: body["properties"] property is required', $e->getMessage());
         }
     }
 
@@ -3262,9 +3283,11 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $url = self::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $mapping = [
-            'field' => [
-                'type' => 'prank',
-                'other' => 'anotherPrank'
+            "properties" => [
+                'field' => [
+                    'type' => 'prank',
+                    'other' => 'anotherPrank'
+                ]
             ]
         ];
 
@@ -3276,7 +3299,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'security',
                 'action' => 'updateRoleMapping',
                 'requestId' => $requestId,
-                'body' => json_encode(['properties' => $mapping])
+                'body' => json_encode($mapping)
             ],
             'query_parameters' => []
         ];
@@ -3302,7 +3325,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $result = $kuzzle->security->updateRoleMapping($mapping, ['requestId' => $requestId]);
 
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result['acknowledged']);
     }
 
     public function testUpdateRoleMappingWithoutMapping()
@@ -3322,14 +3345,33 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testUpdateRoleMappingWithMalformedBody()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->updateRoleMapping(["malformed" => "content"]);
+
+            $this->fail('KuzzleTest::testMDeleteRolesWithMalformedBody => Should raise an exception (could not be called without users id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::updateRoleMapping: Unable to update given role mapping: body["properties"] property is required', $e->getMessage());
+        }
+    }
+
     function testUpdateUserMapping()
     {
         $url = self::FAKE_KUZZLE_HOST;
         $requestId = uniqid();
         $mapping = [
-            'field' => [
-                'type' => 'prank',
-                'other' => 'anotherPrank'
+            "properties" => [
+                'field' => [
+                    'type' => 'prank',
+                    'other' => 'anotherPrank'
+                ]
             ]
         ];
 
@@ -3341,7 +3383,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'security',
                 'action' => 'updateUserMapping',
                 'requestId' => $requestId,
-                'body' => json_encode(['properties' => $mapping])
+                'body' => json_encode($mapping)
             ],
             'query_parameters' => []
         ];
@@ -3367,7 +3409,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 
         $result = $kuzzle->security->updateUserMapping($mapping, ['requestId' => $requestId]);
 
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, $result['acknowledged']);
     }
 
     public function testUpdateUserMappingWithoutMapping()
@@ -3384,6 +3426,23 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
             $this->assertEquals('Kuzzle\Security::updateUserMapping: mapping is required', $e->getMessage());
+        }
+    }
+
+    public function testUpdateUserMappingWithMalformedBody()
+    {
+        // Arrange
+        $url = self::FAKE_KUZZLE_HOST;
+
+        try {
+            $kuzzle = new \Kuzzle\Kuzzle($url);
+            $kuzzle->security->updateUserMapping(["malformed" => "content"]);
+
+            $this->fail('KuzzleTest::testMDeleteUsersWithMalformedBody => Should raise an exception (could not be called without users id or policies)');
+        }
+        catch (Exception $e) {
+            $this->assertInstanceOf('InvalidArgumentException', $e);
+            $this->assertEquals('Kuzzle\Security::updateUserMapping: Unable to update given user mapping: body["properties"] property is required', $e->getMessage());
         }
     }
 }

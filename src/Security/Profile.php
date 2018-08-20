@@ -3,6 +3,7 @@
 namespace Kuzzle\Security;
 
 use InvalidArgumentException;
+use Kuzzle\Kuzzle;
 
 /**
  * Class Profile
@@ -11,40 +12,53 @@ use InvalidArgumentException;
 class Profile
 {
     /**
-     * @var Security The kuzzle security instance associated to this document
+     * @var Kuzzle The kuzzle security instance associated to this Profile
      */
-    public $security;
+    public $kuzzle;
 
     /**
-     * @var string Unique document identifier
+     * @var string Unique Profile identifier
      */
-    public $id;
+    public $_id;
 
     /**
-     * @var array The content of the document
+     * @var array The Profile policies
      */
-    public $content;
+    public $policies;
 
-    /**
-     * @var array The metadata of the document
-     */
-    public $meta;
 
     /**
      * Profile constructor.
-     * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
-     * @param string $id Unique profile identifier
-     * @param array $content Profile content
-     * @param array $meta Profile metadata
+     * @param Kuzzle\Kuzzle $kuzzle An instantiated Kuzzle object
+     * @param string $_id Unique profile identifier
+     * @param array $policies Profile policies
      * @return Profile
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
+    public function __construct(Kuzzle $kuzzle, $_id = '', array $policies = [])
     {
-        $this->security = $kuzzleSecurity;
-        $this->id = $id;
-        $this->content = $content;
-        $this->meta = $meta;
+        $this->kuzzle = $kuzzle;
+        $this->_id = $_id;
+        $this->policies = $policies;
 
         return $this;
+    }
+
+    public function getRoles(array $options = [])
+    {
+        if (empty($this->policies) || !$this->policies) {
+            return [];
+        }
+
+        return $this->kuzzle->security->mGetRoles($this->forgeRolesIdsArray(), $options);
+    }
+
+    private function forgeRolesIdsArray()
+    {
+        $ids = [];
+        foreach ($this->policies as $key => $policy) {
+            array_push($ids, $policy['_id']);
+        }
+
+        return $ids;
     }
 }

@@ -36,17 +36,21 @@ class Security
      * Create a new profile in Kuzzle.
      *
      * @param string $id Unique profile identifier
-     * @param array $policies List of policies to apply to this profile
+     * @param array $body List of policies to apply to this profile
      * @param array $options Optional arguments
      *
      * @return Profile
      *
      * @throws InvalidArgumentException
      */
-    public function createProfile($id, array $policies, array $options = [])
+    public function createProfile($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($policies)) {
-            throw new InvalidArgumentException('Kuzzle\Security::createProfile: Unable to create profile: no id or policies specified');
+        if (empty($id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Security::createProfile: Unable to create profile: no id or body specified');
+        }
+
+        if (empty($body['policies']) || !$body['policies']) {
+            throw new InvalidArgumentException('Kuzzle\Security::createProfile: Unable to create given profile: body["policies"] property is required');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -56,29 +60,33 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'createProfile'),
             [
                 '_id' => $id,
-                'body' => json_encode([ 'policies' => $policies ])
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return new Profile($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new Profile($this->kuzzle, $response['result']['_id'], $response['result']['_source']['policies']);
     }
 
     /**
      * Create or replace a profile in Kuzzle.
      *
      * @param string $id Unique profile identifier
-     * @param array $policies List of policies to apply to this profile
+     * @param array $body List of policies to apply to this profile
      * @param array $options Optional arguments
      *
      * @return Profile
      *
      * @throws InvalidArgumentException
      */
-    public function createOrReplaceProfile($id, array $policies, array $options = [])
+    public function createOrReplaceProfile($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($policies)) {
-            throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace profile: no id or policies specified');
+        if (empty($id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace profile: no id or body specified');
+        }
+
+        if (empty($body['policies']) || !$body['policies']) {
+            throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace given profile: body["policies"] property is required');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -87,29 +95,33 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'createOrReplaceProfile'),
             [
                 '_id' => $id,
-                'body' => json_encode([ 'policies' => $policies ])
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return new Profile($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new Profile($this->kuzzle, $response['result']['_id'], $response['result']['_source']['policies']);
     }
 
     /**
      * Create a new role in Kuzzle.
      *
      * @param integer $id Unique role identifier
-     * @param array $content Data representing the role
+     * @param array $body Data representing the role
      * @param array $options Optional arguments
      *
      * @return Role
      *
      * @throws InvalidArgumentException
      */
-    public function createRole($id, array $content, array $options = [])
+    public function createRole($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($content)) {
-            throw new InvalidArgumentException('Kuzzle\Security::createRole: Unable to create role: no id or content specified');
+        if (empty($id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Security::createRole: Unable to create role: no id or body specified');
+        }
+
+        if (empty($body['controllers']) || !$body['controllers']) {
+            throw new InvalidArgumentException('Kuzzle\Security::createRole: Unable to create given role: body["controllers"] property is required');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -118,29 +130,33 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'createRole'),
             [
                 '_id' => $id,
-                'body' => json_encode($content)
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return new Role($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new Role($this->kuzzle, $response['result']['_id'], $response['result']['_source']['controllers']);
     }
 
     /**
      * Create or replace a role in Kuzzle.
      *
      * @param integer $id Unique role identifier
-     * @param array $content Data representing the role
+     * @param array $body Data representing the role
      * @param array $options Optional arguments
      *
      * @return Role
      *
      * @throws InvalidArgumentException
      */
-    public function createOrReplaceRole($id, array $content, array $options = [])
+    public function createOrReplaceRole($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($content)) {
+        if (empty($id) || empty($body)) {
             throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or content specified');
+        }
+
+        if (empty($body['controllers']) || !$body['controllers']) {
+            throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceRole: Unable to create or replace given role: body["controllers"] property is required');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -149,12 +165,12 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'createOrReplaceRole'),
             [
                 '_id' => $id,
-                'body' => json_encode($content)
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return new Role($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new Role($this->kuzzle, $response['result']['_id'], $response['result']['_source']['controllers']);
     }
 
     /**
@@ -168,10 +184,18 @@ class Security
      *
      * @throws InvalidArgumentException
      */
-    public function createUser($id, array $content, array $options = [])
+    public function createUser($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($content)) {
-            throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: no id or content specified');
+        if (empty($id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: no id or body specified');
+        }
+
+        if (empty($body['content']) || !$body['content']) {
+            throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: body["content"] is required');
+        }
+
+        if (empty($body['credentials']) || !$body['credentials']) {
+             throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: body["credentials"] is required');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -180,29 +204,37 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'createUser'),
             [
                 '_id' => $id,
-                'body' => json_encode($content)
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new User($this->kuzzle, $response['result']['_id'], $response['result']['_source']['profileIds']);
     }
 
     /**
      * Create a new restricted user in Kuzzle.
      *
      * @param integer $id Unique user identifier, will be used as username
-     * @param array $content Data representing the user
+     * @param array $body Data representing the user
      * @param array $options Optional arguments
      *
      * @return User
      *
      * @throws InvalidArgumentException
      */
-    public function createRestrictedUser($id, array $content, array $options = [])
+    public function createRestrictedUser($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($content)) {
+        if (empty($id) || empty($body)) {
             throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: no id or content specified');
+        }
+
+        if (empty($body['content']) || !$body['content']) {
+            throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["content"] is required');
+        }
+
+        if (empty($body['credentials']) || !$body['credentials']) {
+             throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["credentials"] is required');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -211,12 +243,12 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'createRestrictedUser'),
             [
                 '_id' => $id,
-                'body' => json_encode($content)
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new User($this->kuzzle, $response['result']['_id'], $response['result']['_source']['profileIds']);
     }
 
     /**
@@ -224,10 +256,6 @@ class Security
      * Does nothing if an admin user already exists.
      *
      * @param integer $id Unique user identifier, will be used as username
-     * @param bool $reset If the optional field reset is set to true
-     *    (1 with http), the preset roles (anonymous and default)
-     *    will be reset with more restrictive rights.
-     *    Set to false by default.
      * @param array $content Data representing the user
      * @param array $options Optional arguments
      *
@@ -235,22 +263,32 @@ class Security
      *
      * @throws InvalidArgumentException
      */
-    public function createFirstAdmin($reset = false, array $content = [], array $options = [])
+    public function createFirstAdmin(array $body = [], array $options = [])
     {
-        if (empty($content)) {
+        if (empty($body)) {
             throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: no id or content specified');
         }
+
+        if (empty($body['content']) || !$body['content']) {
+            throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["content"] is required');
+        }
+
+        if (empty($body['credentials']) || !$body['credentials']) {
+             throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["credentials"] is required');
+        }
+
+        $reset = empty($options['reset']) ? false : $options['reset'];
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'createFirstAdmin'),
             [
                 'reset' => $reset,
-                'body' => json_encode($content)
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new User($this->kuzzle, $response['result']['_id'], ['admin']);
     }
 
     /**
@@ -281,7 +319,7 @@ class Security
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new User($this->kuzzle, $response['result']['_id'], $response['result']['_source']['profileIds']);
     }
 
     /**
@@ -310,47 +348,7 @@ class Security
             $options
         );
 
-        return $response['result']['_id'];
-    }
-
-    /**
-     * Returns the next profiles result set with scroll query.
-     *
-     * @param string $scrollId
-     * @param array $options (optional) arguments
-     *
-     * @return ProfilesSearchResult
-     *
-     * @throws InvalidArgumentException
-     */
-    public function scrollProfiles($scrollId, array $options = [])
-    {
-        if (empty($scrollId)) {
-            throw new InvalidArgumentException('Kuzzle\Security::scrollProfiles: scrollId is required');
-        }
-
-        $data = array();
-        $options['httpParams'] = [':scrollId' => $scrollId];
-
-        if (isset($options['scroll'])) {
-            $data['scroll'] = $options['scroll'];
-        }
-
-        $response = $this->kuzzle->query(
-            $this->kuzzle->buildQueryArgs('security', 'scrollProfiles'),
-            $data,
-            $options
-        );
-
-        $response['result']['hits'] = array_map(function ($document) {
-            return new Profile($this, $document['_id'], $document['_source'], $document['_meta']);
-        }, $response['result']['hits']);
-
-        return new ProfilesSearchResult(
-            $response['result']['total'],
-            $response['result']['hits'],
-            $scrollId
-        );
+        return $response['result'];
     }
 
     /**
@@ -379,7 +377,7 @@ class Security
             $options
         );
 
-        return $response['result']['_id'];
+        return $response['result'];
     }
 
     /**
@@ -408,47 +406,7 @@ class Security
             $options
         );
 
-        return $response['result']['_id'];
-    }
-
-    /**
-     * Returns the next users result set with scroll query.
-     *
-     * @param string $scrollId
-     * @param array $options (optional) arguments
-     *
-     * @return UsersSearchResult
-     *
-     * @throws InvalidArgumentException
-     */
-    public function scrollUsers($scrollId, array $options = [])
-    {
-        if (empty($scrollId)) {
-            throw new InvalidArgumentException('Kuzzle\Security::scrollUsers: scrollId is required');
-        }
-
-        $data = [];
-        $options['httpParams'] = [':scrollId' => $scrollId];
-
-        if (isset($options['scroll'])) {
-            $data['scroll'] = $options['scroll'];
-        }
-
-        $response = $this->kuzzle->query(
-            $this->kuzzle->buildQueryArgs('security', 'scrollUsers'),
-            $data,
-            $options
-        );
-
-        $response['result']['hits'] = array_map(function ($document) {
-            return new User($this, $document['_id'], $document['_source'], $document['_meta']);
-        }, $response['result']['hits']);
-
-        return new UsersSearchResult(
-            $response['result']['total'],
-            $response['result']['hits'],
-            $scrollId
-        );
+        return $response['result'];
     }
 
     /**
@@ -477,7 +435,7 @@ class Security
             $options
         );
 
-        return new Profile($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new Profile($this->kuzzle, $response['result']['_id'], $response['result']['_source']['policies']);
     }
 
     /**
@@ -526,7 +484,7 @@ class Security
             $options
         );
 
-        return new Role($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new Role($this->kuzzle, $response['result']['_id'], $response['result']['_source']['controllers']);
     }
 
     /**
@@ -574,7 +532,7 @@ class Security
             $options
         );
 
-        return new User($this, $response['result']['_id'], $response['result']['_source'], $response['result']['_meta']);
+        return new User($this->kuzzle, $response['result']['_id'], $response['result']['_source']['profileIds']);
     }
 
     /**
@@ -675,7 +633,7 @@ class Security
         );
 
         $response['result']['hits'] = array_map(function ($profile) {
-            return new Profile($this, $profile['_id'], $profile['_source'], $profile['_meta']);
+            return new Profile($this->kuzzle, $profile['_id'], $profile['_source']['policies']);
         }, $response['result']['hits']);
 
         if (isset($response['result']['scrollId'])) {
@@ -704,7 +662,7 @@ class Security
         );
 
         $response['result']['hits'] = array_map(function ($role) {
-            return new Role($this, $role['_id'], $role['_source'], $role['_meta']);
+            return new Role($this->kuzzle, $role['_id'], $role['_source']['controllers']);
         }, $response['result']['hits']);
 
         return new RolesSearchResult($response['result']['total'], $response['result']['hits']);
@@ -731,7 +689,7 @@ class Security
         );
 
         $response['result']['hits'] = array_map(function ($user) {
-            return new User($this, $user['_id'], $user['_source'], $user['_meta']);
+            return new User($this->kuzzle, $user['_id'], $user['_source']['profileIds']);
         }, $response['result']['hits']);
 
         if (isset($response['result']['scrollId'])) {
@@ -752,10 +710,14 @@ class Security
      *
      * @throws InvalidArgumentException
      */
-    public function updateProfile($id, array $policies, array $options = [])
+    public function updateProfile($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($policies)) {
-            throw new InvalidArgumentException('Kuzzle\Security::updateProfile: id and policies are required');
+        if (empty($id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Security::updateProfile: id and body are required');
+        }
+
+        if (empty($body['policies']) || !$body['policies']) {
+            throw new InvalidArgumentException('Kuzzle\Security::updateProfile: Unable to update given profile: body["policies"] property is required');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -764,39 +726,43 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'updateProfile'),
             [
                 '_id' => $id,
-                'body' => json_encode([ 'policies' => $policies ])
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return new Profile($this, $id, $response['result']['_source'], $response['result']['_meta']);
+        return new Profile($this->kuzzle, $id);
     }
 
     /**
      * Performs an update on the internal profiles collection mapping.
      *
-     * @param array $mapping New mapping
+     * @param array $body Array which contains new mapping
      * @param array $options Optional arguments
      *
      * @return bool
      *
      * @throws InvalidArgumentException
      */
-    public function updateProfileMapping(array $mapping = [], array $options = [])
+    public function updateProfileMapping(array $body = [], array $options = [])
     {
-        if (empty($mapping)) {
-            throw new InvalidArgumentException('Kuzzle\Security::updateProfileMapping: mapping is required');
+        if (empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Security::updateProfileMapping: body is required');
+        }
+
+        if (empty($body['properties']) || !$body['properties']) {
+            throw new InvalidArgumentException('Kuzzle\Security::updateProfileMapping: Unable to update given profile mapping: body["properties"] property is required');
         }
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'updateProfileMapping'),
             [
-                'body' => json_encode([ 'properties' => $mapping ])
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return $response['result']['acknowledged'];
+        return $response['result'];
     }
 
     /**
@@ -827,34 +793,38 @@ class Security
             $options
         );
 
-        return new Role($this, $id, $response['result']['_source'], $response['result']['_meta']);
+        return new Role($this->kuzzle, $id);
     }
 
     /**
      * Performs an update on the internal roles collection mapping.
      *
-     * @param array $mapping New mapping
+     * @param array $body Array which contains new mapping
      * @param array $options Optional arguments
      *
      * @return bool
      *
      * @throws InvalidArgumentException
      */
-    public function updateRoleMapping(array $mapping = [], array $options = [])
+    public function updateRoleMapping(array $body = [], array $options = [])
     {
-        if (empty($mapping)) {
+        if (empty($body)) {
             throw new InvalidArgumentException('Kuzzle\Security::updateRoleMapping: mapping is required');
+        }
+
+        if (empty($body['properties']) || !$body['properties']) {
+            throw new InvalidArgumentException('Kuzzle\Security::updateRoleMapping: Unable to update given role mapping: body["properties"] property is required');
         }
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'updateRoleMapping'),
             [
-                'body' => json_encode([ 'properties' => $mapping ])
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return $response['result']['acknowledged'];
+        return $response['result'];
     }
 
     /**
@@ -885,34 +855,38 @@ class Security
             $options
         );
 
-        return new User($this, $id, $response['result']['_source'], $response['result']['_meta']);
+        return new User($this->kuzzle, $id);
     }
 
     /**
      * Performs an update on the internal users collection mapping.
      *
-     * @param array $mapping New mapping
+     * @param array $body Array which contains ew mapping
      * @param array $options Optional arguments
      *
      * @return bool
      *
      * @throws InvalidArgumentException
      */
-    public function updateUserMapping(array $mapping = [], array $options = [])
+    public function updateUserMapping(array $body = [], array $options = [])
     {
-        if (empty($mapping)) {
+        if (empty($body)) {
             throw new InvalidArgumentException('Kuzzle\Security::updateUserMapping: mapping is required');
+        }
+
+        if (empty($body['properties']) || !$body['properties']) {
+            throw new InvalidArgumentException('Kuzzle\Security::updateUserMapping: Unable to update given user mapping: body["properties"] property is required');
         }
 
         $response = $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'updateUserMapping'),
             [
-                'body' => json_encode([ 'properties' => $mapping ])
+                'body' => json_encode($body)
             ],
             $options
         );
 
-        return $response['result']['acknowledged'];
+        return $response['result'];
     }
 
     /**
@@ -1193,7 +1167,7 @@ class Security
      * @param array $ids array of profile ids
      * @param array $options Optional arguments
      *
-     * @return array Profile which have been fetched.
+     * @return Profile[] Profile which have been fetched.
      *
      * @throws InvalidArgumentException
      */
@@ -1211,7 +1185,16 @@ class Security
             $options
         );
 
-        return $response['result']['hits'];
+        $profiles = [];
+
+        foreach ($response['result']['hits'] as $key => $profile) {
+            array_push(
+                $profiles,
+                new Profile($this->kuzzle, $profile['_id'], $profile['_source']['policies'])
+            );
+        }
+
+        return $profiles;
     }
 
     /**
@@ -1238,7 +1221,16 @@ class Security
             $options
         );
 
-        return $response['result']['hits'];
+        $roles = [];
+
+        foreach ($response['result']['hits'] as $key => $role) {
+            array_push(
+                $roles,
+                new Role($this->kuzzle, $role['_id'], $role['_source']['controllers'])
+            );
+        }
+
+        return $roles;
     }
 
     /**
