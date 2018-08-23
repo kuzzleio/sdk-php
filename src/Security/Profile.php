@@ -56,7 +56,7 @@ class Profile
     {
         $ids = [];
         foreach ($this->policies as $key => $policy) {
-            array_push($ids, $policy['_id']);
+            array_push($ids, $policy['roleId']);
         }
 
         return $ids;
