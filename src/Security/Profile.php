@@ -45,7 +45,7 @@ class Profile
 
     public function getRoles(array $options = [])
     {
-        if (empty($this->policies) || !$this->policies) {
+        if (!$this->policies) {
             return [];
         }
 

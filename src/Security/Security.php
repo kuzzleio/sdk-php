@@ -49,7 +49,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::createProfile: Unable to create profile: no id or body specified');
         }
 
-        if (empty($body['policies']) || !$body['policies']) {
+        if (empty($body['policies'])) {
             throw new InvalidArgumentException('Kuzzle\Security::createProfile: Unable to create given profile: body["policies"] property is required');
         }
 
@@ -85,7 +85,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace profile: no id or body specified');
         }
 
-        if (empty($body['policies']) || !$body['policies']) {
+        if (empty($body['policies'])) {
             throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceProfile: Unable to create or replace given profile: body["policies"] property is required');
         }
 
@@ -120,7 +120,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::createRole: Unable to create role: no id or body specified');
         }
 
-        if (empty($body['controllers']) || !$body['controllers']) {
+        if (empty($body['controllers'])) {
             throw new InvalidArgumentException('Kuzzle\Security::createRole: Unable to create given role: body["controllers"] property is required');
         }
 
@@ -155,7 +155,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or content specified');
         }
 
-        if (empty($body['controllers']) || !$body['controllers']) {
+        if (empty($body['controllers'])) {
             throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceRole: Unable to create or replace given role: body["controllers"] property is required');
         }
 
@@ -190,11 +190,11 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: no id or body specified');
         }
 
-        if (empty($body['content']) || !$body['content']) {
+        if (empty($body['content'])) {
             throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: body["content"] is required');
         }
 
-        if (empty($body['credentials']) || !$body['credentials']) {
+        if (empty($body['credentials'])) {
              throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: body["credentials"] is required');
         }
 
@@ -229,11 +229,11 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: no id or content specified');
         }
 
-        if (empty($body['content']) || !$body['content']) {
+        if (empty($body['content'])) {
             throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["content"] is required');
         }
 
-        if (empty($body['credentials']) || !$body['credentials']) {
+        if (empty($body['credentials'])) {
              throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["credentials"] is required');
         }
 
@@ -269,11 +269,11 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: no id or content specified');
         }
 
-        if (empty($body['content']) || !$body['content']) {
+        if (empty($body['content'])) {
             throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["content"] is required');
         }
 
-        if (empty($body['credentials']) || !$body['credentials']) {
+        if (empty($body['credentials'])) {
              throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["credentials"] is required');
         }
 
@@ -716,7 +716,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::updateProfile: id and body are required');
         }
 
-        if (empty($body['policies']) || !$body['policies']) {
+        if (empty($body['policies'])) {
             throw new InvalidArgumentException('Kuzzle\Security::updateProfile: Unable to update given profile: body["policies"] property is required');
         }
 
@@ -750,7 +750,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::updateProfileMapping: body is required');
         }
 
-        if (empty($body['properties']) || !$body['properties']) {
+        if (empty($body['properties'])) {
             throw new InvalidArgumentException('Kuzzle\Security::updateProfileMapping: Unable to update given profile mapping: body["properties"] property is required');
         }
 
@@ -812,7 +812,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::updateRoleMapping: mapping is required');
         }
 
-        if (empty($body['properties']) || !$body['properties']) {
+        if (empty($body['properties'])) {
             throw new InvalidArgumentException('Kuzzle\Security::updateRoleMapping: Unable to update given role mapping: body["properties"] property is required');
         }
 
@@ -874,7 +874,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::updateUserMapping: mapping is required');
         }
 
-        if (empty($body['properties']) || !$body['properties']) {
+        if (empty($body['properties'])) {
             throw new InvalidArgumentException('Kuzzle\Security::updateUserMapping: Unable to update given user mapping: body["properties"] property is required');
         }
 
@@ -986,7 +986,7 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::getCredentialFields: strategy is required');
         }
 
-        $options['httpParams']= [':strategy' => $strategy];
+        $options['httpParams'] = [':strategy' => $strategy];
 
         return $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'getCredentialFields'),
