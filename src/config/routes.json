@@ -1693,7 +1693,7 @@
     },
     "deleteCredentials": {
       "name": "deleteCredentials",
-      "route": "/credentials/:strategy/:kuid",
+      "route": "/credentials/:strategy/:_id",
       "method": "delete"
     },
     "getAllCredentialFields": {
@@ -1708,27 +1708,27 @@
     },
     "getCredentials": {
       "name": "getCredentials",
-      "route": "/credentials/:strategy/:kuid",
+      "route": "/credentials/:strategy/:_id",
       "method": "get"
     },
     "getCredentialsById": {
       "name": "getCredentialsById",
-      "route": "/credentials/:strategy/:kuid/_byId",
+      "route": "/credentials/:strategy/:_id/_byId",
       "method": "get"
     },
     "hasCredentials": {
       "name": "hasCredentials",
-      "route": "/credentials/:strategy/:kuid/_exists",
+      "route": "/credentials/:strategy/:_id/_exists",
       "method": "get"
     },
     "updateCredentials": {
       "name": "updateCredentials",
-      "route": "/credentials/:strategy/:kuid/_update",
+      "route": "/credentials/:strategy/:_id/_update",
       "method": "put"
     },
     "validateCredentials": {
       "name": "validateCredentials",
-      "route": "/credentials/:strategy/:kuid/_validate",
+      "route": "/credentials/:strategy/:_id/_validate",
       "method": "post"
     }
   },

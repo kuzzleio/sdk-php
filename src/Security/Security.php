@@ -152,7 +152,7 @@ class Security
     public function createOrReplaceRole($id, array $body, array $options = [])
     {
         if (empty($id) || empty($body)) {
-            throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or content specified');
+            throw new InvalidArgumentException('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or body specified');
         }
 
         if (empty($body['controllers'])) {
@@ -194,10 +194,6 @@ class Security
             throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: body["content"] is required');
         }
 
-        if (empty($body['credentials'])) {
-             throw new InvalidArgumentException('Kuzzle\Security::createUser: Unable to create user: body["credentials"] is required');
-        }
-
         $options['httpParams'] = [':_id' => $id];
 
         $response = $this->kuzzle->query(
@@ -226,15 +222,7 @@ class Security
     public function createRestrictedUser($id, array $body, array $options = [])
     {
         if (empty($id) || empty($body)) {
-            throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: no id or content specified');
-        }
-
-        if (empty($body['content'])) {
-            throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["content"] is required');
-        }
-
-        if (empty($body['credentials'])) {
-             throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["credentials"] is required');
+            throw new InvalidArgumentException('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: no id or body specified');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -261,22 +249,9 @@ class Security
      *
      * @return User
      *
-     * @throws InvalidArgumentException
      */
     public function createFirstAdmin(array $body = [], array $options = [])
     {
-        if (empty($body)) {
-            throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: no id or content specified');
-        }
-
-        if (empty($body['content'])) {
-            throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["content"] is required');
-        }
-
-        if (empty($body['credentials'])) {
-             throw new InvalidArgumentException('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["credentials"] is required');
-        }
-
         $reset = empty($options['reset']) ? false : $options['reset'];
 
         $response = $this->kuzzle->query(
@@ -295,17 +270,17 @@ class Security
      * Replaces an existing user in Kuzzle.
      *
      * @param integer $id Unique user identifier, will be used as username
-     * @param array $content Data representing the user
+     * @param array $body Data representing the user
      * @param array $options Optional arguments
      *
      * @return User
      *
      * @throws InvalidArgumentException
      */
-    public function replaceUser($id, array $content, array $options = [])
+    public function replaceUser($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($content)) {
-            throw new InvalidArgumentException('Kuzzle\Security::replaceUser: Unable to replace user: no id or content specified');
+        if (empty($id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Security::replaceUser: Unable to replace user: no id or body specified');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -314,7 +289,7 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'replaceUser'),
             [
                 '_id' => $id,
-                'body' => json_encode($content)
+                'body' => json_encode($body)
             ],
             $options
         );
@@ -831,17 +806,17 @@ class Security
      * Performs a partial update on an existing user.
      *
      * @param string $id Unique user identifier
-     * @param array $content Data representing the user
+     * @param array $body Data representing the user
      * @param array $options Optional arguments
      *
      * @return User
      *
      * @throws InvalidArgumentException
      */
-    public function updateUser($id, array $content, array $options = [])
+    public function updateUser($id, array $body, array $options = [])
     {
-        if (empty($id) || empty($content)) {
-            throw new InvalidArgumentException('Kuzzle\Security::updateUser: id and content are required');
+        if (empty($id) || empty($body)) {
+            throw new InvalidArgumentException('Kuzzle\Security::updateUser: id and body are required');
         }
 
         $options['httpParams'] = [':_id' => $id];
@@ -850,7 +825,7 @@ class Security
             $this->kuzzle->buildQueryArgs('security', 'updateUser'),
             [
                 '_id' => $id,
-                'body' => json_encode($content)
+                'body' => json_encode($body)
             ],
             $options
         );
@@ -942,15 +917,12 @@ class Security
 
         $options['httpParams'] = [
             ':strategy' => $strategy,
-            ':kuid' => $kuid
+            ':_id' => $kuid
         ];
 
         return $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'deleteCredentials'),
-            [
-                'strategy' => $strategy,
-                '_id' => $kuid,
-            ],
+            [],
             $options
         )['result'];
     }
@@ -1016,15 +988,12 @@ class Security
 
         $options['httpParams'] = [
             ':strategy' => $strategy,
-            ':kuid' => $kuid
+            ':_id' => $kuid
         ];
 
         return $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'getCredentials'),
-            [
-                'strategy' => $strategy,
-                '_id' => $kuid
-            ],
+            [],
             $options
         )['result'];
     }
@@ -1033,30 +1002,27 @@ class Security
      * Get credential information of the specified <strategyId> (storage key of the strategy) of the user.
      *
      * @param $strategy
-     * @param $kuid
+     * @param $userId
      * @param array $options
      *
      * @return mixed
      *
      * @throws InvalidArgumentException
      */
-    public function getCredentialsById($strategy, $kuid, array $options = [])
+    public function getCredentialsById($strategy, $userId, array $options = [])
     {
-        if (empty($strategy) || empty($kuid)) {
-            throw new InvalidArgumentException('Kuzzle\Security::getCredentialsById: strategy and kuid are required');
+        if (empty($strategy) || empty($userId)) {
+            throw new InvalidArgumentException('Kuzzle\Security::getCredentialsById: strategy and userId are required');
         }
 
         $options['httpParams'] = [
             ':strategy' => $strategy,
-            ':kuid' => $kuid
+            ':_id' => $userId
         ];
 
         return $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'getCredentialsById'),
-            [
-                'strategy' => $strategy,
-                '_id' => $kuid
-            ],
+            [],
             $options
         )['result'];
     }
@@ -1080,15 +1046,12 @@ class Security
 
         $options['httpParams'] = [
             ':strategy' => $strategy,
-            ':kuid' => $kuid
+            ':_id' => $kuid
         ];
 
         return $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'hasCredentials'),
-            [
-                'strategy' => $strategy,
-                '_id' => $kuid
-            ],
+            [],
             $options
         )['result'];
     }
@@ -1113,14 +1076,12 @@ class Security
 
         $options['httpParams'] = [
             ':strategy' => $strategy,
-            ':kuid' => $kuid
+            ':_id' => $kuid
         ];
 
         return $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'updateCredentials'),
             [
-                'strategy' => $strategy,
-                '_id' => $kuid,
                 "body" => json_encode($credentials)
             ],
             $options
@@ -1147,14 +1108,12 @@ class Security
 
         $options['httpParams'] = [
             ':strategy' => $strategy,
-            ':kuid' => $kuid
+            ':_id' => $kuid
         ];
 
         return $this->kuzzle->query(
             $this->kuzzle->buildQueryArgs('security', 'validateCredentials'),
             [
-                'strategy' => $strategy,
-                '_id' => $kuid,
                 "body" => json_encode($credentials)
             ],
             $options

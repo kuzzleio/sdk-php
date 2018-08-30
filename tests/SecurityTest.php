@@ -409,7 +409,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or body specified', $e->getMessage());
         }
     }
 
@@ -426,7 +426,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createOrReplaceRole: Unable to create or replace role: no id or body specified', $e->getMessage());
         }
     }
 
@@ -538,24 +538,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCreateUserWithMalformedBodyCredentials()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createUser('profile', [ 'content' => [ 'profileIds' => ['admin'] ] ]);
-
-            $this->fail('KuzzleTest::testCreateUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createUser: Unable to create user: body["credentials"] is required', $e->getMessage());
-        }
-    }
-
-
     public function testCreateUserWithMalformedBodyContent()
     {
         // Arrange
@@ -644,7 +626,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: no id or body specified', $e->getMessage());
         }
     }
 
@@ -661,42 +643,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: no id or content specified', $e->getMessage());
-        }
-    }
-
-    public function testCreateRestrictedUserWithMalformedBodyCredentials()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createRestrictedUser('profile', [ 'content' => [ 'profileIds' => ['admin'] ] ]);
-
-            $this->fail('KuzzleTest::testCreateRestrictedUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["credentials"] is required', $e->getMessage());
-        }
-    }
-
-
-    public function testCreateRestrictedUserWithMalformedBodyContent()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createRestrictedUser('profile', [ 'credentials' => [ 'profileIds' => ['admin'] ] ]);
-
-            $this->fail('KuzzleTest::testCreateRestrictedUserWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: body["content"] is required', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::createRestrictedUser: Unable to create restricted user: no id or body specified', $e->getMessage());
         }
     }
 
@@ -756,75 +703,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Kuzzle\Security\User', $result);
         $this->assertAttributeEquals($userId, '_id', $result);
         $this->assertAttributeEquals(['admin'], 'profileIds', $result);
-    }
-
-    public function testCreateFirstAdminWithoutBody()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createFirstAdmin([]);
-
-            $this->fail('KuzzleTest::testCreateFirstAdminWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createFirstAdmin: Unable to create first admin: no id or content specified', $e->getMessage());
-        }
-    }
-
-    public function testCreateFirstAdminWithMalformedBody()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createFirstAdmin([ 'content' => [ 'name' => "The New Admin" ]]);
-
-            $this->fail('KuzzleTest::testCreateFirstAdminWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["credentials"] is required', $e->getMessage());
-        }
-    }
-
-    public function testCreateFirstAdminWithMalformedBodyCredentials()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createFirstAdmin([ 'content' => [ 'profileIds' => ['admin'] ] ]);
-
-            $this->fail('KuzzleTest::testCreateFirstAdminWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["credentials"] is required', $e->getMessage());
-        }
-    }
-
-
-    public function testCreateFirstAdminWithMalformedBodyContent()
-    {
-        // Arrange
-        $url = self::FAKE_KUZZLE_HOST;
-
-        try {
-            $kuzzle = new \Kuzzle\Kuzzle($url);
-            $kuzzle->security->createFirstAdmin([ 'credentials' => [ 'profileIds' => ['admin'] ] ]);
-
-            $this->fail('KuzzleTest::testCreateFirstAdminWithoutId => Should raise an exception (could not be called without profile id or policies)');
-        }
-        catch (Exception $e) {
-            $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::createFirstAdmin: Unable to create first admin: body["content"] is required', $e->getMessage());
-        }
     }
 
     function testReplaceUser()
@@ -892,7 +770,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::replaceUser: Unable to replace user: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::replaceUser: Unable to replace user: no id or body specified', $e->getMessage());
         }
     }
 
@@ -909,7 +787,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::replaceUser: Unable to replace user: no id or content specified', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::replaceUser: Unable to replace user: no id or body specified', $e->getMessage());
         }
     }
 
@@ -1989,7 +1867,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::updateUser: id and content are required', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::updateUser: id and body are required', $e->getMessage());
         }
     }
 
@@ -2006,7 +1884,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::updateUser: id and content are required', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::updateUser: id and body are required', $e->getMessage());
         }
     }
 
@@ -2129,8 +2007,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'security',
                 'volatile' => [],
                 'requestId' => $options['requestId'],
-                'strategy' => 'local',
-                '_id' => 42,
             ],
             'method' => 'DELETE',
             'query_parameters' => []
@@ -2316,8 +2192,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'security',
                 'volatile' => [],
                 'requestId' => $options['requestId'],
-                'strategy' => 'local',
-                '_id' => 42
             ],
             'method' => 'GET',
             'query_parameters' => []
@@ -2395,8 +2269,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'security',
                 'volatile' => [],
                 'requestId' => $options['requestId'],
-                'strategy' => 'local',
-                '_id' => 42
             ],
             'method' => 'GET',
             'query_parameters' => []
@@ -2431,7 +2303,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::getCredentialsById: strategy and kuid are required', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::getCredentialsById: strategy and userId are required', $e->getMessage());
         }
     }
 
@@ -2448,7 +2320,7 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
         }
         catch (Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e);
-            $this->assertEquals('Kuzzle\Security::getCredentialsById: strategy and kuid are required', $e->getMessage());
+            $this->assertEquals('Kuzzle\Security::getCredentialsById: strategy and userId are required', $e->getMessage());
         }
     }
 
@@ -2473,8 +2345,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'hasCredentials',
                 'controller' => 'security',
                 'volatile' => [],
-                'strategy' => 'local',
-                '_id' => 42,
                 'requestId' => $options['requestId']
             ],
             'method' => 'GET',
@@ -2554,8 +2424,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'updateCredentials',
                 'controller' => 'security',
                 'volatile' => [],
-                'strategy' => 'local',
-                '_id' => 42,
                 'body' => json_encode(["foo" => "bar"]),
                 'requestId' => $options['requestId']
             ],
@@ -2651,8 +2519,6 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
                 'action' => 'validateCredentials',
                 'controller' => 'security',
                 'volatile' => [],
-                'strategy' => 'local',
-                '_id' => 42,
                 'body' => json_encode(["foo" => "bar"]),
                 'requestId' => $options['requestId']
             ],
