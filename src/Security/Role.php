@@ -2,29 +2,42 @@
 
 namespace Kuzzle\Security;
 
+use Kuzzle\Kuzzle;
+
 /**
  * Class Role
  * @package kuzzleio/kuzzle-sdk
  */
-class Role extends Document
+class Role
 {
-    protected $deleteActionName = 'deleteRole';
+    /**
+     * @var Kuzzle The kuzzle security instance associated to this Role
+     */
+    private $kuzzle;
 
-    protected $updateActionName = 'updateRole';
+    /**
+     * @var string Unique Role identifier
+     */
+    public $_id;
 
-    protected $saveActionName = 'createOrReplaceRole';
+    /**
+     * @var array The Role controllers
+     */
+    public $controllers;
+
 
     /**
      * Role constructor.
-     *
-     * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
-     * @param string $id Unique role identifier
-     * @param array $content Role content
-     * @param array $meta Role metadata
+     * @param kuzzle $kuzzle An instantiated Kuzzle object
+     * @param string $_id Unique role identifier
+     * @param array $controllers Role controllers
+     * @return Role
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
+    public function __construct(Kuzzle $kuzzle, $_id = '', array $controllers = [])
     {
-        parent::__construct($kuzzleSecurity, $id, $content, $meta);
+        $this->kuzzle = $kuzzle;
+        $this->_id = $_id;
+        $this->controllers = $controllers;
 
         return $this;
     }

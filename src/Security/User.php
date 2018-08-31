@@ -3,267 +3,58 @@
 namespace Kuzzle\Security;
 
 use BadMethodCallException;
+use Kuzzle\Kuzzle;
 
 /**
  * Class User
  * @package kuzzleio/kuzzle-sdk
  */
-class User extends Document
+class User
 {
-    protected $deleteActionName = 'deleteUser';
-
-    protected $updateActionName = 'updateUser';
-
-    protected $saveActionName = 'createUser';
-
-    const DEFAULT_PROFILE = 'default';
-
-    protected $credentials = [];
+    /**
+     * @var Kuzzle The kuzzle security instance associated to this User
+     */
+    public $kuzzle;
 
     /**
-     * Role constructor.
-     *
-     * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
-     * @param string $id Unique user identifier
-     * @param array $content User content
-     * @param array $meta User metadata
+     * @var string Unique User identifier
+     */
+    public $_id;
+
+    /**
+     * @var array The User profileIds
+     */
+    public $profileIds;
+
+
+    /**
+     * User constructor.
+     * @param kuzzle $kuzzle An instantiated Kuzzle object
+     * @param string $_id Unique profile identifier
+     * @param array $profileIds User profileIds
      * @return User
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
+    public function __construct(Kuzzle $kuzzle, $_id = '', array $profileIds = [])
     {
-        parent::__construct($kuzzleSecurity, $id, $content, $meta);
-
-        $this->syncProfile();
+        $this->kuzzle = $kuzzle;
+        $this->_id = $_id;
+        $this->profileIds = $profileIds;
 
         return $this;
     }
 
     /**
-     * Returns this user associated profiles.
+     * Get user associated profiles
      *
-     * @return Profile[]
+     * @param array $options Optional Options
+     * @return Profiles[]
      */
-    public function getProfiles()
+    public function getProfiles(array $options = [])
     {
-        if (!array_key_exists('profileIds', $this->content)) {
+        if (empty($this->profileIds) || !$this->profileIds) {
             return [];
         }
 
-        $profiles = [];
-
-        foreach ($this->content['profileIds'] as $profileId) {
-            $profiles[] = $this->security->fetchProfile($profileId);
-        }
-
-        return $profiles;
-    }
-
-    /**
-     * Returns this user associated profile identifiers
-     * @return  string[]
-     */
-    public function getProfileIds()
-    {
-        if (!array_key_exists('profileIds', $this->content)) {
-            return [];
-        }
-
-        return $this->content['profileIds'];
-    }
-
-    /**
-     * Replaces the profiles associated to this user.
-     *
-     * @param string[]|Profile[] $profiles Unique ids or Kuzzle\Security\Profile instances corresponding to the new associated profiles
-     * @return $this
-     */
-    public function setProfiles($profiles)
-    {
-        $profileIds = [];
-
-        foreach ($profiles as $profile) {
-            $profileIds[] = $this->extractProfileId($profile);
-        }
-
-        $this->content['profileIds'] = $profileIds;
-
-        return $this;
-    }
-
-    /**
-     * Add a profile to this user.
-     *
-     * @param string|Profile $profile Unique id or Kuzzle\Security\Profile instances corresponding to the new associated profile
-     * @return $this
-     */
-    public function addProfile($profile)
-    {
-        if (!array_key_exists('profileIds', $this->content)) {
-            $this->content['profileIds'] = [];
-        }
-
-        $this->content['profileIds'][] = $this->extractProfileId($profile);
-
-        return $this;
-    }
-
-    /**
-     * Replaces the content of the Kuzzle\Security\Profile object.
-     *
-     * @param array $content
-     * @return User
-     */
-    public function setContent(array $content)
-    {
-        parent::setContent($content);
-
-        $this->syncProfile();
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function syncProfile()
-    {
-        if (!array_key_exists('profileIds', $this->content)) {
-            return false;
-        }
-
-        $profileIds = [];
-
-        foreach ($this->content['profileIds'] as $profile) {
-            $profileIds[] = $this->extractProfileId($profile);
-        }
-
-        $this->content['profileIds'] = $profileIds;
-
-        return true;
-    }
-
-    /**
-     * @param Profile|array|string $profile
-     * @return string
-     */
-    protected function extractProfileId($profile)
-    {
-        if ($profile instanceof Profile) {
-            return $profile->getId();
-        }
-
-        return $profile;
-    }
-
-    /**
-     * Throws an error as this method can't be implemented for User
-     *
-     * @param array $options Optional parameters
-     * @return void
-     * @throws BadMethodCallException
-     */
-    public function save(array $options = [])
-    {
-        throw new BadMethodCallException('This method does not exist in User');
-    }
-
-
-    /**
-     * Performs a partial content update on this object.
-     *
-     * @param array $content New profile content
-     * @param array $options Optional parameters
-     * @return Document
-     */
-    public function update(array $content, array $options = [])
-    {
-        $data = [
-            '_id' => $this->id,
-            'body' => $content
-        ];
-
-        $response = $this->security->getKuzzle()->query(
-            $this->security->buildQueryArgs($this->updateActionName),
-            $data,
-            $options
-        );
-
-        $this->setContent($response['result']['_source']);
-
-        return $this;
-    }
-
-    /**
-     * Creates the user in Kuzzle’s database layer.
-     *
-     * @param array $options Optional parameters
-     * @return Document
-     */
-    public function create(array $options = [])
-    {
-        $data = $this->creationSerialize();
-
-        $this->security->getKuzzle()->query(
-            $this->security->buildQueryArgs('createUser'),
-            $data,
-            $options
-        );
-
-        return $this;
-    }
-
-    /**
-     * Replaces the user in Kuzzle’s database layer.
-     *
-     * @param array $options Optional parameters
-     * @return Document
-     */
-    public function replace(array $options = [])
-    {
-        $data = $this->serialize();
-
-        $this->security->getKuzzle()->query(
-            $this->security->buildQueryArgs('replaceUser'),
-            $data,
-            $options
-        );
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    private function creationSerialize()
-    {
-        $data = [];
-
-        if (!empty($this->id)) {
-            $data['_id'] = $this->id;
-        }
-
-        $data['body'] = [
-            'content' => $this->content,
-            'credentials' => $this->credentials
-        ];
-
-
-        return $data;
-    }
-
-    /**
-     * @param array $credentials
-     * @return $this
-     * @throws \InvalidArgumentException
-     */
-    public function setCredentials($credentials)
-    {
-        if (!is_array($credentials)) {
-            throw new \InvalidArgumentException('Parameter "credentials" must be a object');
-        }
-
-        $this->credentials = $credentials;
-
-        return $this;
+        return $this->kuzzle->security->mGetProfiles($this->profileIds, $options);
     }
 }

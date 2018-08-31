@@ -39,11 +39,6 @@ class Kuzzle
     protected $port = 7512;
 
     /**
-     * @var string Kuzzle’s default index to use
-     */
-    protected $defaultIndex;
-
-    /**
      * @var array Common headers for all sent documents.
      */
     protected $headers = [];
@@ -57,11 +52,6 @@ class Kuzzle
      * @var string Token used in requests for authentication.
      */
     protected $jwtToken;
-
-    /**
-     * @var Collection[][]
-     */
-    protected $collections = [];
 
     /**
      * @var array[]
@@ -118,6 +108,10 @@ class Kuzzle
      */
     public $server;
 
+    /**
+     * @var Security Kuzzle's Security controller
+     */
+    public $security;
 
     /**
      * Kuzzle constructor.
@@ -132,10 +126,6 @@ class Kuzzle
 
         if (array_key_exists('routesDescriptionFile', $options)) {
             $this->routesDescriptionFile = $options['routesDescriptionFile'];
-        }
-
-        if (array_key_exists('defaultIndex', $options)) {
-            $this->defaultIndex = $options['defaultIndex'];
         }
 
         if (array_key_exists('requestHandler', $options)) {
@@ -161,6 +151,7 @@ class Kuzzle
         $this->server = new Server($this);
         $this->auth = new Auth($this);
         $this->bulk = new Bulk($this);
+        $this->security = new Security($this);
 
         return $this;
     }
@@ -208,14 +199,6 @@ class Kuzzle
         }
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDefaultIndex()
-    {
-        return $this->defaultIndex;
     }
 
     /**
@@ -393,35 +376,6 @@ class Kuzzle
                 unset($this->listeners[$event][$key]);
             }
         }
-    }
-
-    /**
-     * A static Kuzzle\Security instance
-     *
-     * @return Security
-     */
-    public function security()
-    {
-        static $security;
-
-        if (is_null($security)) {
-            $security = new Security($this);
-        }
-
-        return $security;
-    }
-
-    /**
-     * Set the default data index. Has the same effect than the defaultIndex constructor option.
-     *
-     * @param $index
-     * @return Kuzzle
-     */
-    public function setDefaultIndex($index)
-    {
-        $this->defaultIndex = $index;
-
-        return $this;
     }
 
     /**

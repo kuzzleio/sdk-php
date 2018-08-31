@@ -3,156 +3,62 @@
 namespace Kuzzle\Security;
 
 use InvalidArgumentException;
+use Kuzzle\Kuzzle;
 
 /**
  * Class Profile
  * @package kuzzleio/kuzzle-sdk
  */
-class Profile extends Document
+class Profile
 {
-    protected $deleteActionName = 'deleteProfile';
-
-    protected $updateActionName = 'updateProfile';
-
-    protected $saveActionName = 'createOrReplaceProfile';
-
     /**
-     * @var Policy[]
+     * @var Kuzzle The kuzzle security instance associated to this Profile
      */
-    protected $policies;
+    public $kuzzle;
 
     /**
-     * Role constructor.
-     * @param Security $kuzzleSecurity An instantiated Kuzzle\Security object
-     * @param string $id Unique profile identifier
-     * @param array $content Profile content
-     * @param array $meta Profile metadata
+     * @var string Unique Profile identifier
      */
-    public function __construct(Security $kuzzleSecurity, $id = '', array $content = [], array $meta = [])
-    {
-        parent::__construct($kuzzleSecurity, $id, $content, $meta);
-
-        $this->syncPolicies();
-
-        return $this;
-    }
+    public $_id;
 
     /**
-     * Adds a policy to the profile.
-     *
-     * @param array|Policy $policy Unique Kuzzle\Security\Policy instance corresponding to the new associated policy
+     * @var array The Profile policies
+     */
+    public $policies;
+
+
+    /**
+     * Profile constructor.
+     * @param Kuzzle\Kuzzle $kuzzle An instantiated Kuzzle object
+     * @param string $_id Unique profile identifier
+     * @param array $policies Profile policies
      * @return Profile
      */
-    public function addPolicy($policy)
+    public function __construct(Kuzzle $kuzzle, $_id = '', array $policies = [])
     {
-        $this->policies[] = $this->policyFactory($policy);
+        $this->kuzzle = $kuzzle;
+        $this->_id = $_id;
+        $this->policies = $policies;
 
         return $this;
     }
 
-    /**
-     * Returns this profile associated roles.
-     *
-     * @return Policy[]
-     */
-    public function getPolicies()
+    public function getRoles(array $options = [])
     {
-        return $this->policies;
+        if (!$this->policies) {
+            return [];
+        }
+
+        return $this->kuzzle->security->mGetRoles($this->forgeRolesIdsArray(), $options);
     }
 
-    /**
-     * Replaces the roles associated to the profile.
-     *
-     * @param array[]|Role[] $policies List of policies descriptions or Kuzzle\Security\Role instances corresponding to the new associated roles
-     * @return Profile
-     */
-    public function setPolicies(array $policies)
+    private function forgeRolesIdsArray()
     {
-        $this->policies = [];
-        
-        foreach ($policies as $policy) {
-            $this->policies[] = $this->policyFactory($policy);
-        }
-        
-        return $this;
-    }
-
-    /**
-     * Replaces the content of the Kuzzle\Security\Profile object.
-     *
-     * @param array $content
-     * @return Profile
-     */
-    public function setContent(array $content)
-    {
-        parent::setContent($content);
-
-        $this->syncPolicies();
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function serialize()
-    {
-        $data = [];
-
-        if (!empty($this->id)) {
-            $data['_id'] = $this->id;
+        $ids = [];
+        foreach ($this->policies as $key => $policy) {
+            array_push($ids, $policy['roleId']);
         }
 
-        $this->content['policies'] = [];
-        foreach ($this->policies as $policy) {
-            $this->content['policies'][] = $policy->serialize();
-        }
-
-        $data['body'] = $this->content;
-
-
-        return $data;
-    }
-
-    /**
-     *
-     */
-    protected function syncPolicies()
-    {
-        if (!array_key_exists('policies', $this->content)) {
-            $this->content['policies'] = [];
-        }
-
-        $this->policies = [];
-        foreach ($this->content['policies'] as $policy) {
-            $this->policies[] = $this->policyFactory($policy);
-        }
-    }
-
-    /**
-     * @param Policy|array $policy
-     * @return Policy
-     */
-    protected function policyFactory($policy)
-    {
-        if ($policy instanceof Policy) {
-            return $policy;
-        }
-
-        if (is_array($policy)) {
-            $policyObject = new Policy($this, $policy['roleId']);
-    
-            if (array_key_exists('restrictedTo', $policy)) {
-                $policyObject->setRestrictedTo($policy['restrictedTo']);
-            }
-    
-            if (array_key_exists('allowInternalIndex', $policy)) {
-                $policyObject->setAllowInternalIndex($policy['allowInternalIndex']);
-            }
-            
-            return $policyObject;
-        }
-        
-        throw new InvalidArgumentException('Unable to extract policy from description: an instance of \Kuzzle\Security\Policy or a array is required');
+        return $ids;
     }
 }
