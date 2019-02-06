@@ -2,8 +2,6 @@
 
 namespace Kuzzle;
 
-use Ramsey\Uuid\Uuid;
-
 use Kuzzle\Util\SearchResult;
 use InvalidArgumentException;
 
@@ -210,10 +208,7 @@ class Collection
 
         if (!empty($id)) {
             $data['_id'] = $id;
-        } else {
-            $data['_id'] = Uuid::uuid4()->toString();
         }
-
         $response = $this->kuzzle->query(
             $this->buildQueryArgs('document', $action),
             $this->kuzzle->addHeaders($data, $this->headers),

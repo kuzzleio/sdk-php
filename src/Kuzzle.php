@@ -615,7 +615,6 @@ class Kuzzle
         if (!array_key_exists('requestId', $request)) {
             $request['requestId'] = Uuid::uuid4()->toString();
         }
-
          // @todo move this into RequestHandler
         return $this->emitRestRequest($this->convertRestRequest($request, $httpParams));
     }
@@ -1087,6 +1086,10 @@ class Kuzzle
             }
 
             $httpRequest['route'] = $this->routesDescription[$request['controller']][$request['action']]['route'];
+
+            if ($request['controller'] == 'document' && $request['action'] == 'create') {
+              $httpRequest['route'] = str_replace(':_id/', '', $httpRequest['route']);
+            }
         } else {
             $httpRequest['route'] = $request['route'];
             unset($request['route']);
