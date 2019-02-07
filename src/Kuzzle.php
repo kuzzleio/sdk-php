@@ -1087,7 +1087,7 @@ class Kuzzle
 
             $httpRequest['route'] = $this->routesDescription[$request['controller']][$request['action']]['route'];
 
-            if ($request['controller'] == 'document' && $request['action'] == 'create') {
+            if ($request['controller'] == 'document' && $request['action'] == 'create' && !array_key_exists('_id', $request)) {
               $httpRequest['route'] = str_replace(':_id/', '', $httpRequest['route']);
             }
         } else {
