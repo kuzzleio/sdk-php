@@ -209,7 +209,6 @@ class Collection
         if (!empty($id)) {
             $data['_id'] = $id;
         }
-
         $response = $this->kuzzle->query(
             $this->buildQueryArgs('document', $action),
             $this->kuzzle->addHeaders($data, $this->headers),
