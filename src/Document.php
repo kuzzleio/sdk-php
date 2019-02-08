@@ -58,7 +58,7 @@ class Document
         }
 
         if (is_null($meta)) {
-          $meta = array();
+            $meta = array();
         }
 
         if (!empty($content)) {
