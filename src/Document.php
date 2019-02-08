@@ -49,12 +49,16 @@ class Document
      * @param array $meta Initializes this document with the provided metadata
      * @return Document
      */
-    public function __construct(Collection $kuzzleDataCollection, $documentId = '', array $content = [], array $meta = [])
+    public function __construct(Collection $kuzzleDataCollection, $documentId = '', array $content = [], $meta = [])
     {
         $this->collection = $kuzzleDataCollection;
 
         if (!empty($documentId)) {
             $this->id = $documentId;
+        }
+
+        if (is_null($meta)) {
+          $meta = array();
         }
 
         if (!empty($content)) {
