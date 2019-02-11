@@ -431,7 +431,7 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $documentObject = new \Kuzzle\Document($dataCollection, $documentId, $documentContent, $documentMeta);
 
-        $document = $dataCollection->createDocument($documentObject, '', ['ifExist' => 'replace', 'requestId' => $requestId]);
+        $document = $dataCollection->createDocument($documentObject, $documentId, ['ifExist' => 'replace', 'requestId' => $requestId]);
 
         $this->assertInstanceOf('Kuzzle\Document', $document);
         $this->assertAttributeEquals($documentId, 'id', $document);
