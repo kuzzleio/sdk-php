@@ -1658,7 +1658,7 @@
     },
     "createFirstAdmin": {
       "name": "createFirstAdmin",
-      "route": "/_createFirstAdmin",
+      "route": "/:_id/_createFirstAdmin",
       "method": "post"
     },
     "mDeleteProfiles": {
