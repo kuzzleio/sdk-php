@@ -1,13 +1,94 @@
-dist: trusty
-language: php
-php:
-  - '5.4'
-  - '5.5'
-  - '5.6'
-  - '7.0'
-before_script: composer install
-script:
-  - php ./vendor/bin/phpcs -p -n --standard=PSR2 src
-  - php ./vendor/bin/phpunit
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+env:
+  global:
+    - AWS_ACCESS_KEY_ID=AKIAIYAXFUAHXOWP2MJA
+    # AWS_SECRET_ACCESS_KEY
+    - secure: "M7gzsIo3a7tHg6DJqnGzgYEwEg0ZBnJKitgVyNKE812QmAJ7vscLMoL+aKpvK6WpcwpWhA0veWUDMtodEJKZ9P6r5BUGWvkydWsqLeogoAcrW70sGIKEeP0zbL3mv2bBOrjt9qMuAMV6HA0H6DtVLOdodblzx69h7v66FVNeqdJGxCJvg7ZPi9/oDm96jwWuxxW6ny1WaA6LCBtBYxetnlb0BuhIMSEyzS4TC2ut7yxO5CI2MRFVU50nb+yj3dlAWRoP3OJ9U4Mh+v6N9q4ZBVH9HUB0kTzhNfGk3E05EcVLYEPUcTWsUNeWm93TuImCelTksKchq1CYisFayWsryQ7sITvdRaCzctahtHium50j7brSZPbQpjTrAeJJyTNk3KrbvTAT4WZBrl6LqwjrnWumoZgfS5syKQ/3Hdem1HBUCLn33lOvgw8/zzl0pc1MJIBKjAMwfsNTqUEZ/6dp7o3IS8YtfpILjDp1uz/YvJajg+rYI2tSpkQVGcc6SjGrPh8FmVul7013JvbPC24m9IughBYzmjOyW6dBJ6ldu3nkRybgsyQOl+RTzxWUn4MTl0FbQguZF050LdT0vLcanIDLJQj31R00oAcbxS3igFC3jLXJbErkXiOlZVjzGIIfJ+x5UILkMxuCdGd+A2Gbz6+o5xT3nFfFvfzwDIWA7Z0="
+
+jobs:
+  include:
+    - stage: Tests
+      name: Unit Tests
+      if: type = pull_request OR type = push AND branch =~ /^master|[0-9]+-dev$/ OR type = cron
+      dist: trusty
+      language: php
+      php:
+        - '5.4'
+        - '5.5'
+        - '5.6'
+        - '7.0'
+
+      before_script: composer install
+
+      script:
+        - php ./vendor/bin/phpcs -p -n --standard=PSR2 src
+        - php ./vendor/bin/phpunit
+
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
+
+
+    - stage: Deployment Doc Dev
+      name: Deploy next-docs.kuzzle.io
+      if: type = push AND branch =~ .*-dev
+      language: node_js
+      node_js: 10
+      env:
+        - NODE_ENV=production
+        - S3_BUCKET=docs-next.kuzzle.io
+        - CLOUDFRONT_DISTRIBUTION_ID=E2ZCCEK9GRB49U
+        - AWS_DEFAULT_REGION=us-west-2
+
+      addons:
+        apt:
+          packages:
+            - python
+            - python-pip
+
+      install:
+        - pip install awscli --upgrade --user
+
+      script:
+        - npm run doc-prepare
+        - npm run doc-build
+
+      deploy:
+        provider: script
+        script:
+          - npm run doc-upload
+        skip_cleanup: true
+
+      after_deploy:
+        - npm run doc-cloudfront
+
+    - stage: Deployment Doc Prod
+      name: Deploy docs.kuzzle.io
+      if: type = push AND branch =~ /^master|[0-9]+-stable$/
+      language: node_js
+      node_js: 10
+      env:
+        - NODE_ENV=production
+        - S3_BUCKET=docs.kuzzle.io
+        - CLOUDFRONT_DISTRIBUTION_ID=E3D6RP0POLCJMM
+        - AWS_DEFAULT_REGION=us-west-2
+
+      addons:
+        apt:
+          packages:
+            - python
+            - python-pip
+
+      install:
+        - pip install awscli --upgrade --user
+
+      script:
+        - npm run doc-prepare
+        - npm run doc-build
+
+      deploy:
+        provider: script
+        script:
+          - npm run doc-upload
+        skip_cleanup: true
+
+      after_deploy:
+        - npm run doc-cloudfront
