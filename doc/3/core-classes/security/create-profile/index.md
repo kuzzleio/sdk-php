@@ -11,7 +11,7 @@ Create a new profile in Kuzzle.
 
 :::info
 There is a small delay between profile creation and its availability in our search layer (usually a couple of seconds).
-That means that a profile that was just created might not be returned immediately by the [searchProfiles](/sdk/php/3/core-classes/security/search-profiles/) function.
+That means that a profile that was just created might not be returned immediately by the [searchProfiles](/sdk/php/3/core-classes/security/search-profiles) function.
 :::
 
 ---

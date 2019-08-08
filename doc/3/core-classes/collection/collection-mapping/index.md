@@ -7,7 +7,7 @@ description: Collection:collectionMapping
 
 # collectionMapping
 
-Creates a new [CollectionMapping](/sdk/php/3/core-classes/collection-mapping/) object, using its constructor.
+Creates a new [CollectionMapping](/sdk/php/3/core-classes/collection-mapping) object, using its constructor.
 
 ---
 
@@ -21,7 +21,7 @@ Creates a new [CollectionMapping](/sdk/php/3/core-classes/collection-mapping/) o
 
 ## Return Value
 
-Returns the newly created [CollectionMapping](/sdk/php/3/core-classes/collection-mapping/) object.
+Returns the newly created [CollectionMapping](/sdk/php/3/core-classes/collection-mapping) object.
 
 ## Usage
 

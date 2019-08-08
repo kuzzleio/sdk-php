@@ -11,7 +11,7 @@ Delete the provided profile.
 
 :::info
 There is a small delay between the time a profile is deleted and it being reflected in the search layer (usually a couple of seconds).
-That means that a profile that was just deleted might still be returned by the [searchProfiles](/sdk/php/3/core-classes/security/search-profiles/) function.
+That means that a profile that was just deleted might still be returned by the [searchProfiles](/sdk/php/3/core-classes/security/search-profiles) function.
 :::
 
 ---

@@ -10,7 +10,7 @@ description: User:setContent
 Replaces the content of User.
 
 :::info
-Updating a user will have no impact until the [create](/sdk/php/3/core-classes/user/create/) or [replace](/sdk/php/3/core-classes/user/replace/) method is called.
+Updating a user will have no impact until the [create](/sdk/php/3/core-classes/user/create/) or [replace](/sdk/php/3/core-classes/user/replace) method is called.
 :::
 
 ---

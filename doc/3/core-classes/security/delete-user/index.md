@@ -11,7 +11,7 @@ Delete the provided user.
 
 :::info
 There is a small delay between the time a user is deleted and it being reflected in the search layer (usually a couple of seconds).
-That means that a user that has just been deleted might still be returned by the [searchUsers](/sdk/php/3/core-classes/security/search-users/) function.
+That means that a user that has just been deleted might still be returned by the [searchUsers](/sdk/php/3/core-classes/security/search-users) function.
 :::
 
 ---

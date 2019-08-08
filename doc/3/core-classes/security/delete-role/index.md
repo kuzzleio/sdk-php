@@ -11,7 +11,7 @@ Delete the provided role.
 
 :::info
 There is a small delay between the time a role is deleted and it being reflected in the search layer (usually a couple of seconds).
-That means that a role that was just deleted might still be returned by the [searchRoles](/sdk/php/3/core-classes/security/search-roles/) function.
+That means that a role that was just deleted might still be returned by the [searchRoles](/sdk/php/3/core-classes/security/search-roles) function.
 :::
 
 ---

@@ -10,7 +10,7 @@ description: Role:setContent
 Replaces the content of the `Role` object.
 
 :::info
-Updating a role content will have no impact until the [save](/sdk/php/3/core-classes/role/save/) method is called
+Updating a role content will have no impact until the [save](/sdk/php/3/core-classes/role/save) method is called
 :::
 
 ---

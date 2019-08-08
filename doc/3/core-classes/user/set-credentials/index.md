@@ -10,7 +10,7 @@ description: User:setCredentials
 Sets the user's credentials.
 
 :::info
-Updating user credentials will have no impact until the [create](/sdk/php/3/core-classes/user/create/) method is called.  
+Updating user credentials will have no impact until the [create](/sdk/php/3/core-classes/user/create) method is called.  
 The credentials to send depend on the authentication plugin and the strategy you want to create credentials for.
 :::
 

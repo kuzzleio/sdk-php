@@ -7,7 +7,7 @@ description: Collection:scroll
 
 # scroll
 
-Returns a [SearchResult](/sdk/php/3/core-classes/search-result/) object containing the next page of the scroll session, and the `scrollId` to be used in the next `scroll` action.
+Returns a [SearchResult](/sdk/php/3/core-classes/search-result) object containing the next page of the scroll session, and the `scrollId` to be used in the next `scroll` action.
 A scroll session is always initiated by a `search` action and including the `scroll` argument; more information below.
 
 :::info
@@ -15,7 +15,7 @@ There is a small delay between the time a document is created and its availabili
 :::
 
 :::info
-To get more information about scroll sessions, please refer to the [API reference documentation](/core/1/api/controllers/document/search/).
+To get more information about scroll sessions, please refer to the [API reference documentation](/core/1/api/controllers/document/search).
 :::
 
 ---

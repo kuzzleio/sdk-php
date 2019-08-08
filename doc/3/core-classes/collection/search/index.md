@@ -19,7 +19,7 @@ When processing a large number of documents (i.e. more than 1000), using `search
 
 Pagination of results can be done by using the from and size but the cost becomes prohibitive when deep pagination is reached. In fact, Elasticsearch, Kuzzle's embedded database, limits results to 10,000 records by default.
 
-Instead, the recommended way to process a large number of documents is to use [`Collection.scroll`](/sdk/php/3/core-classes/collection/scroll/) or, easier, [`SearchResult.fetchNext`](/sdk/php/3/core-classes/search-result/fetch-next/).
+Instead, the recommended way to process a large number of documents is to use [`Collection.scroll`](/sdk/php/3/core-classes/collection/scroll/) or, easier, [`SearchResult.fetchNext`](/sdk/php/3/core-classes/search-result/fetch-next).
 
 See [`SearchResult.fetchNext`](/sdk/php/3/core-classes/search-result/fetch-next/#how-to-process-every-document-of-a-collection) for an example of how to process every document of a collection.
 
@@ -45,7 +45,7 @@ See [`SearchResult.fetchNext`](/sdk/php/3/core-classes/search-result/fetch-next/
 | `size`     | number  | Provide the maximum number of results of the request (used to paginate results)                                                                                                                                   | `10`        |
 
 :::info
-To get more information about scroll sessions, please refer to the [API reference documentation](/core/1/api/controllers/document/search/).
+To get more information about scroll sessions, please refer to the [API reference documentation](/core/1/api/controllers/document/search).
 :::
 
 ---
