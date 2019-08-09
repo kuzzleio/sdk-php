@@ -28,7 +28,7 @@ From the [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticse
 
 | Argument   | Type        | Description                                                                                                     |
 | ---------- | ----------- | --------------------------------------------------------------------------------------------------------------- |
-| `index`    | string      | _Optional_. The index to refresh. If not set, defaults to [kuzzle.defaultIndex](/sdk/php/3/core-classes/kuzzle/#properties). |
+| `index`    | string      | _Optional_. The index to refresh. If not set, defaults to [kuzzle.defaultIndex](/sdk/php/3/core-classes/kuzzle#properties). |
 | `options`  | JSON object | Optional parameters                                                                                             |
 | `callback` | function    | _Optional_. Callback handling the response.                                                                     |
 

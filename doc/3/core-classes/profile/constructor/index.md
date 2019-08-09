@@ -8,7 +8,7 @@ order: 1
 
 # Constructors
 
-Instantiates a new `Profile` object, representing a security [profile](/core/1/guides/essentials/security/#users-profiles-and-roles), which is a set of one or many [Role](/sdk/php/3/core-classes/role) objects.
+Instantiates a new `Profile` object, representing a security [profile](/core/1/guides/essentials/security#users-profiles-and-roles), which is a set of one or many [Role](/sdk/php/3/core-classes/role) objects.
 
 ---
 

@@ -14,10 +14,10 @@ Unlike a regular document update, this method will replace the whole role defini
 
 In other words, you always need to provide the complete role definition.
 
-This method has the same effect as calling [setContent](/sdk/php/3/core-classes/role/set-content/) followed by the [save](/sdk/php/3/core-classes/role/save) method.
+This method has the same effect as calling [setContent](/sdk/php/3/core-classes/role/set-content) followed by the [save](/sdk/php/3/core-classes/role/save) method.
 :::
 
-To get more information about Kuzzle permissions, please refer to our [permissions guide](/core/1/guides/essentials/security/#user-permissions).
+To get more information about Kuzzle permissions, please refer to our [permissions guide](/core/1/guides/essentials/security#user-permissions).
 
 ---
 

@@ -10,7 +10,7 @@ description: User:setProfiles
 Replaces the security profiles linked to the user.
 
 :::info
-Updating a user will have no impact until either the [create](/sdk/php/3/core-classes/user/create/) or [replace](/sdk/php/3/core-classes/user/replace) method is called.
+Updating a user will have no impact until either the [create](/sdk/php/3/core-classes/user/create) or [replace](/sdk/php/3/core-classes/user/replace) method is called.
 :::
 
 ---
