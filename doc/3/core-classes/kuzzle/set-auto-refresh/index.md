@@ -26,7 +26,7 @@ using it in production or at least carefully monitor its implications before usi
 
 | Argument      | Type        | Description                                                                                                                      |
 | ------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `index`       | string      | _Optional_ The index to set the `autoRefresh` for. If not set, defaults to [kuzzle.defaultIndex](/sdk/php/3/core-classes/kuzzle/#properties). |
+| `index`       | string      | _Optional_ The index to set the `autoRefresh` for. If not set, defaults to [kuzzle.defaultIndex](/sdk/php/3/core-classes/kuzzle#properties). |
 | `autoRefresh` | boolean     | The value to set for the `autoRefresh` setting.                                                                                  |
 | `options`     | JSON object | Optional parameters                                                                                                              |
 | `callback`    | function    | _Optional_ Callback handling the response                                                                                        |
