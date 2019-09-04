@@ -11,5 +11,6 @@ runners:
   php:
     service: doc-runner-php
     path: /var/snippets/php
-    lint:
-      cmd: echo "lint me master"
+    run:
+      cmd: bash -c "composer intall && php {{ snippet.source }}"
+        

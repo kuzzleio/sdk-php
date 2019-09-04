@@ -1,3 +1,3 @@
-$exists = kuzzle.Server.adminExists();
+$exists = $kuzzle.Server.adminExists();
 
-echo "Admin exists? " + $exists;
+echo("MESCOUILLES");

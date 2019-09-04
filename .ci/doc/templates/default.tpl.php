@@ -1,10 +1,11 @@
 <?php
-use DateTime;
 
-$socket = new WebSocket(new Uri("ws://kuzzle:7512"));
-$kuzzle = new KuzzleSdk.Kuzzle(socket);
 
-kuzzle.connect();
+namespace Kuzzle;
+use Kuzzle;
+use Document;
+
+$kuzzle = new Kuzzle('localhost');
 
 [snippet-code]
 ?>

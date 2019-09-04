@@ -1,0 +1,10 @@
+{
+    "name": "yoann/docker",
+    "type": "project",
+    "require": {
+        "kuzzleio/kuzzle-sdk": "^3.0"
+    },
+    "require-dev": {
+        "kuzzleio/kuzzle-sdk": "^3.0"
+    }
+}
