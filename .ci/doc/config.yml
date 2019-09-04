@@ -1,0 +1,15 @@
+---
+
+snippets:
+  mount: /mnt
+  path: doc/**/snippets/*.test.yml
+  templates: /mnt/.ci/doc/templates
+
+runners:
+  default: php
+
+  php:
+    service: doc-runner-php
+    path: /var/snippets/php
+    lint:
+      cmd: echo "lint me master"

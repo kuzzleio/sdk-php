@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  kuzzle:
+    image: kuzzleio/kuzzle
+    ports:
+      - "7512:7512"
+    cap_add:
+      - SYS_PTRACE
+    depends_on:
+      - redis
+      - elasticsearch
+    container_name: kuzzle
+    environment:
+      - kuzzle_services__db__client__host=http://elasticsearch:9200
+      - kuzzle_services__internalCache__node__host=redis
+      - kuzzle_services__memoryStorage__node__host=redis
+      - NODE_ENV=production
+
+  redis:
+    image: redis:5
+
+  elasticsearch:
+    image: kuzzleio/elasticsearch:5.6.10
+    ulimits:
+      nofile: 65536
+    environment:
+      - cluster.name=kuzzle
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+
+  doc-tests:
+    image: kuzzleio/snippets-tests
+    privileged: true
+    depends_on:
+      - kuzzle
+      - doc-runner-php
+    volumes:
+      - ../..:/mnt
+      - /var/run/docker.sock:/var/run/docker.sock
+      - snippets:/var/snippets
+    environment:
+      - CONFIG_FILE=/mnt/.ci/doc/config.yml
+
+  doc-runner-php:
+    image: groot:latest
+    command: tail -f /dev/null
+    volumes:
+      - ../..:/mnt
+      - snippets:/var/snippets
+
+volumes:
+  snippets:
