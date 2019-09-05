@@ -1,5 +1,5 @@
 
-$exists = $kuzzle->now();
+$now = $kuzzle->now();
 
 
-echo("MESCOUILLES");
+echo $now->format('Y-m-d H:i:s');
