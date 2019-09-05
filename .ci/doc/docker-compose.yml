@@ -42,7 +42,7 @@ services:
       - CONFIG_FILE=/mnt/.ci/doc/config.yml
 
   doc-runner-php:
-    image: groot:latest
+    build: docker/
     command: tail -f /dev/null
     volumes:
       - ../..:/mnt

@@ -15,4 +15,4 @@ runners:
       cmd: php /composer.phar require kuzzleio/kuzzle-sdk
     run:
       cmd: php {{ snippet.source }}
-        
+      before: timeout 600 bash -c 'until curl -f -s -o /dev/null http://kuzzle:7512/_now; do sleep 1; done'
