@@ -11,6 +11,8 @@ runners:
   php:
     service: doc-runner-php
     path: /var/snippets/php
+    build:
+      cmd: php /composer.phar require kuzzleio/kuzzle-sdk
     run:
-      cmd: bash -c "composer intall && php {{ snippet.source }}"
+      cmd: php {{ snippet.source }}
         
