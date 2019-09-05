@@ -4,4 +4,4 @@ hooks:
   before: 
   after:
 template: default
-expected: ^(Admin exists\?) (true|false)$
+expected: 1447151167622

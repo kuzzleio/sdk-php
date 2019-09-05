@@ -1,3 +1,5 @@
-$exists = $kuzzle.Server.adminExists();
+
+$exists = $kuzzle->now();
+
 
 echo("MESCOUILLES");

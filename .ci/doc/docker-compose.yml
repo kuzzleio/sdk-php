@@ -37,7 +37,7 @@ services:
     volumes:
       - ../..:/mnt
       - /var/run/docker.sock:/var/run/docker.sock
-      - snippets:/var/snippets
+      - snippets:/var/snippets/php
     environment:
       - CONFIG_FILE=/mnt/.ci/doc/config.yml
 
@@ -46,7 +46,7 @@ services:
     command: tail -f /dev/null
     volumes:
       - ../..:/mnt
-      - snippets:/var/snippets
+      - snippets:/var/snippets/php
 
 volumes:
   snippets:

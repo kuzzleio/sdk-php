@@ -1,11 +1,9 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
 
+use \Kuzzle\Kuzzle;
+use \Kuzzle\Document;
 
-namespace Kuzzle;
-use Kuzzle;
-use Document;
-
-$kuzzle = new Kuzzle('localhost');
+$kuzzle = new Kuzzle('kuzzle');
 
 [snippet-code]
-?>
