@@ -1,0 +1,7 @@
+name: Security#createUser
+description: Creates a User.
+hooks:
+  before: curl -XDELETE kuzzle:7512/users/test
+  after: curl -XDELETE kuzzle:7512/users/test
+template: default
+expected: 'true'

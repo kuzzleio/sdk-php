@@ -1,7 +1,0 @@
-name: Server#AdminExistsAsync
-description: Checks that an administrator account exists.
-hooks:
-  before: 
-  after:
-template: default
-expected: 1447151167622
