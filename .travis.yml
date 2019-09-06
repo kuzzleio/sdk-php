@@ -133,7 +133,7 @@ jobs:
 stages:
   - name: Unit Tests & Linters
     if: type =~ /(cron|pull_request)/ OR (type = push AND branch =~ /^master|[0-9]+-(dev|stable)$/)
-  - name: Retro
+  - name: Backwards compatibility
     if: type = cron
   - name: Deployments
     if: type = push AND branch =~ /^master|[0-9]+-(dev|stable)$/
