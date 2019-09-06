@@ -131,13 +131,3 @@ stages:
     if: type = cron
   - name: Deployments
     if: type = push AND branch =~ /^master|[0-9]+-(dev|stable)$/
-
-# ---------------------------------------
-# Notifications
-# ---------------------------------------
-notifications:
-  slack:
-    rooms:
-      - secure: "th1UK1PSRYsPG0TrrWFP0fRm/ClTQP/oxG52QxryaZHx3QnWiexrzgs+llv5I0wNcegFxPRgndcqMNFelodgxRWGIproiTQDfftCYXdNdJKTYtWYc6gzlPtqQkk36PH96Tq3tMPA/S0rhiGHQyUrh+R14vkVZJrD3W1fWzN/BqIJkWlXNIoDg98pD3l0nUoOY1s+3vWW7BZdzzMfvNEjF7Q+7DARd+F/pxsqiaUDrNV+EGG10y42/XxEpo4CfkNPqu2ArQRSW7BRoWdpNKVb+f7+nrhfVLr12LA9fcSYyXG0LWQ8vsZZaq8QHU4zImcydTElgryfliaWAFNTQ9KKQN+wjLPEhXyp6dRIET/ThqBxWCuL8pdJqNTqBfsYKp60VKt/jTa/BGwPBuWFwCSYP+/daTsoSK5qPF3A05K0xtSMAPJbylxahtZnqon6gFeuRJeeMtbGHfxNfdCRZXvBtv5txQn+szXDnZtNU2eYZ6uY47cc2VqQ/nx82u9a2vch6M9Hu6x05seYjVJZ50Nyh8kV4KFVpR82rXUb+ZDZ01bXV2MDm1Elo7NiVIByZ4PaI9tlkrlBcs6IRXULvE0+syxa/lwgHSO0NysyUjHPy46+c3VKtNVnu54oBkmEug1GEt+sq0TItqZG7d3COoolOvu+zQjROCzue/0p+1B7mu8="
-    on_success: never
-    on_failure: always
