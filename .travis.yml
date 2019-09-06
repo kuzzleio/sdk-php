@@ -95,7 +95,7 @@ jobs:
 
     - <<: *cross_tests
       name: PHP 5.5
-      stage: Unit Tests & Linters
+      stage: Backwards compatibility
       php: 5.5
       
     - <<: *cross_tests
