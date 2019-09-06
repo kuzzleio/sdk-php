@@ -77,7 +77,6 @@ jobs:
     - name: Documentation test
       stage: Unit Tests & Linters
       language: go
-      go: 1.12.x
           - "$HOME/.cache/go-build"
           - "$HOME/gopath/pkg"
       script:
