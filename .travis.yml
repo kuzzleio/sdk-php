@@ -76,7 +76,6 @@ jobs:
 
     - name: Documentation test
       stage: Unit Tests & Linters
-      language: go
       script:
         - docker-compose -f .ci/doc/docker-compose.yml run doc-tests node index
 
