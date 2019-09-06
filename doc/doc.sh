@@ -2,7 +2,7 @@
 
 set -eu
 
-DOC_VERSION=6
+DOC_VERSION=4
 DOC_PATH=/sdk/php/4
 
 # Used by vuepress
