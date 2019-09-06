@@ -90,7 +90,7 @@ jobs:
     # -----------------------------------------------
     - <<: *cross_tests
       name: PHP 5.4
-      stage: Retro
+      stage: Backwards compatibility
       php: 5.4
 
     - <<: *cross_tests
