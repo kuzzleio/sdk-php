@@ -13,13 +13,21 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
         $host = self::FAKE_KUZZLE_HOST;
 
         try {
-            $kuzzle = new \Kuzzle\Kuzzle($host, ['port' => 1234]);
+            $headers = [ 'Content-Type' => 'application/json' ];
+            $volatile = [ 'job' => 'PHP CEO' ];
+            $options = [
+              'port' => 1234,
+              'headers' => $headers,
+              'volatile' => $volatile,
+              'sslConnection' => true
+            ];
+            $kuzzle = new \Kuzzle\Kuzzle($host, $options);
 
             // Assert type
             $this->assertInstanceOf('\Kuzzle\Kuzzle', $kuzzle);
 
             // Assert Url
-            $this->assertAttributeEquals('http://' . $host . ':1234', 'url', $kuzzle);
+            $this->assertAttributeEquals('https://' . $host . ':1234', 'url', $kuzzle);
 
             // Assert if one (random) route is loaded
             $routesDescription = $this->readAttribute($kuzzle, 'routesDescription');
@@ -29,6 +37,9 @@ class KuzzleTest extends \PHPUnit_Framework_TestCase
                 'route' =>  '/_now'
             ];
 
+            $this->assertEquals($headers, $kuzzle->getHeaders());
+            $this->assertEquals($volatile, $kuzzle->getVolatile());
+            $this->assertEquals(true, $kuzzle->isSSL());
             $this->assertEquals($routesNow, $routesDescription['server']['now']);
         }
         catch (Exception $e) {

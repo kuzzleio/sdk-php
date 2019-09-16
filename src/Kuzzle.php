@@ -112,6 +112,11 @@ class Kuzzle
      * @var Security Kuzzle's Security controller
      */
     public $security;
+    
+    /**
+     * @var boolean
+     */
+    private $sslConnection;
 
     /**
      * Kuzzle constructor.
@@ -138,8 +143,22 @@ class Kuzzle
             $this->port = $options['port'];
         }
 
-        // TODO: Find a way to handle HTTPS and HTTP
-        $this->url = 'http://' . $host . ':' . $this->port;
+        if (array_key_exists('headers', $options)) {
+            $this->headers = $options['headers'];
+        }
+
+        if (array_key_exists('volatile', $options)) {
+            $this->volatile = $options['volatile'];
+        }
+
+        if (array_key_exists('sslConnection', $options)) {
+            $this->sslConnection = $options['sslConnection'];
+        } else {
+            $this->sslConnection = false;
+        }
+
+        $proto = $this->sslConnection ? 'https' : 'http';
+        $this->url = $proto . '://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
 
         $this->sdkVersion = json_decode(file_get_contents(__DIR__.'/../composer.json'))->version;
@@ -228,6 +247,201 @@ class Kuzzle
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * @return boolean
+     */
+    public function isSSL()
+    {
+        return $this->sslConnection;
+    }
+
+    /**
+     * Gets the rights of the current user
+     *
+     * @param array $options Optional parameters
+     * @return array[]
+     */
+    public function getMyRights(array $options = [])
+    {
+        $response = $this->query(
+            $this->buildQueryArgs('auth', 'getMyRights'),
+            [],
+            $options
+        );
+
+        return $response['result']['hits'];
+    }
+
+    /**
+     * Retrieves information about Kuzzle, its plugins and active services.
+     *
+     * @param array $options Optional parameters
+     * @return array containing server information
+     */
+    public function getServerInfo(array $options = [])
+    {
+        $response = $this->query(
+            $this->buildQueryArgs('server', 'info'),
+            [],
+            $options
+        );
+
+        return $response['result']['serverInfo'];
+    }
+
+    /**
+     * Kuzzle monitors active connections, and ongoing/completed/failed requests.
+     * This method allows getting either the last statistics frame,
+     * or a set of frames starting from a provided timestamp.
+     *
+     * @param string $timestamp Optional starting time from which the frames are to be retrieved
+     * @param array $options Optional parameters
+     * @return array[] containing one or more statistics frame(s)
+     */
+    public function getStatistics($timestamp = '', array $options = [])
+    {
+        $data = [];
+
+        if (empty($timestamp)) {
+            $action = 'getLastStats';
+        } else {
+            $action = 'getStats';
+            $data['body'] = [
+                'startTime' => $timestamp
+            ];
+        }
+
+        $response = $this->query(
+            $this->buildQueryArgs('server', $action),
+            $data,
+            $options
+        );
+
+        return empty($timestamp) ? [$response['result']] : $response['result']['hits'];
+    }
+
+    /**
+     * Retrieves the list of known data collections contained in a specified index.
+     *
+     * @param string $index Index containing the collections to be listed
+     * @param array $options Optional parameters
+     * @return array containing the list of stored and/or realtime collections on the provided index
+     *
+     * @throws InvalidArgumentException
+     */
+    public function listCollections($index = '', array $options = [])
+    {
+        $collectionType = 'all';
+
+        if (empty($index)) {
+            if (empty($this->defaultIndex)) {
+                throw new InvalidArgumentException('Unable to list collections: no index specified');
+            }
+
+            $index = $this->defaultIndex;
+        }
+
+        if (array_key_exists('type', $options)) {
+            $collectionType = $options['type'];
+        }
+
+        $options['httpParams'] = [
+            ':type' => $collectionType
+        ];
+
+        $query = [
+            'body' => [
+                'type' => $collectionType
+            ]
+        ];
+
+        $response = $this->query($this->buildQueryArgs('collection', 'list', $index), $query, $options);
+
+        return $response['result']['collections'];
+    }
+
+    /**
+     * Retrieves the list of indexes stored in Kuzzle.
+     *
+     * @param array $options Optional parameters
+     * @return array of index names
+     */
+    public function listIndexes(array $options = [])
+    {
+        $response = $this->query(
+            $this->buildQueryArgs('index', 'list'),
+            [],
+            $options
+        );
+
+        return $response['result']['indexes'];
+    }
+
+    /**
+     * Log a user according to a strategy and credentials
+     *
+     * @param string $strategy Authentication strategy (local, facebook, github, …)
+     * @param array $credentials Optional login credentials, depending on the strategy
+     * @param string $expiresIn Login expiration time
+     * @param array $options Optional options
+     * @return array
+     */
+    public function login($strategy, array $credentials = [], $expiresIn = '', array $options = [])
+    {
+        $body = $credentials;
+
+        if (empty($strategy)) {
+            throw new InvalidArgumentException('Unable to login: no strategy specified');
+        }
+
+        if (!array_key_exists('httpParams', $options)) {
+            $options['httpParams'] = [];
+        }
+
+        if (!array_key_exists(':strategy', $options['httpParams'])) {
+            $options['httpParams'][':strategy'] = $strategy;
+        }
+
+        if (!empty($expiresIn)) {
+            $options['query_parameters']['expiresIn'] = $expiresIn;
+        }
+
+        $response = $this->query(
+            $this->buildQueryArgs('auth', 'login'),
+            [
+                'body' => $body
+            ],
+            $options
+        );
+
+        if ($response['result']['jwt']) {
+            $this->jwtToken = $response['result']['jwt'];
+        }
+
+        return $response['result'];
+    }
+
+    /**
+     * Logs the user out.
+     * @param array $options Optional parameters
+     * @return array
+     */
+    public function logout(array $options = [])
+    {
+        $response = $this->query(
+            $this->buildQueryArgs('auth', 'logout'),
+            [],
+            $options
+        );
+
+        $this->jwtToken = null;
+
+        return $response['result'];
+    }
+
+    /**
+>>>>>>> 88a8f4b... Add missing options feature to Kuzzle constructor (#113)
      * A static Kuzzle\MemoryStorage instance
      *
      * @return MemoryStorage
