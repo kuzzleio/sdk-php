@@ -83,6 +83,11 @@ class Kuzzle
      */
     protected $sdkVersion;
 
+    /**
+     * @var boolean
+     */
+    private $sslConnection;
+
 
     /**
      * Kuzzle constructor.
@@ -113,7 +118,22 @@ class Kuzzle
             $this->port = $options['port'];
         }
 
-        $this->url = 'http://' . $host . ':' . $this->port;
+        if (array_key_exists('headers', $options)) {
+            $this->headers = $options['headers'];
+        }
+
+        if (array_key_exists('volatile', $options)) {
+            $this->volatile = $options['volatile'];
+        }
+
+        if (array_key_exists('sslConnection', $options)) {
+            $this->sslConnection = $options['sslConnection'];
+        } else {
+            $this->sslConnection = false;
+        }
+
+        $proto = $this->sslConnection ? 'https' : 'http';
+        $this->url = $proto . '://' . $host . ':' . $this->port;
         $this->loadRoutesDescription($this->routesDescriptionFile);
 
         $this->sdkVersion = json_decode(file_get_contents(__DIR__.'/../composer.json'))->version;
@@ -292,6 +312,14 @@ class Kuzzle
     public function getVolatile()
     {
         return $this->volatile;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSSL()
+    {
+        return $this->sslConnection;
     }
 
     /**
