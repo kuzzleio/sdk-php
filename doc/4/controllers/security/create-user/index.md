@@ -24,7 +24,7 @@ That means that a user that was just created may not be returned by the [searchU
 | `user`     | JSON Object | A plain JSON object representing the user (see below)                                                                        |
 | `options`  | string      | (Optional) Optional arguments                                                                                                |
 | `callback` | function    | Callback handling the response                                                                                               |
-| `refresh`  | string      | If set to `wait_for`, Kuzzle will wait the persistence layer to finish indexing (available with Elasticsearch 5.x and above) | `undefined` |
+| `refresh`  | string      | If set to `wait_for`, Kuzzle will wait the persistence layer to finish indexing |
 
 The `user` object to provide must have the following properties:
 
