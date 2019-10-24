@@ -3,7 +3,7 @@
 set -eu
 
 DOC_VERSION=4
-DOC_PATH=/sdk/php/4
+DOC_PATH=/sdk/php/${DOC_VERSION}
 
 # Used by vuepress
 export DOC_DIR=$DOC_VERSION
