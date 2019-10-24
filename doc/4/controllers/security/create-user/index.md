@@ -7,7 +7,7 @@ description: Security:createUser
 
 # createUser
 
-Create a new user in Kuzzle.
+Creates a new user in Kuzzle.
 
 :::info
 There is a small delay between user creation and its availability in our search layer (usually a couple of seconds).
