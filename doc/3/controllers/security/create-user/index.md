@@ -39,9 +39,9 @@ The `user` object to provide must have the following properties:
 
 ## Options
 
-| Filter     | Type    | Description                       | Default |
-| ---------- | ------- | --------------------------------- | ------- |
-| `queuable` | boolean | Make this request queuable or not | `true`  |
+| Filter     | Type    | Description                      
+| ---------- | ------- | ---------------------------------
+| `queuable` | boolean | Make this request queuable or not
 
 ---
 

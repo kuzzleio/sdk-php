@@ -2,17 +2,18 @@
 
 set -eu
 
-DOC_VERSION=4
+DOC_VERSION=3
 DOC_PATH=/sdk/php/${DOC_VERSION}
 
 # Used by vuepress
 export DOC_DIR=$DOC_VERSION
 export SITE_BASE=$DOC_PATH/
+export CWD=`dirname "$0"`
 
 # Used to specify --no-cache for example
 ARGS=${2:-""}
 
-if [ ! -d "./$DOC_DIR" ]
+if [ ! -d "$CWD/$DOC_DIR" ]
 then
   echo "Cannot find $DOC_DIR/. You must run this script from doc/ directory."
   exit 1
@@ -21,28 +22,28 @@ fi
 case $1 in
   prepare)
     echo "Clone documentation framework"
-    rm -rf framework
-    git clone --depth 10 --single-branch --branch master https://github.com/kuzzleio/documentation.git framework/
+    rm -rf $CWD/framework
+    git clone --depth 10 --single-branch --branch master https://github.com/kuzzleio/documentation.git $CWD/framework/
 
     echo "Link local doc for dead links checking"
-    rm framework/src$DOC_PATH
-    ln -s ../../../../$DOC_VERSION framework/src$DOC_PATH
+    rm $CWD/framework/src$DOC_PATH
+    ln -s $CWD/../../../../$DOC_VERSION $CWD/framework/src$DOC_PATH
 
     echo "Install dependencies"
-    npm --prefix framework/ install
+    npm --prefix $CWD/framework/ install
   ;;
 
   dev)
-    ./framework/node_modules/.bin/vuepress dev $DOC_VERSION/ $ARGS
+    $CWD/framework/node_modules/.bin/vuepress dev $CWD/$DOC_VERSION/ $ARGS
   ;;
 
   build)
-    ./framework/node_modules/.bin/vuepress build $DOC_VERSION/ $ARGS
+    $CWD/framework/node_modules/.bin/vuepress build $CWD/$DOC_VERSION/ $ARGS
   ;;
 
   build-netlify)
     export SITE_BASE="/"
-    ./framework/node_modules/.bin/vuepress build $DOC_VERSION/ $ARGS
+    $CWD/framework/node_modules/.bin/vuepress build $CWD/$DOC_VERSION/ $ARGS
   ;;
 
   upload)
