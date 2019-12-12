@@ -13,12 +13,6 @@ export CWD=`dirname "$0"`
 # Used to specify --no-cache for example
 ARGS=${2:-""}
 
-if [ ! -d "$CWD/$DOC_DIR" ]
-then
-  echo "Cannot find $DOC_DIR/. You must run this script from doc/ directory."
-  exit 1
-fi
-
 case $1 in
   prepare)
     echo "Clone documentation framework"
