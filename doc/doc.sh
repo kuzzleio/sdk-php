@@ -6,9 +6,10 @@ DOC_VERSION=3
 DOC_PATH=/sdk/php/${DOC_VERSION}
 
 # Used by vuepress
-export DOC_DIR=$DOC_VERSION
+
 export SITE_BASE=$DOC_PATH/
 export CWD=`dirname "$0"`
+export DOC_DIR=$CWD/$DOC_VERSION/
 
 # Used to specify --no-cache for example
 ARGS=${2:-""}
@@ -28,20 +29,20 @@ case $1 in
   ;;
 
   dev)
-    $CWD/framework/node_modules/.bin/vuepress dev $CWD/$DOC_VERSION/ $ARGS
+    $CWD/framework/node_modules/.bin/vuepress dev $DOC_DIR/ $ARGS
   ;;
 
   build)
-    $CWD/framework/node_modules/.bin/vuepress build $CWD/$DOC_VERSION/ $ARGS
+    $CWD/framework/node_modules/.bin/vuepress build $DOC_DIR/ $ARGS
   ;;
 
   build-netlify)
     export SITE_BASE="/"
-    $CWD/framework/node_modules/.bin/vuepress build $CWD/$DOC_VERSION/ $ARGS
+    $CWD/framework/node_modules/.bin/vuepress build $DOC_DIR/ $ARGS
   ;;
 
   upload)
-    aws s3 sync $DOC_VERSION/.vuepress/dist s3://$S3_BUCKET$SITE_BASE --delete
+    aws s3 sync $DOC_DIR/.vuepress/dist s3://$S3_BUCKET$SITE_BASE --delete
   ;;
 
   cloudfront)
