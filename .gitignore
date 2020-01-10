@@ -11,3 +11,4 @@ coverage
 # composer.lock
 
 doc/framework
+node_modules
