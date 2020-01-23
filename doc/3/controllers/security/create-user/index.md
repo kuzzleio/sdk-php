@@ -11,7 +11,7 @@ Creates a new user in Kuzzle.
 
 :::info
 There is a small delay between user creation and its availability in our search layer (usually a couple of seconds).
-That means that a user that was just created may not be returned by the [searchUsers](/sdk/php/3/core-classes/security/search-users) function at first.
+That means that a user that was just created may not be returned by the `searchUsers` function at first.
 :::
 
 ---
@@ -47,7 +47,7 @@ The `user` object to provide must have the following properties:
 
 ## Callback Response
 
-Returns a [User](/sdk/php/3/core-classes/user) object.
+Returns a `User` object.
 
 ## Usage
 
