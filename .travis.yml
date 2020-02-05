@@ -55,6 +55,7 @@ jobs:
     # ---------------------------------------
     - <<: *cross_tests
       name: "PHP 7 (with coverage)"
+      php: 7
       stage: Unit Tests & Linters
       after_success:
         - bash <(curl -s https://codecov.io/bash)
@@ -99,11 +100,6 @@ jobs:
       name: "PHP 5.6"
       stage: Backwards compatibility
       php: 5.6
-
-    - <<: *cross_tests
-      name: "PHP 7.0"
-      stage: Backwards compatibility
-      php: 7.0
 
     # -----------------------------------------------
     # Deployments
