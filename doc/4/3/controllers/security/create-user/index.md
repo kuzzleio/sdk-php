@@ -18,13 +18,13 @@ That means that a user that was just created may not be returned by the `searchU
 
 ## createUser(id, user, [options], [callback])
 
-| Arguments  | Type        | Description                                                                                                                  |
-| ---------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `id`       | string      | [Unique user identifier](/core/1/guides/essentials/user-authentication#kuzzle-user-identifier-kuid)                   |
-| `user`     | JSON Object | A plain JSON object representing the user (see below)                                                                        |
-| `options`  | string      | (Optional) Optional arguments                                                                                                |
-| `callback` | function    | Callback handling the response                                                                                               |
-| `refresh`  | string      | If set to `wait_for`, Kuzzle will wait the persistence layer to finish indexing |
+| Arguments  | Type                   | Description                                                                                                                  |
+| ---------- | -----------            | ---------------------------------------------------------------------------------------------------------------------------- |
+| `id`       | <pre>string</pre>      | [Unique user identifier](/core/1/guides/essentials/user-authentication#kuzzle-user-identifier-kuid)                   |
+| `user`     | <pre>JSON Object</pre> | A plain JSON object representing the user (see below)                                                                        |
+| `options`  | <pre>string</pre>      | (Optional) Optional arguments                                                                                                |
+| `callback` | <pre>function</pre>    | Callback handling the response                                                                                               |
+| `refresh`  | <pre>string</pre>      | If set to `wait_for`, Kuzzle will wait the persistence layer to finish indexing |
 
 The `user` object to provide must have the following properties:
 
@@ -39,9 +39,9 @@ The `user` object to provide must have the following properties:
 
 ## Options
 
-| Filter     | Type    | Description                      
-| ---------- | ------- | ---------------------------------
-| `queuable` | boolean | Make this request queuable or not
+| Filter     | Type               | Description                      
+| ---------- | -------            | ---------------------------------
+| `queuable` | <pre>boolean</pre> | If true, queues the request during downtime, until connected to Kuzzle again
 
 ---
 
